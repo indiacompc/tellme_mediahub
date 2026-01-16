@@ -33,7 +33,7 @@ const Navbar = ({ tellme_logo }: { tellme_logo: StaticImageData }) => {
           />
         </Link>
 
-        <div className="hidden rounded-lg sm:flex justify-center items-center my-2.5 px-2.5">
+        {/* <div className="hidden rounded-lg sm:flex justify-center items-center my-2.5 px-2.5">
           <form action="/search/videos" method="get">
             <fieldset>
               <div className="flex justify-center items-center gap-0">
@@ -63,7 +63,7 @@ const Navbar = ({ tellme_logo }: { tellme_logo: StaticImageData }) => {
               <FaEnvelope size={20} />
             </Link>
           </div>
-        </div>
+        </div> */}
 
         <Suspense>
           <div className="flex sm:hidden">

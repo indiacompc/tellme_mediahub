@@ -1,11 +1,11 @@
 'use client';
 import Link from 'next/link';
 import {
-  FaYoutube,
+  FaEnvelope,
   FaFacebook,
   FaInstagram,
-  FaEnvelope,
   FaSearch,
+  FaYoutube,
 } from 'react-icons/fa';
 // import { HiOutlineMenu } from 'react-icons/hi';
 import {

@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import VideoGrid from "@/components/video-grid"
-import BannerVideo from "@/components/VideoBackground"
 import PlayerModal from "@/components/player-modal"
 import type { YouTubeVideo } from "@/types/youtube"
 

@@ -1,4 +1,4 @@
-import { Open_Sans, Ubuntu, Sofia } from 'next/font/google';
+import { Open_Sans, Sofia, Ubuntu } from 'next/font/google';
 
 export const openSansFont = Open_Sans({
   display: 'swap',
