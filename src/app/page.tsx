@@ -23,7 +23,7 @@ export default function Home() {
 						Accelerate your creative projects with premium 4K stock footage—licensed in hours, not months.
 						Choose from thousands of curated clips across travel, heritage, nature, and tourism themes with
 						transparent pricing and usage rights.
-					</span>
+					</span> 
 				</section>
 			</div>
 			<HomeContent />
