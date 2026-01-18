@@ -7,7 +7,7 @@ import { cn } from '@/shadcn_data/lib/utils';
 import { Suspense } from 'react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
-import MobileNavbar from './MobileNavbar';
+// import MobileNavbar from './MobileNavbar';
 // import MobileNavbar from "./MobileNavbar";
 // import { Suspense } from "react";
 // import dynamic from "next/dynamic";
@@ -100,7 +100,7 @@ const Navbar = ({ tellme_logo }: { tellme_logo: StaticImageData }) => {
             </Link>
           </div>
 
-        <Suspense>
+        {/* <Suspense>
           <div className="flex sm:hidden">
             <MobileNavbar />
             <Link
@@ -111,7 +111,7 @@ const Navbar = ({ tellme_logo }: { tellme_logo: StaticImageData }) => {
               <FaEnvelope size={20} />
             </Link>
           </div>
-        </Suspense>
+        </Suspense> */}
       </div>
     </header>
   );
