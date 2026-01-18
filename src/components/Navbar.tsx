@@ -91,13 +91,13 @@ const Navbar = ({ tellme_logo }: { tellme_logo: StaticImageData }) => {
                 <Moon className="w-5 h-5" />
               )}
             </button>
-            {/* <Link
+            <Link
               target="_blank"
               href="mailto:tellmedigi@outlook.com"
               className="flex justify-center items-center text-white hover:text-gray-300 transition-colors gap-2 p-2.5 rounded-lg hover:bg-white/10"
             >
               <FaEnvelope size={20} />
-            </Link> */}
+            </Link>
           </div>
 
         {/* <Suspense>
