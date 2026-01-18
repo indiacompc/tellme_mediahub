@@ -47,7 +47,7 @@ export default function Home() {
 								Tellme Media Hub
 							</motion.span>
 						</h2>
-						<p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl py-3 sm:py-4 md:py-5 leading-relaxed max-w-full sm:max-w-2xl md:max-w-3xl break-words hyphens-none whitespace-normal">
+						<p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl py-3 sm:py-4 md:py-5 leading-relaxed max-w-full sm:max-w-2xl md:max-w-3xl wrap-break-word hyphens-none whitespace-normal">
 							{paragraphArray.map((word, i) => (
 								<motion.span
 									key={i}

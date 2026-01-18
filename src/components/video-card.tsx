@@ -45,34 +45,36 @@ export default function VideoCard({ video, onClick }: VideoCardProps) {
   }
 
   return (
-    <div
-      onClick={onClick}
-      className="group cursor-pointer rounded-lg overflow-hidden border border-border transition-all duration-300 hover:border-primary hover:shadow-lg h-full flex flex-col bg-card hover:bg-muted/50"
-    >
-      <div className="relative w-full aspect-video bg-muted overflow-hidden">
-        {currentThumbnail ? (
-          <Image
-            src={currentThumbnail}
-            alt={video.title}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-110"
-            unoptimized
-            onError={handleImageError}
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground">
-            <div className="text-center">
-              <Play className="w-12 h-12 mx-auto mb-2 opacity-50" />
-              <p className="text-xs">No thumbnail</p>
+    <div className="flex flex-col h-full group">
+      <div
+        onClick={onClick}
+        className="cursor-pointer rounded-lg overflow-hidden border border-border transition-all duration-300 hover:border-primary hover:shadow-lg bg-card hover:bg-muted/50"
+      >
+        <div className="relative w-full aspect-video bg-muted overflow-hidden rounded-lg">
+          {currentThumbnail ? (
+            <Image
+              src={currentThumbnail}
+              alt={video.title}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-110 rounded-lg"
+              unoptimized
+              onError={handleImageError}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground rounded-lg">
+              <div className="text-center">
+                <Play className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                <p className="text-xs">No thumbnail</p>
+              </div>
             </div>
-          </div>
-        )}
-        {/* Overlay */}
-        {/* <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center">
-          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-accent flex items-center justify-center transition-all duration-300 group-hover:scale-125 group-hover:shadow-lg">
-            <Play className="w-5 h-5 sm:w-6 sm:h-6 text-white fill-white" />
-          </div>
-        </div> */}
+          )}
+          {/* Overlay */}
+          {/* <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-accent flex items-center justify-center transition-all duration-300 group-hover:scale-125 group-hover:shadow-lg">
+              <Play className="w-5 h-5 sm:w-6 sm:h-6 text-white fill-white" />
+            </div>
+          </div> */}
+        </div>
       </div>
 
       {/* Content */}
@@ -82,13 +84,6 @@ export default function VideoCard({ video, onClick }: VideoCardProps) {
         </h3>
         <p className="text-xs sm:text-sm text-muted-foreground mt-2">{video.channelName}</p>
       </div>
-
-      {/* Watch Button */}
-      {/* <div className="px-3 sm:px-4 pb-3 sm:pb-4">
-        <button className="w-full px-3 py-2 bg-primary text-primary-foreground rounded-md text-xs sm:text-sm font-medium transition-all duration-200 hover:shadow-md active:scale-95">
-          Watch on YouTube
-        </button>
-      </div> */}
     </div>
   )
 }
