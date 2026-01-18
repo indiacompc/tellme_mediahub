@@ -6,7 +6,7 @@ import tellme_logo from '@/assets/images/tellme_logo.png'
 export default function Home() {
 	return (
 		<main>
-			<div className="relative w-full h-[80dvh] sm:h-125 lg:h-140 xl:h-160 2xl:h-205 overflow-hidden text-white">
+			<div className="relative w-full h-[80dvh] sm:h-125 lg:h-130 xl:h-150 2xl:h-205 overflow-hidden text-white">
 				<VideoBackground />
 				<div className="absolute top-0 left-0 right-0 bottom-0 bg-black/40 z-1" />
 				<div className="absolute top-0 left-0 right-0 z-20">
