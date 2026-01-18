@@ -17,7 +17,7 @@ const Navbar = ({ tellme_logo }: { tellme_logo: StaticImageData }) => {
   return (
     <header
       className={cn(
-        'w-full container sm:mx-auto px-4 sm:px-20 text-white',
+        'w-full px-4 sm:px-20 text-white ',
         // pathname === "/video_background"
         //   ? "absolute z-10 top-0 left-0"
         //   : undefined,
@@ -28,7 +28,7 @@ const Navbar = ({ tellme_logo }: { tellme_logo: StaticImageData }) => {
           <Image
             src={tellme_logo}
             alt="tellme logo"
-            className="my-1"
+            className="my-1 w-24 h-auto sm:w-40"
             priority={true}
           />
         </Link>
@@ -64,6 +64,15 @@ const Navbar = ({ tellme_logo }: { tellme_logo: StaticImageData }) => {
             </Link>
           </div>
         </div> */}
+		<div className="h-full flex">
+            <Link
+              target="_blank"
+              href="mailto:tellmedigi@outlook.com"
+              className="flex justify-center items-center text-black gap-2 p-2.5"
+            >
+              <FaEnvelope size={20} />
+            </Link>
+          </div>
 
         <Suspense>
           <div className="flex sm:hidden">
