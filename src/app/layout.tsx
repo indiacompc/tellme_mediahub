@@ -122,7 +122,7 @@ export default function RootLayout({
         className="w-full"
       >
         <Providers>
-          <Navbar tellme_logo={tellme_logo} />
+          {/* <Navbar tellme_logo={tellme_logo} /> */}
           {children}
           {/* <Footer /> */}
           <script

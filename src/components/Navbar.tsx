@@ -1,8 +1,12 @@
+'use client';
 import Link from 'next/link';
 import { FaEnvelope, FaSearch } from 'react-icons/fa';
+import { Moon, Sun } from 'lucide-react';
 import Image, { StaticImageData } from 'next/image';
 import { cn } from '@/shadcn_data/lib/utils';
 import { Suspense } from 'react';
+import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
 import MobileNavbar from './MobileNavbar';
 // import MobileNavbar from "./MobileNavbar";
 // import { Suspense } from "react";
@@ -13,11 +17,18 @@ import MobileNavbar from './MobileNavbar';
 // })
 
 const Navbar = ({ tellme_logo }: { tellme_logo: StaticImageData }) => {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // const pathname = usePathname();
   return (
     <header
       className={cn(
-        'w-full px-4 sm:px-20 text-white ',
+        'w-full py-2 px-4 sm:px-20 text-white bg-transparent',
         // pathname === "/video_background"
         //   ? "absolute z-10 top-0 left-0"
         //   : undefined,
@@ -64,11 +75,26 @@ const Navbar = ({ tellme_logo }: { tellme_logo: StaticImageData }) => {
             </Link>
           </div>
         </div> */}
-		<div className="h-full flex">
+		<div className="h-full flex items-center gap-3">
+            <button
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="flex justify-center items-center text-white hover:text-gray-300 transition-colors gap-2 p-2.5 rounded-lg hover:bg-white/10"
+              aria-label="Toggle theme"
+            >
+              {mounted ? (
+                theme === 'dark' ? (
+                  <Sun className="w-5 h-5" />
+                ) : (
+                  <Moon className="w-5 h-5" />
+                )
+              ) : (
+                <Moon className="w-5 h-5" />
+              )}
+            </button>
             <Link
               target="_blank"
               href="mailto:tellmedigi@outlook.com"
-              className="flex justify-center items-center text-black gap-2 p-2.5"
+              className="flex justify-center items-center text-white hover:text-gray-300 transition-colors gap-2 p-2.5 rounded-lg hover:bg-white/10"
             >
               <FaEnvelope size={20} />
             </Link>
