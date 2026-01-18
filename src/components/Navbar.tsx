@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { FaEnvelope, FaSearch } from 'react-icons/fa';
+import { FaEnvelope } from 'react-icons/fa';
 import { Moon, Sun } from 'lucide-react';
 import Image, { StaticImageData } from 'next/image';
 import { cn } from '@/shadcn_data/lib/utils';

@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Providers } from './providers';
-import Navbar from '@/components/Navbar';
 // import tellme_logo from '@/assets/images/tellme_logo.png'
 // import Footer from "@/components/Footer";
 import { ubuntuFont } from '@/assets/fonts';
@@ -10,7 +9,6 @@ import { ubuntuFont } from '@/assets/fonts';
 // import dynamic from "next/dynamic";
 // import { GoogleAnalytics } from '@next/third-parties/google';
 // import { Organization, WebSite, WithContext } from 'schema-dts';
-import tellme_logo from '@/assets/images/tellme_logo.png';
 import { organizationJsonLd, websiteJsonLd } from '@/lib/globalVariables';
 
 // const Navbar = dynamic(() => import('@/components/Navbar'), {
