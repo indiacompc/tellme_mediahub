@@ -6,7 +6,7 @@ export default function Home() {
 		<main>
 			<div className="relative w-full h-[80dvh] sm:h-225 overflow-hidden text-white">
 				<VideoBackground />
-				<div className="absolute top-0 left-0 right-0 bottom-0 bg-black/40 z-[1]" />
+				<div className="absolute top-0 left-0 right-0 bottom-0 bg-black/40 z-1" />
 				{/* <ThreeSixtyImage className="absolute w-full h-full left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 object-cover rounded-xl" imageUrl="/preview2.jpg" /> */}
 				<section className="content absolute top-0 left-0 right-0 bottom-0 z-10 flex flex-col justify-center items-start container mx-auto w-full h-auto">
 					<h2
