@@ -1,9 +1,14 @@
+'use client';
+
 import HomeContent from "@/components/home-content"
 import VideoBackground from "../components/VideoBackground"
 import Navbar from "@/components/Navbar"
 import tellme_logo from '@/assets/images/tellme_logo.png'
+import { motion } from 'motion/react'
 
 export default function Home() {
+	const descriptionText = "Accelerate your creative projects with premium 4K stock footage—licensed in hours, not months. Choose from thousands of curated clips across travel, heritage, nature, and tourism themes with transparent pricing and usage rights.";
+	const paragraphArray = descriptionText.split(' ');
 	return (
 		<main>
 			<div className="relative w-full h-[80dvh] sm:h-125 lg:h-130 xl:h-150 2xl:h-190 overflow-hidden text-white">
@@ -18,14 +23,43 @@ export default function Home() {
 						<h2
 							className="font-semibold md:font-normal mb-4"
 						>
-							<span className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">Welcome to&nbsp;</span>
+							<motion.span
+								className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl"
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								transition={{
+									duration: 1,
+									delay: 0
+								}}
+							>
+								Welcome to&nbsp;
+							</motion.span>
 							<br />
-							<span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl">Tellme Media Hub</span>
+							<motion.span
+								className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl"
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								transition={{
+									duration: 1,
+									delay: 0.1
+								}}
+							>
+								Tellme Media Hub
+							</motion.span>
 						</h2>
-						<p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl py-3 sm:py-4 md:py-5 leading-relaxed max-w-full sm:max-w-2xl md:max-w-3xl">
-							Accelerate your creative projects with premium 4K stock footage—licensed in hours, not months.
-							Choose from thousands of curated clips across travel, heritage, nature, and tourism themes with
-							transparent pricing and usage rights.
+						<p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl py-3 sm:py-4 md:py-5 leading-relaxed max-w-full sm:max-w-2xl md:max-w-3xl break-words hyphens-none whitespace-normal">
+							{paragraphArray.map((word, i) => (
+								<motion.span
+									key={i}
+									className="inline"
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									transition={{ duration: 0.01, delay: i / 10 }}
+								>
+									{word}
+									{i < paragraphArray.length - 1 ? ' ' : ''}
+								</motion.span>
+							))}
 						</p> 
 					</div>
 				</section>
