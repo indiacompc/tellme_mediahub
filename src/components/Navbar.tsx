@@ -69,7 +69,7 @@ const Navbar = ({ tellme_logo }: { tellme_logo: StaticImageData }) => {
           <div className="h-full flex">
             <Link
               target="_blank"
-              href="mailto:tellmedigi@outlook.com"
+              href="mailto:digital@tellmedigi.com"
               className="flex justify-center items-center text-black gap-2 p-2.5"
             >
               <FaEnvelope size={20} />
@@ -94,7 +94,7 @@ const Navbar = ({ tellme_logo }: { tellme_logo: StaticImageData }) => {
             </button>
             <Link
               target="_blank"
-              href="mailto:tellmedigi@outlook.com"
+              href="mailto:digital@tellmedigi.com"
               className="flex justify-center items-center text-white hover:text-black transition-colors gap-2 p-2.5 rounded-lg hover:bg-white/10"
             >
               <FaEnvelope size={20} />
@@ -106,7 +106,7 @@ const Navbar = ({ tellme_logo }: { tellme_logo: StaticImageData }) => {
             <MobileNavbar />
             <Link
               target="_blank"
-              href="mailto:tellmedigi@outlook.com"
+              href="mailto:digital@tellmedigi.com"
               className="flex justify-center items-center text-black gap-2 p-2.5"
             >
               <FaEnvelope size={20} />

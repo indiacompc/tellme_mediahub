@@ -9,7 +9,7 @@ export const organizationJsonLd: WithContext<Organization> = {
   url: 'https://tellmemediahub.com',
   logo: `https://tellmemediahub.com${tellme_logo.src}`,
   telephone: '+917030238122',
-  email: 'tellmedigi@outlook.com',
+  email: 'digital@tellmedigi.com',
   address: {
     '@type': 'PostalAddress',
     streetAddress: 'Office No. 228, B Wing, Akshay Complex, Dhole Patil Road',
@@ -22,7 +22,7 @@ export const organizationJsonLd: WithContext<Organization> = {
     {
       '@type': 'ContactPoint',
       telephone: '+917030238122',
-      email: 'tellmedigi@outlook.com',
+      email: 'digital@tellmedigi.com',
       contactType: 'customer service',
       areaServed: 'IN',
       availableLanguage: ['English', 'Hindi', 'Marathi'],

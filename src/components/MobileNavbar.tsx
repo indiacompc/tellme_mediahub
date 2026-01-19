@@ -54,10 +54,10 @@ const MobileNavbar = () => {
         <div>
           <Link
             target="_blank"
-            href="mailto:tellmedigi@outlook.com"
+            href="mailto:digital@tellmedigi.com"
             className="flex flex-col justify-center items-center gap-2 p-2.5"
           >
-            <FaEnvelope className="hidden" /> tellmedigi@outlook.com
+            <FaEnvelope className="hidden" /> digital@tellmedigi.com
           </Link>
         </div>
       </SheetContent>
