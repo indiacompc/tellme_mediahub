@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import tellme_logo from '@/assets/images/tellme_logo.png'
+import { Button } from '@/shadcn_data/components/ui/button'
 
 type ParamsType = {
   params: Promise<{
@@ -92,16 +93,15 @@ export default async function VideoPage({ params }: ParamsType) {
             </div>
           )}
 
-          {/* Watch on YouTube Link */}
+          {/* Purchase Button */}
           <div className="mb-6">
-            <a
-              href={`https://www.youtube.com/watch?v=${video.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium transition-all duration-200 hover:bg-primary/90"
+            <Link
+              href={`/contact?subject=${encodeURIComponent(`Purchase request for video: /video/${slug}`)}`}
             >
-              Watch on YouTube
-            </a>
+              <Button size="lg" className="text-lg px-8 py-6 font-semibold">
+                Purchase Video
+              </Button>
+            </Link>
           </div>
 
           {/* Video Info */}

@@ -5,9 +5,11 @@ import tellme_logo from '@/assets/images/tellme_logo.png';
 import { Button } from '@/shadcn_data/components/ui/button';
 import { motion } from 'motion/react';
 import { FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 export default function ContactPage() {
+	const searchParams = useSearchParams();
 	const [formData, setFormData] = useState({
 		name: '',
 		email: '',
@@ -17,6 +19,16 @@ export default function ContactPage() {
 	const [loading, setLoading] = useState(false);
 	const [success, setSuccess] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		const subjectParam = searchParams.get('subject');
+		if (subjectParam) {
+			setFormData((prev) => ({
+				...prev,
+				subject: decodeURIComponent(subjectParam),
+			}));
+		}
+	}, [searchParams]);
 
 	const handleChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
