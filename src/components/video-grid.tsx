@@ -85,7 +85,7 @@ export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
     return (
       <div>
         <SearchBar onSearch={handleSearch} />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 12 }).map((_, i) => (
             <VideoSkeleton key={i} />
           ))}

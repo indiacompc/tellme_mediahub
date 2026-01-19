@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Providers } from './providers';
 // import tellme_logo from '@/assets/images/tellme_logo.png'
-// import Footer from "@/components/Footer";
+import Footer from '@/components/Footer';
 import { ubuntuFont } from '@/assets/fonts';
 // import Navbar from "@/components/Navbar";
 // import Footer from '@/components/Footer';
@@ -122,7 +122,7 @@ export default function RootLayout({
         <Providers>
           {/* <Navbar tellme_logo={tellme_logo} /> */}
           {children}
-          {/* <Footer /> */}
+          <Footer />
           <script
             id="globalWebSiteSchema"
             key="globalWebSiteSchema"
