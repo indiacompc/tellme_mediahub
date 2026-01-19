@@ -5,4 +5,6 @@ export interface YouTubeVideo {
   channelName: string
   description: string
   publishedAt: string
+  slug: string
+  recordingLocation?: string
 }

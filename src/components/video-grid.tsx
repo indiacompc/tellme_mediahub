@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import VideoCard from "./video-card"
 import VideoSkeleton from "./video-skeleton"
 import ErrorState from "./error-state"
@@ -9,16 +10,22 @@ import { loadVideosFromJSON, searchVideosInDatabase } from "@/lib/actions"
 import type { YouTubeVideo } from "@/types/youtube"
 
 interface VideoGridProps {
-  onVideoSelect: (video: YouTubeVideo) => void
+  onVideoSelect?: (video: YouTubeVideo) => void
 }
 
 export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
+  const router = useRouter()
   const [videos, setVideos] = useState<YouTubeVideo[]>([])
   const [searchResults, setSearchResults] = useState<YouTubeVideo[]>([])
   const [loading, setLoading] = useState(true)
   const [searching, setSearching] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
+
+  const handleVideoSelect = (video: YouTubeVideo) => {
+    router.push(`/video/${video.slug}`)
+    onVideoSelect?.(video)
+  }
 
   useEffect(() => {
     const loadVideos = async () => {
@@ -126,7 +133,7 @@ export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {sortedVideos.map((video) => (
-            <VideoCard key={video.id} video={video} onClick={() => onVideoSelect(video)} />
+            <VideoCard key={video.id} video={video} onClick={() => handleVideoSelect(video)} />
           ))}
         </div>
       )}

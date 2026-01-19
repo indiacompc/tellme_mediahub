@@ -28,7 +28,8 @@ const Navbar = ({ tellme_logo }: { tellme_logo: StaticImageData }) => {
   return (
     <header
       className={cn(
-        'w-full py-2 px-4 sm:px-20 text-white bg-transparent',
+        'w-full py-2 px-4 sm:px-20 text-white',
+        mounted && theme === 'dark' ? 'bg-white/10' : 'bg-black/10',
         // pathname === "/video_background"
         //   ? "absolute z-10 top-0 left-0"
         //   : undefined,
@@ -78,7 +79,7 @@ const Navbar = ({ tellme_logo }: { tellme_logo: StaticImageData }) => {
 		<div className="h-full flex items-center gap-3">
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="flex justify-center items-center text-white hover:text-gray-300 transition-colors gap-2 p-2.5 rounded-lg hover:bg-white/10"
+              className="flex justify-center items-center text-white hover:text-black transition-colors gap-2 p-2.5 rounded-lg hover:bg-white/10"
               aria-label="Toggle theme"
             >
               {mounted ? (
@@ -94,7 +95,7 @@ const Navbar = ({ tellme_logo }: { tellme_logo: StaticImageData }) => {
             <Link
               target="_blank"
               href="mailto:tellmedigi@outlook.com"
-              className="flex justify-center items-center text-white hover:text-gray-300 transition-colors gap-2 p-2.5 rounded-lg hover:bg-white/10"
+              className="flex justify-center items-center text-white hover:text-black transition-colors gap-2 p-2.5 rounded-lg hover:bg-white/10"
             >
               <FaEnvelope size={20} />
             </Link>

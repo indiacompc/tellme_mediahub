@@ -6,6 +6,34 @@ import fs from 'fs'
 import path from 'path'
 
 /**
+ * Generates a URL-friendly slug from a title and video ID
+ * @param title - Video title
+ * @param videoId - YouTube video ID (for uniqueness)
+ * @returns URL-friendly slug
+ */
+function generateSlug(title: string, videoId: string): string {
+	// Convert to lowercase and replace spaces/special chars with hyphens
+	let slug = title
+		.toLowerCase()
+		.trim()
+		.replace(/[^\w\s-]/g, '') // Remove special characters
+		.replace(/\s+/g, '-') // Replace spaces with hyphens
+		.replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+		.replace(/^-+|-+$/g, '') // Remove leading/trailing hyphens
+	
+	// Limit length and append video ID for uniqueness
+	const maxLength = 100
+	if (slug.length > maxLength) {
+		slug = slug.substring(0, maxLength)
+	}
+	
+	// Append video ID to ensure uniqueness
+	slug = `${slug}-${videoId}`
+	
+	return slug
+}
+
+/**
  * YouTube API Key Configuration
  * 
  * To use this application, you need a valid YouTube Data API v3 key.
@@ -268,13 +296,17 @@ export async function loadVideosFromJSON(): Promise<YouTubeVideo[]> {
 					return null
 				}
 				
+				const title = video.title || ''
+				const slug = generateSlug(title, videoId)
+				
 				return {
 					id: videoId,
-					title: video.title || '',
+					title: title,
 					description: video.description || '',
 					thumbnail: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`, // Use hqdefault as it's more reliable
 					publishedAt: new Date().toISOString(), // json_youtube.json doesn't have published date
-					channelName: 'Tellme360'
+					channelName: 'Tellme360',
+					slug: slug
 				}
 			})
 			.filter((video: YouTubeVideo | null): video is YouTubeVideo => video !== null)
@@ -338,14 +370,22 @@ export async function searchVideosInDatabase(query: string): Promise<YouTubeVide
 				       description.includes(searchTerm) || 
 				       recordingLocation.includes(searchTerm)
 			})
-			.map((video: any) => ({
-				id: video.youtube_video_id,
-				title: video.title || '',
-				description: video.description || '',
-				thumbnail: video.thumbnail_url || `https://img.youtube.com/vi/${video.youtube_video_id}/hqdefault.jpg`, // Use hqdefault as it's more reliable
-				publishedAt: video.published_on || video.last_modified || new Date().toISOString(),
-				channelName: 'Tellme360'
-			}))
+			.map((video: any) => {
+				const videoId = video.youtube_video_id
+				const title = video.title || ''
+				// Use existing slug from database, or generate one if not present
+				const slug = video.slug || generateSlug(title, videoId)
+				
+				return {
+					id: videoId,
+					title: title,
+					description: video.description || '',
+					thumbnail: video.thumbnail_url || `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`, // Use hqdefault as it's more reliable
+					publishedAt: video.published_on || video.last_modified || new Date().toISOString(),
+					channelName: 'Tellme360',
+					slug: slug
+				}
+			})
 
 		// Validate videos - check if they are accessible
 		console.log(`Validating ${videos.length} search results...`)
@@ -356,5 +396,80 @@ export async function searchVideosInDatabase(query: string): Promise<YouTubeVide
 	} catch (error) {
 		console.error('Error searching videos:', error)
 		throw error instanceof Error ? error : new Error('Failed to search videos')
+	}
+}
+
+/**
+ * Gets a single video by slug from the database
+ * @param slug - Video slug
+ * @returns YouTubeVideo object or null if not found
+ */
+export async function getVideoBySlug(slug: string): Promise<YouTubeVideo | null> {
+	try {
+		// First try the tellme_videohub_db file (has more details like recording_location)
+		try {
+			const dbFilePath = path.join(process.cwd(), 'public', 'tellme_videohub_db_2025-07-18_171335.json')
+			if (fs.existsSync(dbFilePath)) {
+				const fileContents = fs.readFileSync(dbFilePath, 'utf-8')
+				const data = JSON.parse(fileContents)
+
+				if (data.videos && Array.isArray(data.videos)) {
+					const video = data.videos.find((v: any) => v.slug === slug && v.status === 'public')
+					if (video) {
+						const videoId = video.youtube_video_id
+						const title = video.title || ''
+						const videoSlug = video.slug || generateSlug(title, videoId)
+						
+						return {
+							id: videoId,
+							title: title,
+							description: video.description || '',
+							thumbnail: video.thumbnail_url || `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+							publishedAt: video.published_on || video.last_modified || new Date().toISOString(),
+							channelName: 'Tellme360',
+							slug: videoSlug,
+							recordingLocation: video.recording_location || undefined
+						}
+					}
+				}
+			}
+		} catch (err) {
+			console.warn('Error reading tellme_videohub_db file:', err)
+		}
+
+		// Fallback to json_youtube.json (search by generated slug pattern)
+		const filePath = path.join(process.cwd(), 'public', 'json_youtube.json')
+		if (fs.existsSync(filePath)) {
+			const fileContents = fs.readFileSync(filePath, 'utf-8')
+			const data = JSON.parse(fileContents)
+
+			if (Array.isArray(data)) {
+				// Find video by matching slug
+				for (const video of data) {
+					const videoId = extractVideoId(video.url)
+					if (!videoId) continue
+					
+					const title = video.title || ''
+					const generatedSlug = generateSlug(title, videoId)
+					
+					if (generatedSlug === slug) {
+						return {
+							id: videoId,
+							title: title,
+							description: video.description || '',
+							thumbnail: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+							publishedAt: new Date().toISOString(),
+							channelName: 'Tellme360',
+							slug: generatedSlug
+						}
+					}
+				}
+			}
+		}
+
+		return null
+	} catch (error) {
+		console.error('Error getting video by slug:', error)
+		return null
 	}
 }
