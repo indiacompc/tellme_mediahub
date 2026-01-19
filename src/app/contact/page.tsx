@@ -114,7 +114,7 @@ export default function ContactPage() {
 
 								<div className="space-y-4">
 									<div className="flex items-start gap-4">
-										<div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+										<div className="shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
 											<FaEnvelope className="text-primary" />
 										</div>
 										<div>
@@ -129,7 +129,7 @@ export default function ContactPage() {
 									</div>
 
 									<div className="flex items-start gap-4">
-										<div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+										<div className="shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
 											<FaMapMarkerAlt className="text-primary" />
 										</div>
 										<div>
