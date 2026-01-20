@@ -49,21 +49,23 @@ export default async function VideoPage({ params }: ParamsType) {
   return (
     <>
       <Navbar tellme_logo={tellme_logo} />
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div className="container mx-auto px-0 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Back Button */}
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Videos
-        </Link>
+        <div className="px-4 sm:px-0">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Videos
+          </Link>
+        </div>
 
       <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
         {/* Main Content */}
         <main className="w-full lg:w-2/3">
           {/* Video Player */}
-          <div className="w-screen -mx-4 sm:mx-0 sm:w-full h-[50vh] sm:h-auto sm:aspect-video bg-black lg:rounded-xl overflow-hidden mb-6">
+          <div className="w-full h-[50vh] sm:h-auto sm:aspect-video bg-black lg:rounded-xl overflow-hidden mb-6">
             <iframe
               src={`https://www.youtube.com/embed/${video.id}?autoplay=1`}
               title={video.title}
@@ -74,7 +76,7 @@ export default async function VideoPage({ params }: ParamsType) {
           </div>
 
           {/* Video Title */}
-          <div className="mb-4">
+          <div className="mb-4 px-4 sm:px-0">
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
               {video.title}
             </h1>
@@ -85,7 +87,7 @@ export default async function VideoPage({ params }: ParamsType) {
 
           {/* Video Description */}
           {video.description && (
-            <div className="mb-6">
+            <div className="mb-6 px-4 sm:px-0">
               <h2 className="text-lg font-semibold mb-2">Description</h2>
               <div className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
                 {video.description}
@@ -94,7 +96,7 @@ export default async function VideoPage({ params }: ParamsType) {
           )}
 
           {/* Purchase Button */}
-          <div className="mb-6">
+          <div className="mb-6 px-4 sm:px-0">
             <Link
               href={`/contact?subject=${encodeURIComponent(`Purchase request for video: https://www.youtube.com/watch?v=${video.id}`)}`}
             >
@@ -105,7 +107,7 @@ export default async function VideoPage({ params }: ParamsType) {
           </div>
 
           {/* Video Info */}
-          <div className="border-t pt-6">
+          <div className="border-t pt-6 px-4 sm:px-0">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="text-muted-foreground">Published:</span>
