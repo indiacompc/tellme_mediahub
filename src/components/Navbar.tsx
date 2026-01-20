@@ -4,7 +4,6 @@ import { FaEnvelope } from 'react-icons/fa';
 import { Moon, Sun } from 'lucide-react';
 import Image, { StaticImageData } from 'next/image';
 import { cn } from '@/shadcn_data/lib/utils';
-import { Suspense } from 'react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 // import MobileNavbar from './MobileNavbar';

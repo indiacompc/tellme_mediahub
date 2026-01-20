@@ -5,7 +5,7 @@ import tellme_logo from '@/assets/images/tellme_logo.png';
 import { Button } from '@/shadcn_data/components/ui/button';
 import { motion } from 'motion/react';
 import { FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 export default function ContactPage() {
