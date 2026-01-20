@@ -96,7 +96,7 @@ export default async function VideoPage({ params }: ParamsType) {
           {/* Purchase Button */}
           <div className="mb-6">
             <Link
-              href={`/contact?subject=${encodeURIComponent(`Purchase request for video: /video/${slug}`)}`}
+              href={`/contact?subject=${encodeURIComponent(`Purchase request for video: https://www.youtube.com/watch?v=${video.id}`)}`}
             >
               <Button size="lg" className="text-lg px-8 py-6 font-semibold">
                 Purchase Video
