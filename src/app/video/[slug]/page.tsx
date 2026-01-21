@@ -50,14 +50,14 @@ export default async function VideoPage({ params }: ParamsType) {
   return (
     <>
       <Navbar tellme_logo={tellme_logo} />
-      <div className="container mx-auto px-0 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16 py-6 sm:py-8 lg:py-10 xl:py-12">
         {/* Back Button */}
-        <div className="px-4 sm:px-0">
+        <div className="mb-6 sm:mb-8">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+            className="inline-flex items-center gap-2 text-sm sm:text-base text-muted-foreground hover:text-foreground transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             Back to Videos
           </Link>
         </div>
@@ -67,7 +67,7 @@ export default async function VideoPage({ params }: ParamsType) {
       ) : (
         <>
           {/* Video Player */}
-          <div className="w-full aspect-5/4 sm:aspect-16/10 lg:aspect-video bg-black overflow-hidden mb-6">
+          <div className="w-full aspect-5/4 sm:aspect-16/10 md:aspect-video bg-black overflow-hidden mb-6 sm:mb-8 lg:mb-10">
             <iframe
               src={`https://www.youtube.com/embed/${video.id}?autoplay=1`}
               title={video.title}
