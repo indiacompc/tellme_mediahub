@@ -32,6 +32,7 @@ export default function ShortsLayout({ video }: ShortsLayoutProps) {
 								<h1 className="text-lg sm:text-xl font-bold text-foreground leading-tight">
 									{video.title}
 								</h1>
+								<p className="text-xs text-muted-foreground mt-1">Click here</p>
 							</button>
 						</div>
 					)}
@@ -48,6 +49,7 @@ export default function ShortsLayout({ video }: ShortsLayoutProps) {
 								<h1 className="text-lg xl:text-xl font-bold text-foreground leading-tight">
 									{video.title}
 								</h1>
+								<p className="text-xs text-muted-foreground mt-1">Click here</p>
 							</button>
 						)}
 					</div>
