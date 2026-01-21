@@ -428,7 +428,8 @@ export async function getVideoBySlug(slug: string): Promise<YouTubeVideo | null>
 							publishedAt: video.published_on || video.last_modified || new Date().toISOString(),
 							channelName: 'Tellme360',
 							slug: videoSlug,
-							recordingLocation: video.recording_location || undefined
+							recordingLocation: video.recording_location || undefined,
+							isShort: video.is_short || false
 						}
 					}
 				}

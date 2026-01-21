@@ -7,4 +7,5 @@ export interface YouTubeVideo {
   publishedAt: string
   slug: string
   recordingLocation?: string
+  isShort?: boolean
 }
