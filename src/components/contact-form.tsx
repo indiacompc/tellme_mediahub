@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/shadcn_data/components/ui/button';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 export default function ContactForm() {

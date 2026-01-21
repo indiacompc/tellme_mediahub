@@ -27,7 +27,7 @@ export default function ShortsLayout({ video }: ShortsLayoutProps) {
 						<div className="w-full lg:hidden flex justify-center">
 							<button
 								onClick={() => setIsExpanded(!isExpanded)}
-								className="w-full max-w-85 sm:max-w-[350px] md:max-w-sm text-left"
+								className="w-full max-w-85 sm:max-w-87.5 md:max-w-sm text-left"
 							>
 								<h1 className="text-lg sm:text-xl font-bold text-foreground leading-tight">
 									{video.title}

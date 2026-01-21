@@ -27,7 +27,7 @@ export default function VideoDetailsCollapsible({
 						{video.title}
 					</h1>
 					<ChevronDown
-						className={`w-4 h-4 lg:w-5 lg:h-5 text-muted-foreground transition-transform flex-shrink-0 mt-1 ${
+						className={`w-4 h-4 lg:w-5 lg:h-5 text-muted-foreground transition-transform shrink-0 mt-1 ${
 							isExpanded ? 'rotate-180' : ''
 						}`}
 					/>
