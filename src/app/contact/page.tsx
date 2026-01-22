@@ -5,7 +5,7 @@ import tellme_logo from '@/assets/images/tellme_logo.png';
 import { motion } from 'motion/react';
 import { FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 import { Suspense } from 'react';
-import ContactForm from '@/components/contact-form';
+import ContactForm from '@/components/contact-form'; 
 
 export default function ContactPage() {
 
