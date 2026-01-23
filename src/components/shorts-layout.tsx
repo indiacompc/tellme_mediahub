@@ -7,13 +7,6 @@ import { X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { YouTubeVideo } from '@/types/youtube';
 
-// TypeScript declarations for YouTube IFrame API
-declare global {
-	interface Window {
-		YT: any;
-		onYouTubeIframeAPIReady: () => void;
-	}
-}
 
 interface ShortsLayoutProps {
 	video: YouTubeVideo;
@@ -26,9 +19,9 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 	const [showFullDescription, setShowFullDescription] = useState<Set<string>>(new Set());
 	const containerRef = useRef<HTMLDivElement>(null);
 	const videoRefs = useRef<(HTMLDivElement | null)[]>([]);
-	const iframeRefs = useRef<(HTMLIFrameElement | null)[]>([]);
-	const playersRef = useRef<any[]>([]);
 	const isScrollingRef = useRef(false);
+	const observerRef = useRef<IntersectionObserver | null>(null);
+	const currentVideoIndexRef = useRef(0);
 	
 	// Use all shorts if provided, otherwise just show the current video
 	const shortsList = allShorts.length > 0 ? allShorts : [video];
@@ -38,6 +31,7 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 		const index = shortsList.findIndex(s => s.id === video.id);
 		if (index !== -1) {
 			setCurrentVideoIndex(index);
+			currentVideoIndexRef.current = index;
 		}
 	}, [video.id, shortsList]);
 	
@@ -89,162 +83,80 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 		);
 	};
 	
-	// Load YouTube IFrame API
+	// Use Intersection Observer for better performance
 	useEffect(() => {
-		// Load YouTube IFrame API script if not already loaded
-		if (!window.YT) {
-			const tag = document.createElement('script');
-			tag.src = 'https://www.youtube.com/iframe_api';
-			const firstScriptTag = document.getElementsByTagName('script')[0];
-			firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+		// Cleanup previous observer
+		if (observerRef.current) {
+			observerRef.current.disconnect();
 		}
 
-		// Initialize YouTube API when ready
-		const initializeYouTubeAPI = () => {
-			// Wait a bit for iframes to be rendered
-			setTimeout(() => {
-				if (window.YT && window.YT.Player) {
-					// Initialize players for each short
-					shortsList.forEach((short, index) => {
-						const iframeId = `youtube-player-${short.id}-${index}`;
-						const iframeElement = document.getElementById(iframeId) as HTMLIFrameElement;
-						
-						if (iframeElement && !playersRef.current[index]) {
-							try {
-								const player = new window.YT.Player(iframeId, {
-									events: {
-										onStateChange: (event: any) => {
-											// State 0 = ended
-											if (event.data === 0 && index === currentVideoIndex) {
-												// Auto-scroll to next video
-												const nextIndex = (index + 1) % shortsList.length;
-												scrollToVideo(nextIndex);
-											}
-										}
-									}
-								});
-								playersRef.current[index] = player;
-							} catch (error) {
-								console.error('Error initializing YouTube player:', error);
+		// Create new Intersection Observer
+		observerRef.current = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+						const index = parseInt(entry.target.getAttribute('data-index') || '0');
+						if (index !== currentVideoIndexRef.current && !isScrollingRef.current) {
+							currentVideoIndexRef.current = index;
+							setCurrentVideoIndex(index);
+							// Update URL without navigation
+							const newVideo = shortsList[index];
+							if (newVideo) {
+								window.history.replaceState(null, '', `/video/${newVideo.slug}`);
 							}
 						}
-					});
-				}
-			}, 500);
-		};
+					}
+				});
+			},
+			{
+				threshold: [0.5],
+				rootMargin: '0px'
+			}
+		);
 
-		// Wait for YouTube API to be ready
-		if (window.YT && window.YT.Player) {
-			initializeYouTubeAPI();
-		} else {
-			window.onYouTubeIframeAPIReady = initializeYouTubeAPI;
-		}
+		// Wait for refs to be populated, then observe
+		const timeoutId = setTimeout(() => {
+			videoRefs.current.forEach((ref) => {
+				if (ref && observerRef.current) {
+					observerRef.current.observe(ref);
+				}
+			});
+		}, 100);
 
 		return () => {
-			// Cleanup players
-			playersRef.current.forEach((player, index) => {
-				if (player && player.destroy) {
-					try {
-						player.destroy();
-						playersRef.current[index] = null;
-					} catch (e) {
-						// Ignore cleanup errors
-					}
-				}
-			});
-		};
-	}, [shortsList.length, currentVideoIndex]);
-
-	// Scroll to a specific video
-	const scrollToVideo = (index: number) => {
-		if (videoRefs.current[index] && containerRef.current && !isScrollingRef.current) {
-			isScrollingRef.current = true;
-			videoRefs.current[index]?.scrollIntoView({ 
-				behavior: 'smooth', 
-				block: 'center' 
-			});
-			setCurrentVideoIndex(index);
-			
-			// Update URL
-			const newVideo = shortsList[index];
-			if (newVideo) {
-				window.history.replaceState(null, '', `/video/${newVideo.slug}`);
+			clearTimeout(timeoutId);
+			if (observerRef.current) {
+				observerRef.current.disconnect();
 			}
+		};
+	}, [shortsList.length]);
 
-			// Reset scrolling flag after animation
-			setTimeout(() => {
-				isScrollingRef.current = false;
-			}, 1000);
-		}
-	};
 
-	// Scroll to current video when component mounts or video changes
+	// Scroll to current video when component mounts or video changes (only on initial load)
+	const initialLoadRef = useRef(true);
 	useEffect(() => {
-		if (videoRefs.current[currentVideoIndex] && containerRef.current && !isScrollingRef.current) {
-			videoRefs.current[currentVideoIndex]?.scrollIntoView({ 
-				behavior: 'smooth', 
-				block: 'center' 
-			});
+		if (initialLoadRef.current && videoRefs.current[currentVideoIndex] && containerRef.current) {
+			initialLoadRef.current = false;
+			setTimeout(() => {
+				if (videoRefs.current[currentVideoIndex]) {
+					videoRefs.current[currentVideoIndex]?.scrollIntoView({ 
+						behavior: 'smooth', 
+						block: 'center' 
+					});
+				}
+			}, 100);
 		}
 	}, [currentVideoIndex]);
 	
-	// Throttle scroll handler to prevent performance issues
-	const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-	
-	// Handle scroll to detect which video is in view
+	// Handle scroll for desktop details hiding only
 	const handleScroll = () => {
-		if (!containerRef.current || isScrollingRef.current) return;
+		// Check if we're on desktop (lg breakpoint is 1024px)
+		const isDesktop = window.innerWidth >= 1024;
 		
-		// Clear existing timeout
-		if (scrollTimeoutRef.current) {
-			clearTimeout(scrollTimeoutRef.current);
+		// On desktop, if details are expanded, hide them when scrolling
+		if (isDesktop && expandedShorts.size > 0) {
+			setExpandedShorts(new Set());
 		}
-		
-		// Throttle scroll detection
-		scrollTimeoutRef.current = setTimeout(() => {
-			if (!containerRef.current || isScrollingRef.current) return;
-			
-			// Check if we're on desktop (lg breakpoint is 1024px)
-			const isDesktop = window.innerWidth >= 1024;
-			
-			// On desktop, if details are expanded, hide them when scrolling
-			if (isDesktop && expandedShorts.size > 0) {
-				setExpandedShorts(new Set());
-			}
-			
-			const container = containerRef.current;
-			if (!container) return;
-			
-			const containerHeight = container.clientHeight;
-			const containerTop = container.getBoundingClientRect().top;
-			
-			// Find which video is closest to center (simplified calculation)
-			let closestIndex = 0;
-			let closestDistance = Infinity;
-			
-			videoRefs.current.forEach((ref, index) => {
-				if (ref) {
-					const rect = ref.getBoundingClientRect();
-					const videoTop = rect.top - containerTop;
-					const videoCenter = videoTop + rect.height / 2;
-					const distance = Math.abs(videoCenter - containerHeight / 2);
-					
-					if (distance < closestDistance) {
-						closestDistance = distance;
-						closestIndex = index;
-					}
-				}
-			});
-			
-			if (closestIndex !== currentVideoIndex) {
-				setCurrentVideoIndex(closestIndex);
-				// Update URL without navigation
-				const newVideo = shortsList[closestIndex];
-				if (newVideo) {
-					window.history.replaceState(null, '', `/video/${newVideo.slug}`);
-				}
-			}
-		}, 100); // Throttle to 100ms
 	};
 
 	return (
@@ -272,20 +184,20 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 							<div
 								key={short.id}
 								ref={(el) => { videoRefs.current[index] = el; }}
+								data-index={index}
 								className="w-full relative snap-start min-h-screen lg:min-h-[calc(100vh-140px)] flex items-center justify-center lg:flex-row lg:items-center lg:justify-center lg:pt-0"
 							>
 								{/* Mobile: Full Screen Video */}
 								<div className="absolute inset-0 w-full h-full bg-black lg:hidden">
 									<iframe
-										id={`youtube-player-${short.id}-${index}`}
-										ref={(el) => { iframeRefs.current[index] = el; }}
-										src={`https://www.youtube.com/embed/${short.id}?autoplay=${isCurrent ? 1 : 0}&enablejsapi=1`}
+										src={`https://www.youtube.com/embed/${short.id}?autoplay=${isCurrent ? 1 : 0}&mute=0`}
 										title={short.title}
 										allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
 										allowFullScreen
 										className="w-full h-full border-0"
+										loading="lazy"
 									/>
-								</div>
+						</div>
 
 								{/* Desktop: Video, Title and Details Group */}
 								<div className="hidden lg:flex flex-row gap-4 sm:gap-5 lg:gap-4 xl:gap-5 items-end lg:justify-center w-full">
@@ -310,100 +222,99 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 									<div className="w-auto flex justify-center shrink-0">
 										<div className="w-[calc(100vw-0.5rem)] sm:w-full sm:max-w-100 md:max-w-110 lg:w-105 xl:w-125 2xl:w-150 aspect-9/16 bg-black overflow-hidden rounded-lg">
 							<iframe
-												id={`youtube-player-${short.id}-${index}`}
-												ref={(el) => { iframeRefs.current[index] = el; }}
-												src={`https://www.youtube.com/embed/${short.id}?autoplay=${isCurrent ? 1 : 0}&enablejsapi=1`}
+												src={`https://www.youtube.com/embed/${short.id}?autoplay=${isCurrent ? 1 : 0}&mute=0`}
 												title={short.title}
 								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
 								allowFullScreen
 								className="w-full h-full border-0"
+								loading="lazy"
 							/>
-						</div>
 					</div>
+				</div>
 
 									{/* Desktop: Details Panel - Now part of the same flex row */}
 									<div className={`transition-all duration-300 ${
-										isExpanded
+					isExpanded 
 											? 'block w-80 xl:w-96 shrink-0 mr-4 xl:ml-6' 
 											: 'hidden w-0'
-									}`}>
-										{isExpanded && (
+				}`}>
+					{isExpanded && (
 											<div className="space-y-6 animate-in fade-in slide-in-from-left-4 duration-300">
-												{/* Channel Name */}
+							{/* Channel Name */}
 												<div className="animate-in fade-in slide-in-from-left-2 duration-300 delay-75">
 													<p className="text-lg text-muted-foreground">{short.title}</p>
 													<p className="text-sm text-muted-foreground">{short.channelName}</p>
 												</div>
 
-												{/* Video Description with View More/Less */}
+							{/* Video Description with View More/Less */}
 												{short.description && (
 													<div className="animate-in fade-in slide-in-from-left-2 duration-300 delay-150">
-														<div className="text-sm text-muted-foreground">
+									<div className="text-sm text-muted-foreground">
 															{showFullDescription.has(short.id) ? (
-																<div>
+											<div>
 																	{renderAnimatedDescription(short.description, 'whitespace-pre-wrap')}
-																	<button
+												<button
 																		onClick={() => toggleFullDescription(short.id)}
-																		className="text-primary hover:underline ml-1 font-semibold mt-2 inline-block"
-																	>
-																		View less
-																	</button>
-																</div>
-															) : (
-																<div>
+													className="text-primary hover:underline ml-1 font-semibold mt-2 inline-block"
+												>
+													View less
+												</button>
+											</div>
+										) : (
+											<div>
 																	{renderAnimatedDescription(shortTruncatedDesc)}
 																	{shortHasMore && (
-																		<button
+													<button
 																			onClick={() => toggleFullDescription(short.id)}
-																			className="text-primary hover:underline ml-1 font-semibold"
-																		>
-																			View more
-																		</button>
-																	)}
-																</div>
-															)}
-														</div>
-													</div>
-												)}
-
-												{/* Purchase Button */}
-												<div className="animate-in fade-in slide-in-from-left-2 duration-300 delay-225">
-													<Link
-														href={`/contact?subject=${encodeURIComponent(`Purchase request for video: https://www.youtube.com/watch?v=${short.id}`)}`}
+														className="text-primary hover:underline ml-1 font-semibold"
 													>
-														<Button size="lg" className="text-lg px-8 py-6 font-semibold w-full lg:w-auto">
-															Purchase Video
-														</Button>
-													</Link>
-												</div>
-
-												{/* Video Info */}
-												<div className="border-t pt-6 animate-in fade-in slide-in-from-left-2 duration-300 delay-300">
-													<div className="space-y-3 text-sm">
-														<div>
-															<span className="text-muted-foreground">Published:</span>
-															<span className="ml-2 text-foreground">
-																{new Date(short.publishedAt).toLocaleDateString('en-US', {
-																	year: 'numeric',
-																	month: 'long',
-																	day: 'numeric',
-																})}
-															</span>
-														</div>
-														<div>
-															<span className="text-muted-foreground">Channel:</span>
-															<span className="ml-2 text-foreground">{short.channelName}</span>
-														</div>
-														{short.recordingLocation && (
-															<div>
-																<span className="text-muted-foreground">Location:</span>
-																<span className="ml-2 text-foreground">{short.recordingLocation}</span>
-															</div>
-														)}
-													</div>
-												</div>
+														View more
+													</button>
+												)}
 											</div>
 										)}
+									</div>
+								</div>
+							)}
+
+							{/* Purchase Button */}
+												<div className="animate-in fade-in slide-in-from-left-2 duration-300 delay-225">
+								<Link
+														href={`/contact?subject=${encodeURIComponent(`Purchase request for video: https://www.youtube.com/watch?v=${short.id}`)}`}
+								>
+									<Button size="lg" className="text-lg px-8 py-6 font-semibold w-full lg:w-auto">
+										Purchase Video
+									</Button>
+								</Link>
+							</div>
+
+							{/* Video Info */}
+												<div className="border-t pt-6 animate-in fade-in slide-in-from-left-2 duration-300 delay-300">
+								<div className="space-y-3 text-sm">
+									<div>
+										<span className="text-muted-foreground">Published:</span>
+										<span className="ml-2 text-foreground">
+																{new Date(short.publishedAt).toLocaleDateString('en-US', {
+												year: 'numeric',
+												month: 'long',
+												day: 'numeric',
+											})}
+										</span>
+									</div>
+									<div>
+										<span className="text-muted-foreground">Channel:</span>
+															<span className="ml-2 text-foreground">{short.channelName}</span>
+									</div>
+														{short.recordingLocation && (
+										<div>
+											<span className="text-muted-foreground">Location:</span>
+																<span className="ml-2 text-foreground">{short.recordingLocation}</span>
+										</div>
+									)}
+								</div>
+							</div>
+						</div>
+					)}
 									</div>
 				</div>
 
