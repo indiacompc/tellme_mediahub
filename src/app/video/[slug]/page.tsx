@@ -69,12 +69,16 @@ export default async function VideoPage({ params, searchParams }: ParamsType) {
   return (
     <>
       <Navbar tellme_logo={tellme_logo} />
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16 py-6 sm:py-8 lg:py-10 xl:py-12">
+      <div className={`w-full ${video.isShort ? 'p-0' : 'max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16 py-6 sm:py-8 lg:py-10 xl:py-12'}`}>
         {/* Back Button */}
-        <div className="mb-6 sm:mb-8">
+        <div className={`${video.isShort ? 'absolute top-16 left-4 z-30 lg:static lg:top-auto lg:left-auto lg:z-auto mb-4 lg:mb-6 lg:ml-6 lg:mt-6' : 'mb-6 sm:mb-8'}`}>
           <Link
             href={backHref}
-            className="inline-flex items-center gap-2 text-sm sm:text-base text-muted-foreground hover:text-foreground transition-colors"
+            className={`inline-flex items-center gap-2 text-sm sm:text-base transition-colors ${
+              video.isShort 
+                ? 'text-white bg-black/50 hover:bg-black/70 px-3 py-2 rounded-lg backdrop-blur-sm lg:bg-transparent lg:text-muted-foreground lg:hover:text-foreground lg:px-0 lg:py-0 lg:backdrop-blur-none' 
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
           >
             <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             {backText}
