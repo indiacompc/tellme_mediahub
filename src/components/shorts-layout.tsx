@@ -7,6 +7,14 @@ import { X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { YouTubeVideo } from '@/types/youtube';
 
+// TypeScript declarations for YouTube IFrame API
+declare global {
+	interface Window {
+		YT: any;
+		onYouTubeIframeAPIReady: () => void;
+	}
+}
+
 interface ShortsLayoutProps {
 	video: YouTubeVideo;
 	allShorts?: YouTubeVideo[];
@@ -18,6 +26,9 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 	const [showFullDescription, setShowFullDescription] = useState<Set<string>>(new Set());
 	const containerRef = useRef<HTMLDivElement>(null);
 	const videoRefs = useRef<(HTMLDivElement | null)[]>([]);
+	const iframeRefs = useRef<(HTMLIFrameElement | null)[]>([]);
+	const playersRef = useRef<any[]>([]);
+	const isScrollingRef = useRef(false);
 	
 	// Use all shorts if provided, otherwise just show the current video
 	const shortsList = allShorts.length > 0 ? allShorts : [video];
@@ -78,9 +89,98 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 		);
 	};
 	
+	// Load YouTube IFrame API
+	useEffect(() => {
+		// Load YouTube IFrame API script if not already loaded
+		if (!window.YT) {
+			const tag = document.createElement('script');
+			tag.src = 'https://www.youtube.com/iframe_api';
+			const firstScriptTag = document.getElementsByTagName('script')[0];
+			firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+		}
+
+		// Initialize YouTube API when ready
+		const initializeYouTubeAPI = () => {
+			// Wait a bit for iframes to be rendered
+			setTimeout(() => {
+				if (window.YT && window.YT.Player) {
+					// Initialize players for each short
+					shortsList.forEach((short, index) => {
+						const iframeId = `youtube-player-${short.id}-${index}`;
+						const iframeElement = document.getElementById(iframeId) as HTMLIFrameElement;
+						
+						if (iframeElement && !playersRef.current[index]) {
+							try {
+								const player = new window.YT.Player(iframeId, {
+									events: {
+										onStateChange: (event: any) => {
+											// State 0 = ended
+											if (event.data === 0 && index === currentVideoIndex) {
+												// Auto-scroll to next video
+												const nextIndex = (index + 1) % shortsList.length;
+												scrollToVideo(nextIndex);
+											}
+										}
+									}
+								});
+								playersRef.current[index] = player;
+							} catch (error) {
+								console.error('Error initializing YouTube player:', error);
+							}
+						}
+					});
+				}
+			}, 500);
+		};
+
+		// Wait for YouTube API to be ready
+		if (window.YT && window.YT.Player) {
+			initializeYouTubeAPI();
+		} else {
+			window.onYouTubeIframeAPIReady = initializeYouTubeAPI;
+		}
+
+		return () => {
+			// Cleanup players
+			playersRef.current.forEach((player, index) => {
+				if (player && player.destroy) {
+					try {
+						player.destroy();
+						playersRef.current[index] = null;
+					} catch (e) {
+						// Ignore cleanup errors
+					}
+				}
+			});
+		};
+	}, [shortsList.length, currentVideoIndex]);
+
+	// Scroll to a specific video
+	const scrollToVideo = (index: number) => {
+		if (videoRefs.current[index] && containerRef.current && !isScrollingRef.current) {
+			isScrollingRef.current = true;
+			videoRefs.current[index]?.scrollIntoView({ 
+				behavior: 'smooth', 
+				block: 'center' 
+			});
+			setCurrentVideoIndex(index);
+			
+			// Update URL
+			const newVideo = shortsList[index];
+			if (newVideo) {
+				window.history.replaceState(null, '', `/video/${newVideo.slug}`);
+			}
+
+			// Reset scrolling flag after animation
+			setTimeout(() => {
+				isScrollingRef.current = false;
+			}, 1000);
+		}
+	};
+
 	// Scroll to current video when component mounts or video changes
 	useEffect(() => {
-		if (videoRefs.current[currentVideoIndex] && containerRef.current) {
+		if (videoRefs.current[currentVideoIndex] && containerRef.current && !isScrollingRef.current) {
 			videoRefs.current[currentVideoIndex]?.scrollIntoView({ 
 				behavior: 'smooth', 
 				block: 'center' 
@@ -90,7 +190,7 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 	
 	// Handle scroll to detect which video is in view
 	const handleScroll = () => {
-		if (!containerRef.current) return;
+		if (!containerRef.current || isScrollingRef.current) return;
 		
 		// Check if we're on desktop (lg breakpoint is 1024px)
 		const isDesktop = window.innerWidth >= 1024;
@@ -137,10 +237,11 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 			<div 
 				ref={containerRef}
 				onScroll={handleScroll}
-				className="h-screen lg:h-[calc(100vh-120px)] overflow-y-auto snap-y snap-mandatory scroll-smooth scrollbar-hide"
+				className="h-screen lg:h-[calc(100vh-120px)] overflow-y-auto snap-y snap-mandatory scroll-smooth scrollbar-hide touch-pan-y"
 				style={{ 
 					scrollbarWidth: 'none',
-					msOverflowStyle: 'none'
+					msOverflowStyle: 'none',
+					WebkitOverflowScrolling: 'touch'
 				}}
 			>
 				<div className="flex flex-col items-center lg:gap-4 lg:pb-12">
@@ -154,18 +255,20 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 							<div
 								key={short.id}
 								ref={(el) => { videoRefs.current[index] = el; }}
-								className="w-full relative snap-start min-h-screen lg:min-h-[calc(100vh-140px)] flex items-center justify-center lg:flex-row lg:items-center lg:justify-center lg:pt-0"
+								className="w-full relative snap-start min-h-screen lg:min-h-[calc(100vh-140px)] flex items-center justify-center lg:flex-row lg:items-center lg:justify-center lg:pt-0 touch-none"
 							>
 								{/* Mobile: Full Screen Video */}
 								<div className="absolute inset-0 w-full h-full bg-black lg:hidden">
 									<iframe
-										src={`https://www.youtube.com/embed/${short.id}?autoplay=${isCurrent ? 1 : 0}`}
+										id={`youtube-player-${short.id}-${index}`}
+										ref={(el) => { iframeRefs.current[index] = el; }}
+										src={`https://www.youtube.com/embed/${short.id}?autoplay=${isCurrent ? 1 : 0}&enablejsapi=1`}
 										title={short.title}
 										allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
 										allowFullScreen
 										className="w-full h-full border-0"
 									/>
-						</div>
+								</div>
 
 								{/* Desktop: Video, Title and Details Group */}
 								<div className="hidden lg:flex flex-row gap-4 sm:gap-5 lg:gap-4 xl:gap-5 items-end lg:justify-center w-full">
@@ -190,7 +293,9 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 									<div className="w-auto flex justify-center shrink-0">
 										<div className="w-[calc(100vw-0.5rem)] sm:w-full sm:max-w-100 md:max-w-110 lg:w-105 xl:w-125 2xl:w-150 aspect-9/16 bg-black overflow-hidden rounded-lg">
 							<iframe
-												src={`https://www.youtube.com/embed/${short.id}?autoplay=${isCurrent ? 1 : 0}`}
+												id={`youtube-player-${short.id}-${index}`}
+												ref={(el) => { iframeRefs.current[index] = el; }}
+												src={`https://www.youtube.com/embed/${short.id}?autoplay=${isCurrent ? 1 : 0}&enablejsapi=1`}
 												title={short.title}
 								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
 								allowFullScreen
