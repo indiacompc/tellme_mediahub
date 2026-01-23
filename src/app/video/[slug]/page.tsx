@@ -71,7 +71,7 @@ export default async function VideoPage({ params, searchParams }: ParamsType) {
       <Navbar tellme_logo={tellme_logo} />
       <div className={`w-full ${video.isShort ? 'p-0' : 'max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16 py-6 sm:py-8 lg:py-10 xl:py-12'}`}>
         {/* Back Button */}
-        <div className={`${video.isShort ? 'absolute top-16 left-4 z-30 lg:static lg:top-auto lg:left-auto lg:z-auto mb-4 lg:mb-6 lg:ml-6 lg:mt-6' : 'mb-6 sm:mb-8'}`}>
+        <div className={`${video.isShort ? 'absolute top-24 left-4 z-30 lg:static lg:top-auto lg:left-auto lg:z-auto mb-4 lg:mb-6 lg:ml-6 lg:mt-6' : 'mb-6 sm:mb-8'}`}>
           <Link
             href={backHref}
             className={`inline-flex items-center gap-2 text-sm sm:text-base transition-colors ${
