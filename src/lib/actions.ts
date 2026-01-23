@@ -324,6 +324,72 @@ export async function loadVideosFromJSON(): Promise<YouTubeVideo[]> {
 }
 
 /**
+ * Loads shorts from tellme_videohub_db JSON file
+ * @returns Array of YouTube shorts (videos where is_short is true)
+ */
+export async function loadShortsFromJSON(): Promise<YouTubeVideo[]> {
+	try {
+		// Read the JSON file from the public directory
+		const filePath = path.join(process.cwd(), 'public', 'tellme_videohub_db_2025-07-18_171335.json')
+		const fileContents = fs.readFileSync(filePath, 'utf-8')
+		const data = JSON.parse(fileContents)
+
+		// Check if videos array exists
+		if (!data.videos || !Array.isArray(data.videos)) {
+			throw new Error('Videos array not found in JSON file')
+		}
+
+		// Filter only shorts (is_short === true) and public videos
+		const seenIds = new Set<string>()
+		const shorts: YouTubeVideo[] = data.videos
+			.filter((video: any) => {
+				// Only include public shorts with YouTube IDs
+				if (!video.youtube_video_id || video.status !== 'public' || !video.is_short) {
+					return false
+				}
+				
+				// Skip duplicates
+				if (seenIds.has(video.youtube_video_id)) {
+					return false
+				}
+				seenIds.add(video.youtube_video_id)
+				return true
+			})
+			.map((video: any) => {
+				const videoId = video.youtube_video_id
+				const title = video.title || ''
+				// Use existing slug from database, or generate one if not present
+				const slug = video.slug || generateSlug(title, videoId)
+				
+				return {
+					id: videoId,
+					title: title,
+					description: video.description || '',
+					thumbnail: video.thumbnail_url || `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+					publishedAt: video.published_on || video.last_modified || new Date().toISOString(),
+					channelName: 'Tellme360',
+					slug: slug,
+					recordingLocation: video.recording_location || undefined,
+					isShort: true
+				}
+			})
+
+		// Sort by published date (newest first)
+		shorts.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+
+		// Validate shorts - check if they are accessible
+		console.log(`Validating ${shorts.length} shorts...`)
+		const validShorts = await validateYouTubeVideos(shorts, 5) // Validate 5 at a time
+		console.log(`Found ${validShorts.length} valid shorts out of ${shorts.length}`)
+
+		return validShorts
+	} catch (error) {
+		console.error('Error loading shorts from JSON:', error)
+		throw error instanceof Error ? error : new Error('Failed to load shorts from JSON file')
+	}
+}
+
+/**
  * Searches for videos in the tellme_videohub_db JSON file
  * @param query - Search query string
  * @returns Array of YouTube videos matching the search query
@@ -383,7 +449,9 @@ export async function searchVideosInDatabase(query: string): Promise<YouTubeVide
 					thumbnail: video.thumbnail_url || `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`, // Use hqdefault as it's more reliable
 					publishedAt: video.published_on || video.last_modified || new Date().toISOString(),
 					channelName: 'Tellme360',
-					slug: slug
+					slug: slug,
+					recordingLocation: video.recording_location || undefined,
+					isShort: video.is_short || false
 				}
 			})
 

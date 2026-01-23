@@ -44,13 +44,16 @@ export default function VideoCard({ video, onClick }: VideoCardProps) {
     }
   }
 
+  // Use portrait aspect ratio for shorts, landscape for regular videos
+  const aspectRatio = video.isShort ? "aspect-[9/16]" : "aspect-video"
+
   return (
     <div className="flex flex-col h-full group">
       <div
         onClick={onClick}
         className="cursor-pointer rounded-lg overflow-hidden border border-border transition-all duration-300 hover:border-primary hover:shadow-lg bg-card hover:bg-muted/50"
       >
-        <div className="relative w-full aspect-video bg-muted overflow-hidden rounded-lg">
+        <div className={`relative w-full ${aspectRatio} bg-muted overflow-hidden rounded-lg`}>
           {currentThumbnail ? (
             <Image
               src={currentThumbnail}
