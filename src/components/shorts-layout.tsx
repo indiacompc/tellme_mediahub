@@ -188,7 +188,7 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 
 									{/* Desktop: Video Player */}
 									<div className="w-auto flex justify-center shrink-0">
-										<div className="w-[calc(100vw-0.5rem)] sm:w-full sm:max-w-100 md:max-w-110 lg:w-[420px] xl:w-[500px] 2xl:w-[600px] aspect-9/16 bg-black overflow-hidden rounded-lg">
+										<div className="w-[calc(100vw-0.5rem)] sm:w-full sm:max-w-100 md:max-w-110 lg:w-105 xl:w-125 2xl:w-150 aspect-9/16 bg-black overflow-hidden rounded-lg">
 							<iframe
 												src={`https://www.youtube.com/embed/${short.id}?autoplay=${isCurrent ? 1 : 0}`}
 												title={short.title}
@@ -287,7 +287,7 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 
 								{/* Mobile: Title Overlay at Bottom */}
 								{!isExpanded && (
-									<div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 bg-gradient-to-t from-black/80 via-black/60 to-transparent pointer-events-none lg:hidden">
+									<div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 bg-linear-to-t from-black/80 via-black/60 to-transparent pointer-events-none lg:hidden">
 										<button
 											onClick={() => toggleExpanded(short.id)}
 											className="w-full text-left pointer-events-auto"
@@ -336,7 +336,7 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 																	{renderAnimatedDescription(short.description, 'whitespace-pre-wrap')}
 																	<button
 																		onClick={() => toggleFullDescription(short.id)}
-																		className="text-primary lg:text-primary hover:underline ml-1 font-semibold mt-2 inline-block text-white"
+																		className="text-primary lg:text-primary hover:underline ml-1 font-semibold mt-2 inline-block"
 																	>
 																		View less
 																	</button>
@@ -347,7 +347,7 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 																	{shortHasMore && (
 																		<button
 																			onClick={() => toggleFullDescription(short.id)}
-																			className="text-primary lg:text-primary hover:underline ml-1 font-semibold text-white"
+																			className="text-primary lg:text-primary hover:underline ml-1 font-semibold"
 																		>
 																			View more
 																		</button>
