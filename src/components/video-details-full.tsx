@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/shadcn_data/components/ui/button';
 import type { YouTubeVideo } from '@/types/youtube';
@@ -7,6 +10,12 @@ interface VideoDetailsFullProps {
 }
 
 export default function VideoDetailsFull({ video }: VideoDetailsFullProps) {
+	const [showFullDescription, setShowFullDescription] = useState(false);
+	
+	// Truncate description to first 300 characters for regular videos
+	const truncatedDescription = video.description ? video.description.substring(0, 300) : '';
+	const hasMoreContent = video.description && video.description.length > 300;
+
 	return (
 		<div className="flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-10 xl:gap-12">
 			{/* Main Content */}
@@ -19,12 +28,34 @@ export default function VideoDetailsFull({ video }: VideoDetailsFullProps) {
 					<p className="text-sm sm:text-base text-muted-foreground">{video.channelName}</p>
 				</div>
 
-				{/* Video Description */}
+				{/* Video Description with View More/Less */}
 				{video.description && (
 					<div className="mb-6 sm:mb-8 lg:mb-10">
 						<h2 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-3 sm:mb-4">Description</h2>
 						<div className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed">
-							{video.description}
+							{showFullDescription ? (
+								<div>
+									<div>{video.description}</div>
+									<button
+										onClick={() => setShowFullDescription(false)}
+										className="text-primary hover:underline ml-1 font-semibold mt-2 inline-block"
+									>
+										View less
+									</button>
+								</div>
+							) : (
+								<div>
+									{truncatedDescription}
+									{hasMoreContent && (
+										<button
+											onClick={() => setShowFullDescription(true)}
+											className="text-primary hover:underline ml-1 font-semibold"
+										>
+											View more
+										</button>
+									)}
+								</div>
+							)}
 						</div>
 					</div>
 				)}

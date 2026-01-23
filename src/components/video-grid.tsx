@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import VideoCard from "./video-card"
 import VideoSkeleton from "./video-skeleton"
 import ErrorState from "./error-state"
@@ -18,6 +18,7 @@ type FilterType = "videos" | "shorts"
 
 export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [videos, setVideos] = useState<YouTubeVideo[]>([])
   const [shorts, setShorts] = useState<YouTubeVideo[]>([])
   const [searchResults, setSearchResults] = useState<YouTubeVideo[]>([])
@@ -25,10 +26,23 @@ export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
   const [searching, setSearching] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
-  const [filter, setFilter] = useState<FilterType>("videos")
+  
+  // Initialize filter from URL params, default to "videos"
+  const urlFilter = searchParams.get("filter") as FilterType | null
+  const [filter, setFilter] = useState<FilterType>(urlFilter === "shorts" ? "shorts" : "videos")
+  
+  // Update filter when URL param changes
+  useEffect(() => {
+    const urlFilter = searchParams.get("filter") as FilterType | null
+    if (urlFilter === "shorts" || urlFilter === "videos") {
+      setFilter(urlFilter)
+    }
+  }, [searchParams])
 
   const handleVideoSelect = (video: YouTubeVideo) => {
-    router.push(`/video/${video.slug}`)
+    // Include filter in URL so back button knows where to return
+    const filterParam = filter === "shorts" ? "?filter=shorts" : "?filter=videos"
+    router.push(`/video/${video.slug}${filterParam}`)
     onVideoSelect?.(video)
   }
 
@@ -80,14 +94,25 @@ export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
 
   const isSearching = searchQuery.trim().length > 0
   
-  // When searching, use search results; otherwise use loaded videos
-  // Separate search results into regular videos and shorts
+  // When searching, filter results based on current filter selection
+  // If filter is "videos", only show videos from search results
+  // If filter is "shorts", only show shorts from search results
+  let filteredSearchResults: YouTubeVideo[] = []
+  if (isSearching) {
+    if (filter === "videos") {
+      filteredSearchResults = searchResults.filter(video => !video.isShort)
+    } else if (filter === "shorts") {
+      filteredSearchResults = searchResults.filter(video => video.isShort)
+    }
+  }
+  
+  // When searching, use filtered search results; otherwise use loaded videos
   const allRegularVideos = isSearching 
-    ? searchResults.filter(video => !video.isShort)
+    ? filteredSearchResults
     : videos.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
   
   const allShorts = isSearching
-    ? searchResults.filter(video => video.isShort)
+    ? filteredSearchResults
     : shorts
 
   // Apply filter to determine what to display
@@ -159,7 +184,7 @@ export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
           {searching ? (
             "Searching..."
           ) : (
-            `Found ${searchResults.length} result${searchResults.length !== 1 ? 's' : ''} for "${searchQuery}"`
+            `Found ${filteredSearchResults.length} ${filter === "videos" ? "video" : "short"}${filteredSearchResults.length !== 1 ? 's' : ''} for "${searchQuery}"`
           )}
         </div>
       )}
@@ -193,10 +218,14 @@ export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-6 sm:mb-8">
                 Shorts
               </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
-                {displayedShorts.map((video) => (
-                  <VideoCard key={video.id} video={video} onClick={() => handleVideoSelect(video)} />
-                ))}
+              <div className="overflow-x-auto pb-4 -mx-4 px-4 sm:-mx-6 sm:px-6">
+                <div className="flex gap-3 sm:gap-4 min-w-max">
+                  {displayedShorts.map((video) => (
+                    <div key={video.id} className="w-[160px] sm:w-[180px] md:w-[200px] flex-shrink-0">
+                      <VideoCard video={video} onClick={() => handleVideoSelect(video)} />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}

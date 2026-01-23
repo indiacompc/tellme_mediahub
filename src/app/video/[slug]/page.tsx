@@ -1,4 +1,4 @@
-import { getVideoBySlug } from '@/lib/actions'
+import { getVideoBySlug, loadShortsFromJSON, searchVideosInDatabase } from '@/lib/actions'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
@@ -10,6 +10,9 @@ import VideoDetailsFull from '@/components/video-details-full'
 type ParamsType = {
   params: Promise<{
     slug: string
+  }>
+  searchParams: Promise<{
+    filter?: string
   }>
 }
 
@@ -39,12 +42,28 @@ export async function generateMetadata({ params }: ParamsType) {
   }
 }
 
-export default async function VideoPage({ params }: ParamsType) {
+export default async function VideoPage({ params, searchParams }: ParamsType) {
   const { slug } = await params
+  const { filter } = await searchParams
   const video = await getVideoBySlug(decodeURIComponent(slug))
 
   if (!video) {
     notFound()
+  }
+
+  // Determine back button destination based on filter param or video type
+  const backFilter = filter === "shorts" ? "shorts" : (video.isShort ? "shorts" : "videos")
+  const backHref = `/?filter=${backFilter}`
+  const backText = backFilter === "shorts" ? "Back to Shorts" : "Back to Videos"
+
+  // Load all shorts if this is a short
+  let allShorts: Awaited<ReturnType<typeof loadShortsFromJSON>> = []
+  if (video.isShort) {
+    try {
+      allShorts = await loadShortsFromJSON()
+    } catch (error) {
+      console.error('Error loading shorts:', error)
+    }
   }
 
   return (
@@ -54,16 +73,16 @@ export default async function VideoPage({ params }: ParamsType) {
         {/* Back Button */}
         <div className="mb-6 sm:mb-8">
           <Link
-            href="/"
+            href={backHref}
             className="inline-flex items-center gap-2 text-sm sm:text-base text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-            Back to Videos
+            {backText}
           </Link>
         </div>
 
       {video.isShort ? (
-        <ShortsLayout video={video} />
+        <ShortsLayout video={video} allShorts={allShorts} />
       ) : (
         <>
           {/* Video Player */}
