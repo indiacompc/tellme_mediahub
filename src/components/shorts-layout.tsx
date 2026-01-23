@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/shadcn_data/components/ui/button';
-import { useRouter } from 'next/navigation';
 import type { YouTubeVideo } from '@/types/youtube';
 
 interface ShortsLayoutProps {
@@ -12,7 +11,6 @@ interface ShortsLayoutProps {
 }
 
 export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProps) {
-	const router = useRouter();
 	const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 	const [expandedShorts, setExpandedShorts] = useState<Set<string>>(new Set());
 	const [showFullDescription, setShowFullDescription] = useState<Set<string>>(new Set());
@@ -71,9 +69,7 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 		if (!containerRef.current) return;
 		
 		const container = containerRef.current;
-		const containerTop = container.scrollTop;
 		const containerHeight = container.clientHeight;
-		const centerPoint = containerTop + containerHeight / 2;
 		
 		// Find which video is closest to center
 		let closestIndex = 0;
@@ -103,12 +99,6 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 		}
 	};
 	
-	const currentVideo = shortsList[currentVideoIndex] || video;
-	
-	// Truncate description to first 150 characters
-	const truncatedDescription = currentVideo.description ? currentVideo.description.substring(0, 150) : '';
-	const hasMoreContent = currentVideo.description && currentVideo.description.length > 150;
-
 	return (
 		<div className="w-full mx-auto px-1 sm:px-4 md:px-6 lg:max-w-7xl">
 			{/* Scrollable Shorts Feed */}

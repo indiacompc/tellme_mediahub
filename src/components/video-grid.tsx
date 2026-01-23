@@ -6,8 +6,7 @@ import VideoCard from "./video-card"
 import VideoSkeleton from "./video-skeleton"
 import ErrorState from "./error-state"
 import SearchBar from "./search-bar"
-import { Button } from "@/shadcn_data/components/ui/button"
-import { loadVideosFromJSON, loadShortsFromJSON, searchVideosInDatabase } from "@/lib/actions"
+import { loadShortsFromJSON, loadVideosFromJSON, searchVideosInDatabase } from "@/lib/actions"
 import type { YouTubeVideo } from "@/types/youtube"
 
 interface VideoGridProps {

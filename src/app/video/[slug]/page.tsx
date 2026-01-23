@@ -1,4 +1,4 @@
-import { getVideoBySlug, loadShortsFromJSON, searchVideosInDatabase } from '@/lib/actions'
+import { getVideoBySlug, loadShortsFromJSON } from '@/lib/actions'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
