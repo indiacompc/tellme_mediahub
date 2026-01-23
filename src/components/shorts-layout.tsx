@@ -188,47 +188,63 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 		}
 	}, [currentVideoIndex]);
 	
+	// Throttle scroll handler to prevent performance issues
+	const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+	
 	// Handle scroll to detect which video is in view
 	const handleScroll = () => {
 		if (!containerRef.current || isScrollingRef.current) return;
 		
-		// Check if we're on desktop (lg breakpoint is 1024px)
-		const isDesktop = window.innerWidth >= 1024;
-		
-		// On desktop, if details are expanded, hide them when scrolling
-		if (isDesktop && expandedShorts.size > 0) {
-			setExpandedShorts(new Set());
+		// Clear existing timeout
+		if (scrollTimeoutRef.current) {
+			clearTimeout(scrollTimeoutRef.current);
 		}
 		
-		const container = containerRef.current;
-		const containerHeight = container.clientHeight;
-		
-		// Find which video is closest to center
-		let closestIndex = 0;
-		let closestDistance = Infinity;
-		
-		videoRefs.current.forEach((ref, index) => {
-			if (ref) {
-				const rect = ref.getBoundingClientRect();
-				const containerRect = container.getBoundingClientRect();
-				const videoCenter = rect.top - containerRect.top + rect.height / 2;
-				const distance = Math.abs(videoCenter - containerHeight / 2);
-				
-				if (distance < closestDistance) {
-					closestDistance = distance;
-					closestIndex = index;
+		// Throttle scroll detection
+		scrollTimeoutRef.current = setTimeout(() => {
+			if (!containerRef.current || isScrollingRef.current) return;
+			
+			// Check if we're on desktop (lg breakpoint is 1024px)
+			const isDesktop = window.innerWidth >= 1024;
+			
+			// On desktop, if details are expanded, hide them when scrolling
+			if (isDesktop && expandedShorts.size > 0) {
+				setExpandedShorts(new Set());
+			}
+			
+			const container = containerRef.current;
+			if (!container) return;
+			
+			const containerHeight = container.clientHeight;
+			const containerTop = container.getBoundingClientRect().top;
+			
+			// Find which video is closest to center (simplified calculation)
+			let closestIndex = 0;
+			let closestDistance = Infinity;
+			
+			videoRefs.current.forEach((ref, index) => {
+				if (ref) {
+					const rect = ref.getBoundingClientRect();
+					const videoTop = rect.top - containerTop;
+					const videoCenter = videoTop + rect.height / 2;
+					const distance = Math.abs(videoCenter - containerHeight / 2);
+					
+					if (distance < closestDistance) {
+						closestDistance = distance;
+						closestIndex = index;
+					}
+				}
+			});
+			
+			if (closestIndex !== currentVideoIndex) {
+				setCurrentVideoIndex(closestIndex);
+				// Update URL without navigation
+				const newVideo = shortsList[closestIndex];
+				if (newVideo) {
+					window.history.replaceState(null, '', `/video/${newVideo.slug}`);
 				}
 			}
-		});
-		
-		if (closestIndex !== currentVideoIndex) {
-			setCurrentVideoIndex(closestIndex);
-			// Update URL without navigation
-			const newVideo = shortsList[closestIndex];
-			if (newVideo) {
-				window.history.replaceState(null, '', `/video/${newVideo.slug}`);
-			}
-		}
+		}, 100); // Throttle to 100ms
 	};
 
 	return (
@@ -237,11 +253,12 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 			<div 
 				ref={containerRef}
 				onScroll={handleScroll}
-				className="h-screen lg:h-[calc(100vh-120px)] overflow-y-auto snap-y snap-mandatory scroll-smooth scrollbar-hide touch-pan-y"
+				className="h-screen lg:h-[calc(100vh-120px)] overflow-y-auto snap-y snap-mandatory scroll-smooth scrollbar-hide"
 				style={{ 
 					scrollbarWidth: 'none',
 					msOverflowStyle: 'none',
-					WebkitOverflowScrolling: 'touch'
+					WebkitOverflowScrolling: 'touch',
+					overscrollBehavior: 'contain'
 				}}
 			>
 				<div className="flex flex-col items-center lg:gap-4 lg:pb-12">
@@ -255,7 +272,7 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 							<div
 								key={short.id}
 								ref={(el) => { videoRefs.current[index] = el; }}
-								className="w-full relative snap-start min-h-screen lg:min-h-[calc(100vh-140px)] flex items-center justify-center lg:flex-row lg:items-center lg:justify-center lg:pt-0 touch-none"
+								className="w-full relative snap-start min-h-screen lg:min-h-[calc(100vh-140px)] flex items-center justify-center lg:flex-row lg:items-center lg:justify-center lg:pt-0"
 							>
 								{/* Mobile: Full Screen Video */}
 								<div className="absolute inset-0 w-full h-full bg-black lg:hidden">
