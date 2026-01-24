@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import { X } from "lucide-react"
 import type { YouTubeVideo } from "@/types/youtube"
+import IframeClient from "@/components/IframeClient"
 
 interface PlayerModalProps {
   video: YouTubeVideo
@@ -10,6 +11,8 @@ interface PlayerModalProps {
 }
 
 export default function PlayerModal({ video, onClose }: PlayerModalProps) {
+  const embedSrc = video.embedUrl ?? `https://www.youtube.com/embed/${video.id}?autoplay=1&rel=0`
+
   useEffect(() => {
     // Close on Escape key
     const handleEscape = (e: KeyboardEvent) => {
@@ -42,14 +45,16 @@ export default function PlayerModal({ video, onClose }: PlayerModalProps) {
 
         {/* Player Container */}
         <div className="w-full aspect-video bg-black">
-          <iframe
+          <IframeClient
             width="100%"
             height="100%"
-            src={`https://www.youtube.com/embed/${video.id}?autoplay=1`}
+            src={embedSrc}
             title={video.title}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            referrerPolicy="strict-origin-when-cross-origin"
             allowFullScreen
             className="w-full h-full"
+            frameBorder="0"
           />
         </div>
 

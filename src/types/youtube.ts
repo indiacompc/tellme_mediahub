@@ -8,4 +8,7 @@ export interface YouTubeVideo {
   slug: string
   recordingLocation?: string
   isShort?: boolean
+  playlistId?: string
+  playlistIndex?: number
+  embedUrl?: string
 }

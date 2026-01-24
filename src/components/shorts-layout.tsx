@@ -179,6 +179,9 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 						const shortTruncatedDesc = short.description ? short.description.substring(0, 150) : '';
 						const shortHasMore = short.description && short.description.length > 150;
 						const isExpanded = expandedShorts.has(short.id);
+						const embedSrc = short.playlistId
+							? `https://www.youtube.com/embed/${short.id}?list=${short.playlistId}&index=${short.playlistIndex ?? 1}&autoplay=${isCurrent ? 1 : 0}&mute=0&rel=0`
+							: `https://www.youtube.com/embed/${short.id}?autoplay=${isCurrent ? 1 : 0}&mute=0&rel=0`;
 						
 						return (
 							<div
@@ -190,12 +193,14 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 								{/* Mobile: Full Screen Video */}
 								<div className="absolute inset-0 w-full h-full bg-black lg:hidden">
 									<iframe
-										src={`https://www.youtube.com/embed/${short.id}?autoplay=${isCurrent ? 1 : 0}&mute=0`}
+										src={embedSrc}
 										title={short.title}
 										allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+										referrerPolicy="strict-origin-when-cross-origin"
 										allowFullScreen
 										className="w-full h-full border-0"
 										loading="lazy"
+										frameBorder="0"
 									/>
 						</div>
 
@@ -222,12 +227,14 @@ export default function ShortsLayout({ video, allShorts = [] }: ShortsLayoutProp
 									<div className="w-auto flex justify-center shrink-0">
 										<div className="w-[calc(100vw-0.5rem)] sm:w-full sm:max-w-100 md:max-w-110 lg:w-105 xl:w-125 2xl:w-150 aspect-9/16 bg-black overflow-hidden rounded-lg">
 							<iframe
-												src={`https://www.youtube.com/embed/${short.id}?autoplay=${isCurrent ? 1 : 0}&mute=0`}
+												src={embedSrc}
 												title={short.title}
 								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+								referrerPolicy="strict-origin-when-cross-origin"
 								allowFullScreen
 								className="w-full h-full border-0"
 								loading="lazy"
+								frameBorder="0"
 							/>
 					</div>
 				</div>

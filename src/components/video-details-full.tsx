@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/shadcn_data/components/ui/button';
 import type { YouTubeVideo } from '@/types/youtube';
@@ -11,6 +11,15 @@ interface VideoDetailsFullProps {
 
 export default function VideoDetailsFull({ video }: VideoDetailsFullProps) {
 	const [showFullDescription, setShowFullDescription] = useState(false);
+	const publishedDate = useMemo(() => {
+		const formatter = new Intl.DateTimeFormat('en-US', {
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric',
+			timeZone: 'UTC',
+		});
+		return formatter.format(new Date(video.publishedAt));
+	}, [video.publishedAt]);
 	
 	// Truncate description to first 300 characters for regular videos
 	const truncatedDescription = video.description ? video.description.substring(0, 300) : '';
@@ -76,13 +85,7 @@ export default function VideoDetailsFull({ video }: VideoDetailsFullProps) {
 					<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 text-sm sm:text-base">
 						<div>
 							<span className="text-muted-foreground">Published:</span>
-							<span className="ml-2 text-foreground">
-								{new Date(video.publishedAt).toLocaleDateString('en-US', {
-									year: 'numeric',
-									month: 'long',
-									day: 'numeric',
-								})}
-							</span>
+							<span className="ml-2 text-foreground">{publishedDate}</span>
 						</div>
 						<div>
 							<span className="text-muted-foreground">Channel:</span>
@@ -103,13 +106,7 @@ export default function VideoDetailsFull({ video }: VideoDetailsFullProps) {
 						</div>
 						<div>
 							<span className="text-muted-foreground block mb-1 sm:mb-2">Published</span>
-							<span className="text-foreground">
-								{new Date(video.publishedAt).toLocaleDateString('en-US', {
-									year: 'numeric',
-									month: 'long',
-									day: 'numeric',
-								})}
-							</span>
+							<span className="text-foreground">{publishedDate}</span>
 						</div>
 						{video.recordingLocation && (
 							<div>

@@ -205,6 +205,14 @@ function extractVideoId(url: string): string | null {
 }
 
 /**
+ * Extracts YouTube playlist ID from a YouTube URL
+ */
+function extractPlaylistId(url: string): string | null {
+	const match = url.match(/[?&]list=([^&\n?#]+)/)
+	return match && match[1] ? match[1] : null
+}
+
+/**
  * Validates if a YouTube video is accessible by checking the video's oEmbed endpoint
  * @param videoId - YouTube video ID
  * @returns Promise<boolean> - true if video is accessible, false otherwise
@@ -290,14 +298,21 @@ export async function loadVideosFromJSON(): Promise<YouTubeVideo[]> {
 
 		// Transform JSON video data to YouTubeVideo format
 		const videos: YouTubeVideo[] = data
-			.map((video: any) => {
+			.map((video: any, index: number) => {
 				const videoId = extractVideoId(video.url)
 				if (!videoId) {
 					return null
 				}
 				
+				const playlistId = extractPlaylistId(video.url)
 				const title = video.title || ''
 				const slug = generateSlug(title, videoId)
+				const playlistIndex = playlistId ? index + 1 : undefined
+				const embedUrl = video.embed
+					? String(video.embed)
+					: playlistId
+						? `https://www.youtube.com/embed/videoseries?list=${playlistId}`
+						: `https://www.youtube.com/embed/${videoId}`
 				
 				return {
 					id: videoId,
@@ -306,7 +321,10 @@ export async function loadVideosFromJSON(): Promise<YouTubeVideo[]> {
 					thumbnail: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`, // Use hqdefault as it's more reliable
 					publishedAt: new Date().toISOString(), // json_youtube.json doesn't have published date
 					channelName: 'Tellme360',
-					slug: slug
+					slug: slug,
+					playlistId: playlistId || undefined,
+					playlistIndex: playlistIndex,
+					embedUrl: embedUrl
 				}
 			})
 			.filter((video: YouTubeVideo | null): video is YouTubeVideo => video !== null)
@@ -320,6 +338,59 @@ export async function loadVideosFromJSON(): Promise<YouTubeVideo[]> {
 	} catch (error) {
 		console.error('Error loading videos from JSON:', error)
 		throw error instanceof Error ? error : new Error('Failed to load videos from JSON file')
+	}
+}
+
+/**
+ * Loads videos for a specific playlist from json_youtube.json without validation
+ * @param playlistId - YouTube playlist ID
+ * @returns Array of YouTube videos in the playlist (in JSON order)
+ */
+export async function loadPlaylistFromJSON(playlistId: string): Promise<YouTubeVideo[]> {
+	try {
+		const filePath = path.join(process.cwd(), 'public', 'json_youtube.json')
+		const fileContents = fs.readFileSync(filePath, 'utf-8')
+		const data = JSON.parse(fileContents)
+
+		if (!Array.isArray(data)) {
+			throw new Error('JSON file should contain an array of videos')
+		}
+
+		return data
+			.map((video: any, index: number) => {
+				const videoId = extractVideoId(video.url)
+				if (!videoId) {
+					return null
+				}
+
+				const parsedPlaylistId = extractPlaylistId(video.url)
+				if (!parsedPlaylistId || parsedPlaylistId !== playlistId) {
+					return null
+				}
+
+				const title = video.title || ''
+				const slug = generateSlug(title, videoId)
+				const embedUrl = video.embed
+					? String(video.embed)
+					: `https://www.youtube.com/embed/videoseries?list=${parsedPlaylistId}`
+
+				return {
+					id: videoId,
+					title: title,
+					description: video.description || '',
+					thumbnail: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+					publishedAt: new Date().toISOString(),
+					channelName: 'Tellme360',
+					slug: slug,
+					playlistId: parsedPlaylistId,
+					playlistIndex: index + 1,
+					embedUrl: embedUrl
+				}
+			})
+			.filter((video: YouTubeVideo | null): video is YouTubeVideo => video !== null)
+	} catch (error) {
+		console.error('Error loading playlist from JSON:', error)
+		return []
 	}
 }
 
@@ -514,7 +585,7 @@ export async function getVideoBySlug(slug: string): Promise<YouTubeVideo | null>
 
 			if (Array.isArray(data)) {
 				// Find video by matching slug
-				for (const video of data) {
+				for (const [index, video] of data.entries()) {
 					const videoId = extractVideoId(video.url)
 					if (!videoId) continue
 					
@@ -522,6 +593,13 @@ export async function getVideoBySlug(slug: string): Promise<YouTubeVideo | null>
 					const generatedSlug = generateSlug(title, videoId)
 					
 					if (generatedSlug === slug) {
+						const playlistId = extractPlaylistId(video.url)
+						const embedUrl = video.embed
+							? String(video.embed)
+							: playlistId
+								? `https://www.youtube.com/embed/videoseries?list=${playlistId}`
+								: `https://www.youtube.com/embed/${videoId}`
+
 						return {
 							id: videoId,
 							title: title,
@@ -529,7 +607,10 @@ export async function getVideoBySlug(slug: string): Promise<YouTubeVideo | null>
 							thumbnail: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
 							publishedAt: new Date().toISOString(),
 							channelName: 'Tellme360',
-							slug: generatedSlug
+							slug: generatedSlug,
+							playlistId: playlistId || undefined,
+							playlistIndex: playlistId ? index + 1 : undefined,
+							embedUrl: embedUrl
 						}
 					}
 				}
