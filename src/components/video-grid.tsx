@@ -288,7 +288,7 @@ export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
 												}
 											}, 500);
 										}}
-										className='border-primary/50 hover:border-primary bg-card/50 hover:bg-card group flex min-h-[200px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed transition-all duration-300 hover:shadow-lg active:scale-95'
+										className='border-primary/50 hover:border-primary bg-card/50 hover:bg-card group flex min-h-50 cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed transition-all duration-300 hover:shadow-lg active:scale-95'
 									>
 										<div className='p-6 text-center'>
 											<div className='bg-primary/10 group-hover:bg-primary/20 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full transition-colors'>
@@ -330,7 +330,7 @@ export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
 									{displayedShorts.map((video) => (
 										<div
 											key={video.slug || video.id}
-											className='w-[160px] flex-shrink-0 sm:w-[180px] md:w-[200px]'
+											className='w-40 shrink-0 sm:w-45 md:w-50'
 										>
 											<VideoCard
 												video={video}
