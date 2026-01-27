@@ -35,7 +35,9 @@ export async function POST(request: NextRequest) {
 			);
 		}
 
-		const fromEmail = process.env.RESEND_FROM_EMAIL || 'Tellme Media Hub <onboarding@resend.dev>';
+		const fromEmail =
+			process.env.RESEND_FROM_EMAIL ||
+			'Tellme Media Hub <onboarding@resend.dev>';
 
 		// Escape user input for HTML
 		const safeName = escapeHtml(name);
@@ -56,7 +58,7 @@ export async function POST(request: NextRequest) {
 				<p><strong>Message:</strong></p>
 				<p>${safeMessage}</p>
 			`,
-			replyTo: email,
+			replyTo: email
 		});
 
 		if (companyEmailResult.error) {
@@ -81,16 +83,21 @@ export async function POST(request: NextRequest) {
 					<p><strong>Your message:</strong></p>
 					<p>${safeMessage}</p>
 					<p>Best regards,<br>Tellme Media Hub Team</p>
-				`,
+				`
 			});
 
 			if (userEmailResult.error) {
-				console.warn('User confirmation email could not be sent. Domain verification may be required.');
+				console.warn(
+					'User confirmation email could not be sent. Domain verification may be required.'
+				);
 			}
 		} catch (userEmailError) {
 			// If user email fails (e.g., domain not verified), log but don't fail the request
 			// since the main email to company was sent successfully
-			console.warn('User confirmation email failed (domain may need verification):', userEmailError);
+			console.warn(
+				'User confirmation email failed (domain may need verification):',
+				userEmailError
+			);
 		}
 
 		return NextResponse.json(

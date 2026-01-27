@@ -1,22 +1,22 @@
-"use client"
+'use client';
 
 export default function VideoSkeleton() {
-  return (
-    <div className="rounded-lg overflow-hidden bg-card border border-border h-full flex flex-col animate-pulse">
-      {/* Thumbnail Skeleton */}
-      <div className="w-full aspect-video bg-muted" />
+	return (
+		<div className='bg-card border-border flex h-full animate-pulse flex-col overflow-hidden rounded-lg border'>
+			{/* Thumbnail Skeleton */}
+			<div className='bg-muted aspect-video w-full' />
 
-      {/* Content Skeleton */}
-      <div className="p-4 flex flex-col flex-1">
-        <div className="h-4 bg-muted rounded w-3/4 mb-3" />
-        <div className="h-4 bg-muted rounded w-1/2" />
-        <div className="h-3 bg-muted rounded w-2/3 mt-auto" />
-      </div>
+			{/* Content Skeleton */}
+			<div className='flex flex-1 flex-col p-4'>
+				<div className='bg-muted mb-3 h-4 w-3/4 rounded' />
+				<div className='bg-muted h-4 w-1/2 rounded' />
+				<div className='bg-muted mt-auto h-3 w-2/3 rounded' />
+			</div>
 
-      {/* Button Skeleton */}
-      <div className="px-4 pb-4">
-        <div className="w-full h-9 bg-muted rounded-md" />
-      </div>
-    </div>
-  )
+			{/* Button Skeleton */}
+			<div className='px-4 pb-4'>
+				<div className='bg-muted h-9 w-full rounded-md' />
+			</div>
+		</div>
+	);
 }

@@ -1,12 +1,12 @@
 // Optional: YouTube API helper functions for future use
 export const YOUTUBE_CHANNEL_IDS = {
-  TELLME360: "@Tellme360",
-  // Add more channel IDs as needed
-}
+	TELLME360: '@Tellme360'
+	// Add more channel IDs as needed
+};
 
 export const YOUTUBE_PLAYLISTS = {
-  // Add playlist IDs as needed
-}
+	// Add playlist IDs as needed
+};
 
 /**
  * Helper function to build YouTube search URL
@@ -28,11 +28,11 @@ export function buildYouTubeSearchUrl(
 		order: 'date',
 		type: 'video',
 		key: apiKey
-	})
+	});
 
 	if (pageToken) {
-		params.append('pageToken', pageToken)
+		params.append('pageToken', pageToken);
 	}
 
-	return `https://www.googleapis.com/youtube/v3/search?${params.toString()}`
+	return `https://www.googleapis.com/youtube/v3/search?${params.toString()}`;
 }

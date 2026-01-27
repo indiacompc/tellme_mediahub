@@ -1,13 +1,13 @@
-'use client'
+'use client';
 
-import React from 'react'
+import React from 'react';
 
 const IframeClient = (
 	props: React.JSX.IntrinsicAttributes &
 		React.ClassAttributes<HTMLIFrameElement> &
 		React.IframeHTMLAttributes<HTMLIFrameElement>
 ) => {
-	const { suppressHydrationWarning, title, ...remainingProps } = { ...props }
+	const { suppressHydrationWarning, title, ...remainingProps } = { ...props };
 	return (
 		<iframe
 			{...remainingProps}
@@ -16,7 +16,7 @@ const IframeClient = (
 				suppressHydrationWarning ? suppressHydrationWarning : true
 			}
 		/>
-	)
-}
+	);
+};
 
-export default IframeClient
+export default IframeClient;
