@@ -9,15 +9,99 @@ import {
 	CarouselNext,
 	CarouselPrevious
 } from '@/shadcn_data/components/ui/carousel';
+import { getYouTubeThumbnailFallbacks } from '@/lib/youtube-thumbnails';
 import type { YouTubeVideo } from '@/types/youtube';
+import { Play } from 'lucide-react';
 import { motion } from 'motion/react';
-import type { StaticImageData } from 'next/image';
+import Image, { type StaticImageData } from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import VideoBackground from './VideoBackground';
 
 interface BannerSectionProps {
 	tellme_logo: StaticImageData;
+}
+
+// Featured Video Card Component matching VideoCard design
+function FeaturedVideoCard({
+	video,
+	onClick
+}: {
+	video: YouTubeVideo;
+	onClick: () => void;
+}) {
+	const [currentThumbnailIndex, setCurrentThumbnailIndex] = useState(0);
+	const [hasError, setHasError] = useState(false);
+
+	// Get fallback thumbnails for this video
+	const thumbnailFallbacks = video.id
+		? getYouTubeThumbnailFallbacks(video.id)
+		: video.thumbnail
+			? [video.thumbnail]
+			: [];
+
+	// Start with the provided thumbnail, or hqdefault (index 1) for YouTube videos
+	const startIndex = video.thumbnail && !video.id ? 0 : video.id ? 1 : 0;
+	const currentIndex = startIndex + currentThumbnailIndex;
+	const currentThumbnail =
+		hasError || currentIndex >= thumbnailFallbacks.length
+			? null
+			: thumbnailFallbacks[currentIndex] || null;
+
+	const handleImageError = () => {
+		const nextIndex = currentThumbnailIndex + 1;
+		const totalIndex = startIndex + nextIndex;
+
+		if (totalIndex < thumbnailFallbacks.length) {
+			setCurrentThumbnailIndex(nextIndex);
+			setHasError(false);
+		} else {
+			setHasError(true);
+		}
+	};
+
+	const aspectRatio = video.isShort ? 'aspect-[9/16]' : 'aspect-video';
+
+	return (
+		<div className='group flex h-full flex-col'>
+			<div
+				onClick={onClick}
+				className='border-border hover:border-primary bg-card hover:bg-muted/50 cursor-pointer overflow-hidden rounded-lg border transition-all duration-300 hover:shadow-lg'
+			>
+				<div
+					className={`relative w-full ${aspectRatio} bg-muted overflow-hidden rounded-lg`}
+				>
+					{currentThumbnail ? (
+						<Image
+							src={currentThumbnail}
+							alt={video.title}
+							fill
+							className='rounded-lg object-cover transition-transform duration-300 group-hover:scale-110'
+							unoptimized
+							onError={handleImageError}
+						/>
+					) : (
+						<div className='bg-muted text-muted-foreground flex h-full w-full items-center justify-center rounded-lg'>
+							<div className='text-center'>
+								<Play className='mx-auto mb-2 h-12 w-12 opacity-50' />
+								<p className='text-xs'>No thumbnail</p>
+							</div>
+						</div>
+					)}
+				</div>
+			</div>
+
+			{/* Content */}
+			<div className='flex flex-1 flex-col p-3 sm:p-4'>
+				<h3 className='text-foreground group-hover:text-primary line-clamp-2 text-sm font-semibold transition-colors duration-300 sm:text-base'>
+					{video.title}
+				</h3>
+				<p className='text-muted-foreground mt-2 text-xs sm:text-sm'>
+					{video.channelName}
+				</p>
+			</div>
+		</div>
+	);
 }
 
 export default function BannerSection({ tellme_logo }: BannerSectionProps) {
@@ -136,16 +220,16 @@ export default function BannerSection({ tellme_logo }: BannerSectionProps) {
 
 	return (
 		<>
-			{/* Video Banner Section */}
-			<div className='xl:text-foreground relative min-h-[70vh] w-full overflow-hidden text-white sm:min-h-[80vh] md:h-[85vh] lg:h-[90vh] xl:h-[95vh] 2xl:h-[100vh]'>
-				<div className='xl:hidden'>
-					<VideoBackground />
-				</div>
-				<div className='xl:bg-background/40 absolute top-0 right-0 bottom-0 left-0 z-1 bg-black/40 xl:dark:bg-black/40' />
+		{/* Video Banner Section */}
+		<div className='xl:text-foreground relative min-h-[70vh] w-full overflow-hidden text-white sm:min-h-[80vh] md:h-[85vh] lg:h-[90vh] xl:h-[95vh] 2xl:h-[100vh]'>
+			<div className='xl:hidden'>
+				<VideoBackground />
+			</div>
+			<div className='xl:bg-background/40 absolute top-0 right-0 bottom-0 left-0 z-1 bg-black/40 xl:dark:bg-black/40' />
 				<div className='absolute top-0 right-0 left-0 z-20'>
 					<Navbar tellme_logo={tellme_logo} />
 				</div>
-				<section className='content absolute top-0 right-0 bottom-0 left-0 z-10 flex h-auto w-full flex-col items-start justify-center px-3 py-16 sm:px-4 sm:py-20 md:px-6 md:py-24 lg:px-8 lg:py-28 xl:px-12 xl:py-12 2xl:px-16 2xl:py-16'>
+				<section className='content absolute top-0 right-0 bottom-0 left-0 z-10 flex h-auto w-full flex-col items-start justify-center px-3 pt-16 sm:px-4 sm:pt-20 md:px-6 md:pt-24 lg:px-8 lg:pt-28 xl:px-12 xl:pt-12 2xl:px-16 2xl:pt-16'>
 					<div className='mx-auto w-full max-w-7xl lg:flex lg:items-center lg:justify-between lg:gap-8 xl:gap-12'>
 						<div className='w-full max-w-full sm:max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-[calc(100%-320px)] 2xl:max-w-[calc(100%-380px)]'>
 							<h2 className='mb-3 font-semibold sm:mb-4 md:mb-5 md:font-normal'>
@@ -216,27 +300,12 @@ export default function BannerSection({ tellme_logo }: BannerSectionProps) {
 													key={video.id}
 													className='basis-[85%] pl-4 sm:basis-[70%] md:basis-[75%] lg:basis-1/3 xl:basis-[40%] xl:pl-5 2xl:basis-[45%] 2xl:pl-6'
 												>
-													<div
+												<FeaturedVideoCard
+													video={video}
 														onClick={() =>
 															router.push(`/video/${video.slug}?filter=videos`)
 														}
-														className='border-foreground/20 hover:border-foreground/50 bg-background/40 group cursor-pointer overflow-hidden rounded-xl border-2 backdrop-blur-md transition-all duration-300 hover:shadow-2xl active:scale-95 xl:rounded-2xl xl:border-[3px] 2xl:rounded-3xl dark:border-white/20 dark:bg-black/40 dark:hover:border-white/50'
-													>
-														<div className='bg-muted relative aspect-video w-full overflow-hidden'>
-															<img
-																src={video.thumbnail}
-																alt={video.title}
-																className='h-full w-full object-cover transition-transform duration-300 group-hover:scale-110'
-																loading='lazy'
-															/>
-															<div className='absolute inset-0 flex items-center justify-center bg-black/20 transition-colors duration-300 group-hover:bg-black/30 dark:bg-black/20'></div>
-														</div>
-														<div className='p-5 xl:p-6 2xl:p-7'>
-															<h4 className='text-foreground group-hover:text-foreground/90 line-clamp-2 text-base font-semibold transition-colors xl:text-lg 2xl:text-xl'>
-																{video.title}
-															</h4>
-														</div>
-													</div>
+												/>
 												</CarouselItem>
 											))}
 										</CarouselContent>
@@ -358,37 +427,12 @@ export default function BannerSection({ tellme_logo }: BannerSectionProps) {
 											key={video.id}
 											className='basis-[85%] pl-2 sm:basis-[70%] sm:pl-3 md:basis-[45%] md:pl-4 lg:basis-1/3 lg:pl-6 xl:basis-1/3 2xl:basis-1/4'
 										>
-											<div
+											<FeaturedVideoCard
+												video={video}
 												onClick={() =>
 													router.push(`/video/${video.slug}?filter=videos`)
 												}
-												className='border-border hover:border-primary bg-card group cursor-pointer overflow-hidden rounded-lg border transition-all duration-300 hover:shadow-2xl active:scale-95 sm:rounded-xl'
-											>
-												<div className='bg-muted relative aspect-video w-full overflow-hidden'>
-													<img
-														src={video.thumbnail}
-														alt={video.title}
-														className='h-full w-full object-cover transition-transform duration-300 group-hover:scale-110'
-														loading='lazy'
-													/>
-													<div className='absolute inset-0 flex items-center justify-center bg-black/20 transition-colors duration-300 group-hover:bg-black/30'>
-														<div className='flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-all duration-300 group-hover:scale-125 group-hover:bg-white/30 sm:h-16 sm:w-16 md:h-20 md:w-20'>
-															<svg
-																className='ml-0.5 h-6 w-6 text-white sm:ml-1 sm:h-8 sm:w-8 md:h-10 md:w-10'
-																fill='currentColor'
-																viewBox='0 0 24 24'
-															>
-																<path d='M8 5v14l11-7z' />
-															</svg>
-														</div>
-													</div>
-												</div>
-												<div className='p-3 sm:p-4 md:p-5'>
-													<h4 className='text-foreground group-hover:text-primary line-clamp-2 text-sm font-semibold transition-colors sm:text-base md:text-lg'>
-														{video.title}
-													</h4>
-												</div>
-											</div>
+											/>
 										</CarouselItem>
 									))}
 								</CarouselContent>

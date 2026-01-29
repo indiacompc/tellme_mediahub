@@ -32,12 +32,53 @@ export default function ShortsLayout({
 
 	// Find the index of the current video in the shorts list
 	useEffect(() => {
-		const index = shortsList.findIndex((s) => s.id === video.id);
+		// Try multiple matching strategies - prioritize ID matching as it's most reliable
+		let index = shortsList.findIndex((s) => s.id === video.id);
+		
+		// If not found by ID, try matching by slug (exact match)
+		if (index === -1 && video.slug) {
+			index = shortsList.findIndex((s) => s.slug === video.slug);
+		}
+		
+		// If still not found, try matching by slug that ends with video ID
+		if (index === -1 && video.id) {
+			index = shortsList.findIndex((s) => 
+				s.slug && s.slug.endsWith(`-${video.id}`)
+			);
+		}
+		
+		// If still not found, try partial slug match
+		if (index === -1 && video.slug) {
+			index = shortsList.findIndex((s) => 
+				s.slug && (s.slug.includes(video.slug) || video.slug.includes(s.slug))
+			);
+		}
+		
 		if (index !== -1) {
 			setCurrentVideoIndex(index);
 			currentVideoIndexRef.current = index;
+		} else {
+			// If still not found, default to 0 but log a warning for debugging
+			console.warn('Could not find video in shorts list:', {
+				videoId: video.id,
+				videoSlug: video.slug,
+				shortsListLength: shortsList.length,
+				shortsListIds: shortsList.slice(0, 5).map(s => s.id),
+				shortsListSlugs: shortsList.slice(0, 5).map(s => s.slug)
+			});
+			// Try to find by video ID one more time with case-insensitive match
+			const caseInsensitiveIndex = shortsList.findIndex((s) => 
+				s.id.toLowerCase() === video.id.toLowerCase()
+			);
+			if (caseInsensitiveIndex !== -1) {
+				setCurrentVideoIndex(caseInsensitiveIndex);
+				currentVideoIndexRef.current = caseInsensitiveIndex;
+			} else {
+				setCurrentVideoIndex(0);
+				currentVideoIndexRef.current = 0;
+			}
 		}
-	}, [video.id, shortsList]);
+	}, [video.id, video.slug, shortsList]);
 
 	// Toggle expanded state for a specific short
 	const toggleExpanded = (shortId: string) => {

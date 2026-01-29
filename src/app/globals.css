@@ -214,3 +214,13 @@
 .delay-300 {
   animation-delay: 600ms;
 }
+
+/* Shadow sweep animation for featured videos */
+@keyframes shadowSweep {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}

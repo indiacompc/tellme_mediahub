@@ -345,14 +345,12 @@ export async function loadVideosFromJSON(): Promise<YouTubeVideo[]> {
 					publishedAt: new Date().toISOString(), // json_youtube.json doesn't have published date
 					channelName: 'Tellme360',
 					slug: slug,
-					playlistId: playlistId || undefined,
+					playlistId: playlistId,
 					playlistIndex: playlistIndex,
 					embedUrl: embedUrl
-				};
+				} as YouTubeVideo;
 			})
-			.filter(
-				(video: YouTubeVideo | null): video is YouTubeVideo => video !== null
-			);
+			.filter((video): video is YouTubeVideo => video !== null);
 
 		// Validate videos - check if they are accessible
 		console.log(`Validating ${videos.length} videos...`);
@@ -416,11 +414,9 @@ export async function loadPlaylistFromJSON(
 					playlistId: parsedPlaylistId,
 					playlistIndex: index + 1,
 					embedUrl: embedUrl
-				};
+				} as YouTubeVideo;
 			})
-			.filter(
-				(video: YouTubeVideo | null): video is YouTubeVideo => video !== null
-			);
+			.filter((video): video is YouTubeVideo => video !== null);
 	} catch (error) {
 		console.error('Error loading playlist from JSON:', error);
 		return [];
@@ -629,9 +625,60 @@ export async function getVideoBySlug(
 				const data = JSON.parse(fileContents);
 
 				if (data.videos && Array.isArray(data.videos)) {
-					const video = data.videos.find(
+					// First try exact slug match
+					let video = data.videos.find(
 						(v: any) => v.slug === slug && v.status === 'public'
 					);
+					
+					// If not found, try to extract video ID from slug and match by ID
+					// Slugs typically end with the video ID (e.g., "title-videoId")
+					if (!video) {
+						// Try multiple methods to extract video ID from slug
+						let potentialVideoId: string | null = null;
+						
+						// Method 1: Check if slug ends with a video ID (11 characters after last hyphen)
+						const slugParts = slug.split('-');
+						if (slugParts.length > 0) {
+							const lastPart = slugParts[slugParts.length - 1];
+							// YouTube video IDs are exactly 11 characters
+							if (lastPart && lastPart.length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(lastPart)) {
+								potentialVideoId = lastPart;
+							}
+						}
+						
+						// Method 2: If slug ends with video ID directly (no hyphen before it)
+						// Extract last 11 characters if they match video ID pattern
+						if (!potentialVideoId && slug.length >= 11) {
+							const last11 = slug.slice(-11);
+							if (/^[a-zA-Z0-9_-]{11}$/.test(last11)) {
+								potentialVideoId = last11;
+							}
+						}
+						
+						// Try to find video by extracted ID
+						if (potentialVideoId) {
+							video = data.videos.find(
+								(v: any) =>
+									v.youtube_video_id === potentialVideoId &&
+									v.status === 'public'
+							);
+						}
+						
+						// Method 3: Try partial slug match (in case slug was truncated)
+						if (!video) {
+							// Try matching by slug prefix (first part before video ID)
+							for (const v of data.videos) {
+								if (v.status === 'public' && v.slug) {
+									// Check if the provided slug is a prefix of the stored slug
+									if (v.slug.startsWith(slug) || slug.startsWith(v.slug)) {
+										video = v;
+										break;
+									}
+								}
+							}
+						}
+					}
+					
 					if (video) {
 						const videoId = video.youtube_video_id;
 						const title = video.title || '';

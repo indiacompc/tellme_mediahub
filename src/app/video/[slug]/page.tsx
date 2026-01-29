@@ -74,8 +74,16 @@ export default async function VideoPage({ params, searchParams }: ParamsType) {
 	if (video.isShort) {
 		try {
 			allShorts = await loadShortsFromJSON();
+			// Ensure the current video is in the list (in case validation filtered it out)
+			const videoInList = allShorts.find((s) => s.id === video.id);
+			if (!videoInList) {
+				// Add the current video to the list if it's not there
+				allShorts = [video, ...allShorts];
+			}
 		} catch (error) {
 			console.error('Error loading shorts:', error);
+			// If loading fails, at least include the current video
+			allShorts = [video];
 		}
 	}
 

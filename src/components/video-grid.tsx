@@ -325,7 +325,8 @@ export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
 							<h2 className='text-foreground mb-6 text-2xl font-bold sm:mb-8 sm:text-3xl lg:text-4xl'>
 								Shorts
 							</h2>
-							<div className='-mx-4 overflow-x-auto px-4 pb-4 sm:-mx-6 sm:px-6'>
+							{/* Mobile/Tablet: Horizontal Scrolling */}
+							<div className='-mx-4 overflow-x-auto px-4 pb-4 sm:-mx-6 sm:px-6 lg:hidden'>
 								<div className='flex min-w-max gap-3 sm:gap-4'>
 									{displayedShorts.map((video) => (
 										<div
@@ -339,6 +340,16 @@ export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
 										</div>
 									))}
 								</div>
+							</div>
+							{/* Desktop: 6-Column Grid */}
+							<div className='hidden lg:grid lg:grid-cols-6 lg:gap-4 xl:gap-6'>
+								{displayedShorts.map((video) => (
+									<VideoCard
+										key={video.slug || video.id}
+										video={video}
+										onClick={() => handleVideoSelect(video)}
+									/>
+								))}
 							</div>
 						</div>
 					)}
