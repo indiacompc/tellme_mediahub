@@ -607,10 +607,12 @@ export async function searchVideosInDatabase(
 /**
  * Gets a single video by slug from the database
  * @param slug - Video slug
+ * @param isShort - Optional: if true, only search for shorts; if false, only search for regular videos
  * @returns YouTubeVideo object or null if not found
  */
 export async function getVideoBySlug(
-	slug: string
+	slug: string,
+	isShort?: boolean
 ): Promise<YouTubeVideo | null> {
 	try {
 		// First try the tellme_videohub_db file (has more details like recording_location)
@@ -625,10 +627,26 @@ export async function getVideoBySlug(
 				const data = JSON.parse(fileContents);
 
 				if (data.videos && Array.isArray(data.videos)) {
-					// First try exact slug match
-					let video = data.videos.find(
+					// Filter by is_short if specified
+					let filteredVideos = data.videos;
+					if (isShort !== undefined) {
+						filteredVideos = data.videos.filter((v: any) => 
+							isShort ? v.is_short === true : v.is_short !== true
+						);
+					}
+
+					// First try exact slug match (case-sensitive first, most reliable)
+					let video = filteredVideos.find(
 						(v: any) => v.slug === slug && v.status === 'public'
 					);
+					
+					// If not found, try exact slug match with URL decoding
+					if (!video) {
+						const decodedSlug = decodeURIComponent(slug);
+						video = filteredVideos.find(
+							(v: any) => v.slug === decodedSlug && v.status === 'public'
+						);
+					}
 					
 					// If not found, try to extract video ID from slug and match by ID
 					// Slugs typically end with the video ID (e.g., "title-videoId")
@@ -655,23 +673,45 @@ export async function getVideoBySlug(
 							}
 						}
 						
-						// Try to find video by extracted ID
+						// Try to find video by extracted ID (this is the most reliable method)
 						if (potentialVideoId) {
-							video = data.videos.find(
+							video = filteredVideos.find(
 								(v: any) =>
 									v.youtube_video_id === potentialVideoId &&
 									v.status === 'public'
 							);
 						}
 						
-						// Method 3: Try partial slug match (in case slug was truncated)
+						// Method 3: Try case-insensitive exact slug match
 						if (!video) {
-							// Try matching by slug prefix (first part before video ID)
-							for (const v of data.videos) {
-								if (v.status === 'public' && v.slug) {
-									// Check if the provided slug is a prefix of the stored slug
-									if (v.slug.startsWith(slug) || slug.startsWith(v.slug)) {
-										video = v;
+							video = filteredVideos.find(
+								(v: any) =>
+									v.slug &&
+									v.slug.toLowerCase() === slug.toLowerCase() &&
+									v.status === 'public'
+							);
+						}
+						
+						// Method 4: Last resort - try to find video ID anywhere in slug, but prioritize exact matches
+						// Only use this if we haven't found a match yet and the slug looks like it might contain a video ID
+						if (!video && slug.length >= 11) {
+							// Find all potential 11-character sequences in the slug
+							const videoIdPattern = /[a-zA-Z0-9_-]{11}/g;
+							const matches = slug.match(videoIdPattern);
+							if (matches && matches.length > 0) {
+								// Try each potential video ID (starting from the end, as IDs are usually at the end)
+								// But only match if the slug from the database also contains this video ID
+								for (let i = matches.length - 1; i >= 0; i--) {
+									const testVideoId = matches[i];
+									const foundVideo = filteredVideos.find(
+										(v: any) =>
+											v.youtube_video_id === testVideoId &&
+											v.status === 'public' &&
+											// Additional check: ensure the stored slug also contains or ends with this ID
+											(v.slug?.endsWith(`-${testVideoId}`) || v.slug?.endsWith(testVideoId))
+									);
+									if (foundVideo) {
+										video = foundVideo;
 										break;
 									}
 								}
@@ -683,6 +723,31 @@ export async function getVideoBySlug(
 						const videoId = video.youtube_video_id;
 						const title = video.title || '';
 						const videoSlug = video.slug || generateSlug(title, videoId);
+
+						// Try to get embed URL from json_youtube.json if this is a regular video (not a short)
+						// This ensures featured videos use the embed URL from json_youtube.json
+						let embedUrl: string | undefined = undefined;
+						if (!video.is_short) {
+							try {
+								const jsonFilePath = path.join(process.cwd(), 'public', 'json_youtube.json');
+								if (fs.existsSync(jsonFilePath)) {
+									const jsonFileContents = fs.readFileSync(jsonFilePath, 'utf-8');
+									const jsonData = JSON.parse(jsonFileContents);
+									if (Array.isArray(jsonData)) {
+										// Find matching video by video ID
+										const jsonVideo = jsonData.find((v: any) => {
+											const vId = extractVideoId(v.url);
+											return vId === videoId;
+										});
+										if (jsonVideo && jsonVideo.embed) {
+											embedUrl = String(jsonVideo.embed);
+										}
+									}
+								}
+							} catch (err) {
+								// Ignore errors, will use default embed URL
+							}
+						}
 
 						return {
 							id: videoId,
@@ -698,7 +763,8 @@ export async function getVideoBySlug(
 							channelName: 'Tellme360',
 							slug: videoSlug,
 							recordingLocation: video.recording_location || undefined,
-							isShort: video.is_short || false
+							isShort: video.is_short || false,
+							embedUrl: embedUrl
 						};
 					}
 				}

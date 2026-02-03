@@ -9,9 +9,9 @@ import type { YouTubeVideo } from '@/types/youtube';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import ErrorState from './Error';
-import SearchBar from './search-bar';
+import SearchBar from './SearchBar';
 import VideoCard from './video-card';
-import VideoSkeleton from './video-skeleton';
+import VideoSkeleton from './VideoSkeleton';
 
 interface VideoGridProps {
 	onVideoSelect?: (video: YouTubeVideo) => void;
@@ -48,7 +48,19 @@ export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
 		// Include filter in URL so back button knows where to return
 		const filterParam =
 			filter === 'shorts' ? '?filter=shorts' : '?filter=videos';
-		router.push(`/video/${video.slug}${filterParam}`);
+		// Route shorts to /short/ and regular videos to /video/
+		const route = video.isShort ? '/short' : '/video';
+		const url = `${route}/${video.slug}${filterParam}`;
+		
+		console.log('[VideoGrid] Navigating to:', {
+			videoId: video.id,
+			videoSlug: video.slug,
+			videoTitle: video.title,
+			isShort: video.isShort,
+			url: url
+		});
+		
+		router.push(url);
 		onVideoSelect?.(video);
 	};
 
@@ -220,7 +232,7 @@ export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
 				<div className='bg-muted/50 border-border inline-flex items-center rounded-lg border p-1 shadow-sm'>
 					<button
 						onClick={() => setFilter('videos')}
-						className={`relative rounded-md px-6 py-2 text-sm font-medium transition-all duration-200 sm:px-8 sm:py-2.5 sm:text-base ${
+						className={`relative rounded-md px-6 py-2 text-sm font-ci transition-all duration-200 sm:px-8 sm:py-2.5 sm:text-base ${
 							filter === 'videos'
 								? 'bg-primary text-primary-foreground shadow-sm'
 								: 'text-muted-foreground hover:text-foreground'
@@ -260,7 +272,7 @@ export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
 					{/* Regular Videos Section */}
 					{regularVideos.length > 0 && (
 						<div className='mb-8 sm:mb-12'>
-							<h2 className='text-foreground mb-6 text-2xl font-bold sm:mb-8 sm:text-3xl lg:text-4xl'>
+							<h2 className='text-foreground mb-6 text-2xl font-semibold font-cinzel sm:mb-8 sm:text-3xl lg:text-4xl'>
 								Videos
 							</h2>
 							<div className='grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-4'>
@@ -306,7 +318,7 @@ export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
 													/>
 												</svg>
 											</div>
-											<h4 className='text-foreground group-hover:text-primary mb-2 text-base font-semibold transition-colors sm:text-lg'>
+											<h4 className='text-foreground group-hover:text-primary mb-2 text-base font-semibold font-quicksand transition-colors sm:text-lg'>
 												For More Videos
 											</h4>
 											<p className='text-muted-foreground text-sm'>
@@ -322,7 +334,7 @@ export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
 					{/* Shorts Section - Show when not searching (main page) or when search has shorts */}
 					{displayedShorts.length > 0 && (
 						<div>
-							<h2 className='text-foreground mb-6 text-2xl font-bold sm:mb-8 sm:text-3xl lg:text-4xl'>
+							<h2 className='text-foreground mb-6 text-2xl font-semibold font-cinzel sm:mb-8 sm:text-3xl lg:text-4xl'>
 								Shorts
 							</h2>
 							{/* Mobile/Tablet: Horizontal Scrolling */}

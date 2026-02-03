@@ -17,7 +17,7 @@ const Footer = () => {
 					<div className='grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10'>
 						{/* About The Company */}
 						<section className='space-y-4'>
-							<h2 className='text-lg font-semibold sm:text-xl'>
+							<h2 className='text-lg font-semibold font-quicksand sm:text-xl'>
 								About The Company
 							</h2>
 							<ul className='space-y-2 text-sm sm:text-base'>
@@ -29,7 +29,7 @@ const Footer = () => {
 
 						{/* Find Us */}
 						<section className='space-y-4'>
-							<h2 className='text-lg font-semibold sm:text-xl'>Find Us</h2>
+							<h2 className='text-lg font-semibold font-quicksand sm:text-xl'>Find Us</h2>
 							<address className='space-y-2 text-sm not-italic sm:text-base'>
 								<p>Office No. 228, B Wing,</p>
 								<p>Akshay Complex, Dhole Patil Road,</p>
@@ -40,7 +40,7 @@ const Footer = () => {
 
 						{/* Location Map */}
 						<section className='space-y-4'>
-							<h2 className='text-lg font-semibold sm:text-xl'>Location Map</h2>
+							<h2 className='text-lg font-semibold font-quicksand sm:text-xl'>Location Map</h2>
 							<div className='w-full overflow-hidden rounded-lg'>
 								<iframe
 									src='https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3782.819044800587!2d73.8704232!3d18.5370777!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2c1df117160bd%3A0xb4d52baabbd93eed!2sTellme%20Digiinfotech%20Pvt.%20Ltd.!5e0!3m2!1sen!2sin!4v1722407994735!5m2!1sen!2sin'
@@ -57,7 +57,7 @@ const Footer = () => {
 
 						{/* Connect With Us */}
 						<section className='space-y-4'>
-							<h2 className='text-lg font-semibold sm:text-xl'>
+							<h2 className='text-lg font-semibold font-quicksand sm:text-xl'>
 								Connect With Us
 							</h2>
 							<div className='space-y-4'>

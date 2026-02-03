@@ -1,8 +1,8 @@
 'use client';
 
-import VideoGrid from '@/components/video-grid';
+import VideoGrid from '@/components/VideoGrid';
 import { Suspense } from 'react';
-import VideoSkeleton from './video-skeleton';
+import VideoSkeleton from './VideoSkeleton';
 
 export default function HomeContent() {
 	return (

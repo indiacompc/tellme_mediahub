@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Providers } from './providers';
 // import tellme_logo from '@/assets/images/tellme_logo.png'
-import { ubuntuFont } from '@/assets/fonts';
+import { cinzelFont, poppinsFont, quicksandFont, ubuntuFont } from '@/assets/fonts';
 import Footer from '@/components/Footer';
 // import Navbar from "@/components/Navbar";
 // import Footer from '@/components/Footer';
@@ -108,14 +108,17 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang='en' suppressHydrationWarning>
+		<html
+			lang='en'
+			suppressHydrationWarning
+			className={`${cinzelFont.variable} ${poppinsFont.variable} ${quicksandFont.variable}`}
+		>
 			{/* <head>
         <link rel="preload" href={tellme_logo.src} />
       </head> */}
 			<body
 				style={{
-					// backgroundImage: `url(${bgImage.src})`,
-					fontFamily: ubuntuFont.style.fontFamily
+					fontFamily: poppinsFont.style.fontFamily
 				}}
 				className='w-full'
 			>
