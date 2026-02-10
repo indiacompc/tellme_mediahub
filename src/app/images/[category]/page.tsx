@@ -9,7 +9,8 @@ type PhotoCategoryPageProps = {
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
-const limit = 10;
+// Reduced limit to minimize bandwidth usage
+const limit = 8;
 
 export async function generateMetadata({
 	params,

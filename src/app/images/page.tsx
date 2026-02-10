@@ -22,7 +22,8 @@ function ImagesPageContent() {
 	const [totalImages, setTotalImages] = useState(0);
 	const [currentPage] = useState(page ? parseInt(page) : 1);
 
-	const limit = 10;
+	// Reduced limit to minimize bandwidth usage
+	const limit = 8;
 
 	useEffect(() => {
 		const loadFilteredImages = async () => {

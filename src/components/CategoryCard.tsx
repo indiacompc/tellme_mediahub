@@ -53,6 +53,7 @@ export default function CategoryCard({ category }: CategoryCardProps) {
 					className='object-cover transition-transform duration-500 group-hover:scale-110'
 					loading='lazy'
 					unoptimized={isFirebaseStorageUrl(thumbnailImage.src)}
+					quality={isFirebaseStorageUrl(thumbnailImage.src) ? undefined : 70}
 				/>
 
 				{/* Black Overlay */}

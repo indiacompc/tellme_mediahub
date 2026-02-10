@@ -48,6 +48,7 @@ const ImageWithLoading = (
 		alt,
 		loadingClassName,
 		unoptimized: propUnoptimized,
+		quality: propQuality,
 		...remainingProps
 	} = props;
 	const [isloaded, setIsLoaded] = useState(false);
@@ -66,15 +67,20 @@ const ImageWithLoading = (
 	const shouldUseUnoptimized =
 		propUnoptimized || isFirebaseStorage || isProxyUrl;
 
+	// Default quality: 75 for grid images (lower bandwidth), can be overridden
+	const defaultQuality = 75;
+	const imageQuality = propQuality !== undefined ? propQuality : defaultQuality;
+
 	return (
 		<Image
 			src={src}
 			alt={alt}
 			className={cn(
 				className,
-				isloaded ? '' : loadingClassName || 'animate-pulse bg-gray-400'
+				isloaded ? '' : loadingClassName || 'animate-pulse bg-gray-200 dark:bg-gray-700'
 			)}
 			unoptimized={shouldUseUnoptimized}
+			quality={shouldUseUnoptimized ? undefined : imageQuality}
 			onLoad={(e) => {
 				setIsLoaded(true);
 				if (onLoad !== undefined) {

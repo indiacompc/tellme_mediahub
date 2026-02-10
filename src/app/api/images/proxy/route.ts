@@ -144,21 +144,29 @@ export async function GET(request: NextRequest) {
 		const contentType =
 			imageResponse.headers.get('content-type') || 'image/jpeg';
 
+		// Check if quality parameter is requested (for bandwidth optimization)
+		const qualityParam = searchParams.get('q');
+		const requestedQuality = qualityParam ? parseInt(qualityParam) : null;
+
 		// Return the image with appropriate headers
-		// Note: For server-side watermarking with logo, you would need to install 'sharp' package
-		// and add watermark overlay. For now, client-side watermark applies.
+		// Note: For server-side compression, you would need to install 'sharp' package
+		// For now, we return the original image but with aggressive caching
 		return new NextResponse(imageBuffer, {
 			status: 200,
 			headers: {
 				'Content-Type': contentType,
-				'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+				// Aggressive caching to reduce bandwidth on repeat visits
+				'Cache-Control': 'public, max-age=31536000, s-maxage=31536000, immutable',
 				'X-Content-Type-Options': 'nosniff',
 				// Prevent direct linking
 				'X-Frame-Options': 'SAMEORIGIN',
 				// Add CORS headers to allow same-origin requests
 				'Access-Control-Allow-Origin': origin || '*',
 				'Access-Control-Allow-Methods': 'GET',
-				'Access-Control-Allow-Headers': 'Content-Type'
+				'Access-Control-Allow-Headers': 'Content-Type',
+				// Compression hint
+				'Content-Encoding': 'identity',
+				'Vary': 'Accept-Encoding'
 			}
 		});
 	} catch (error) {
