@@ -51,7 +51,7 @@ export default function ProtectedImageWrapper({
 				img.addEventListener('dragstart', handleDragStart);
 				img.addEventListener('contextmenu', handleContextMenu);
 				img.style.userSelect = 'none';
-				img.style.webkitUserDrag = 'none';
+				(img.style as any).webkitUserDrag = 'none';
 				img.style.pointerEvents = 'none';
 			});
 
