@@ -17,9 +17,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import VideoBackground from './VideoBackground';
 
-interface BannerSectionProps {
-	tellme_logo: StaticImageData;
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface BannerSectionProps {}
 
 // Featured Video Card Component matching VideoCard design
 function FeaturedVideoCard({
@@ -103,7 +102,7 @@ function FeaturedVideoCard({
 	);
 }
 
-export default function BannerSection({ tellme_logo }: BannerSectionProps) {
+export default function BannerSection({}: BannerSectionProps) {
 	const router = useRouter();
 	const descriptionText =
 		'Accelerate your creative projects with premium 4K stock footage—licensed in hours, not months. Choose from thousands of curated clips across travel, heritage, nature, and tourism themes with transparent pricing and usage rights.';

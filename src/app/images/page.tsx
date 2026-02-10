@@ -20,7 +20,7 @@ function ImagesPageContent() {
 	const [categoryName, setCategoryName] = useState<string>('');
 	const [loading, setLoading] = useState(false);
 	const [totalImages, setTotalImages] = useState(0);
-	const [currentPage, setCurrentPage] = useState(page ? parseInt(page) : 1);
+	const [currentPage] = useState(page ? parseInt(page) : 1);
 
 	const limit = 10;
 

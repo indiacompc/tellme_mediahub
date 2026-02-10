@@ -115,7 +115,7 @@ export function extractFilePathFromUrl(firebaseUrl: string): string {
 		// Format 3: https://firebasestorage.googleapis.com/v0/b/bucket/o/path%2Fto%2Ffile.jpg?token=...
 
 		// Try to extract path after /o/ (for signed URLs or old format)
-		let pathMatch = url.pathname.match(/\/o\/(.+?)(?:\?|$)/);
+		const pathMatch = url.pathname.match(/\/o\/(.+?)(?:\?|$)/);
 		if (pathMatch) {
 			return decodeURIComponent(pathMatch[1]);
 		}
@@ -157,7 +157,7 @@ export function extractFilePathFromUrl(firebaseUrl: string): string {
 		}
 
 		// Final fallback: return the full pathname without leading slash
-		return url.pathname.replace(/^\//, '').replace(/^[^\/]+\//, '');
+		return url.pathname.replace(/^\//, '').replace(/^[^/]+\//, '');
 	} catch (error) {
 		console.error('Error extracting file path from URL:', error);
 		// Fallback: try to extract from the URL string directly

@@ -3,22 +3,6 @@ import crypto from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
- * Generate a secure token for image access
- * This token is time-limited and URL-specific
- */
-function generateAccessToken(
-	imageUrl: string,
-	expiresIn: number = 3600
-): string {
-	const secret =
-		process.env.IMAGE_PROXY_SECRET || 'default-secret-change-in-production';
-	const timestamp = Math.floor(Date.now() / 1000) + expiresIn;
-	const data = `${imageUrl}|${timestamp}`;
-	const hash = crypto.createHmac('sha256', secret).update(data).digest('hex');
-	return `${timestamp}:${hash}`;
-}
-
-/**
  * Verify the access token
  */
 function verifyAccessToken(imageUrl: string, token: string): boolean {
@@ -42,7 +26,7 @@ function verifyAccessToken(imageUrl: string, token: string): boolean {
 			.digest('hex');
 
 		return crypto.timingSafeEqual(Buffer.from(hash), Buffer.from(expectedHash));
-	} catch (error) {
+	} catch {
 		return false;
 	}
 }

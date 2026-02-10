@@ -757,7 +757,7 @@ export async function getVideoBySlug(
 										}
 									}
 								}
-							} catch (err) {
+							} catch {
 								// Ignore errors, will use default embed URL
 							}
 						}

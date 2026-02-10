@@ -39,9 +39,8 @@ export async function generateMetadata({ params }: ParamsType) {
 	};
 }
 
-export default async function ShortPage({ params, searchParams }: ParamsType) {
+export default async function ShortPage({ params }: ParamsType) {
 	const { slug } = await params;
-	const { filter } = await searchParams;
 	const decodedSlug = decodeURIComponent(slug);
 	const video = await getVideoBySlug(decodedSlug, true);
 
