@@ -85,7 +85,7 @@ export default function VideoCard({ video, onClick }: VideoCardProps) {
 
 			{/* Content */}
 			<div className='flex flex-1 flex-col p-3 sm:p-4'>
-				<h3 className='text-foreground group-hover:text-primary line-clamp-2 text-sm font-semibold font-cinzel transition-colors duration-300 sm:text-base'>
+				<h3 className='text-foreground group-hover:text-primary font-cinzel line-clamp-2 text-sm font-semibold transition-colors duration-300 sm:text-base'>
 					{video.title}
 				</h3>
 				<p className='text-muted-foreground mt-2 text-xs sm:text-sm'>

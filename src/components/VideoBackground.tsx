@@ -19,7 +19,7 @@ const VideoBackground: React.FC = () => {
 				height: '100%'
 			}}
 		>
-			<source src='/bg_video.mp4' type='video/mp4' />
+			<source src='/homepage_hero_section_background.webm' type='video/mp4' />
 		</video>
 	);
 };

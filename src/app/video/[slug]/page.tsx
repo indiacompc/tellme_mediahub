@@ -1,8 +1,8 @@
-import tellme_logo from '@/assets/images/tellme_logo.png';
 import IframeClient from '@/components/IframeClient';
-import Navbar from '@/components/Navbar';
+import RecommendedVideos from '@/components/RecommendedVideos';
 import VideoDetailsFull from '@/components/video-details-full';
 import {
+	getSuggestedVideos,
 	getVideoBySlug,
 	loadPlaylistFromJSON
 } from '@/lib/actions';
@@ -56,17 +56,20 @@ export default async function VideoPage({ params, searchParams }: ParamsType) {
 
 	// If this is a short, redirect to the short route
 	if (video.isShort) {
-		redirect(`/short/${slug}${filter ? `?filter=${filter}` : ''}`);
+		redirect(`/shorts/${slug}${filter ? `?filter=${filter}` : ''}`);
 	}
 
 	// Determine back button destination
 	const backFilter = filter === 'videos' ? 'videos' : 'videos';
 	const backHref = `/?filter=${backFilter}`;
 	const backText = 'Back to Videos';
-	
+
 	const playlistVideos = video.playlistId
 		? await loadPlaylistFromJSON(video.playlistId)
 		: [];
+
+	const suggestedVideos = await getSuggestedVideos(video.id, 8);
+
 	// Use embedUrl from JSON if available, otherwise generate default
 	// The embed URL from json_youtube.json already has query params, so we need to append properly
 	let embedSrc: string;
@@ -91,7 +94,6 @@ export default async function VideoPage({ params, searchParams }: ParamsType) {
 
 	return (
 		<>
-			<Navbar tellme_logo={tellme_logo} />
 			<div className='mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 md:px-8 lg:px-10 lg:py-10 xl:max-w-6xl 2xl:max-w-7xl'>
 				{/* Back Button */}
 				<div className='mb-6 sm:mb-8'>
@@ -175,6 +177,9 @@ export default async function VideoPage({ params, searchParams }: ParamsType) {
 						</aside>
 					)}
 				</div>
+
+				{/* Recommended Videos */}
+				<RecommendedVideos videos={suggestedVideos} />
 			</div>
 		</>
 	);

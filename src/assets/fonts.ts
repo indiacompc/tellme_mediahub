@@ -1,4 +1,11 @@
-import { Cinzel, Open_Sans, Poppins, Quicksand, Sofia, Ubuntu } from 'next/font/google';
+import {
+	Cinzel,
+	Open_Sans,
+	Poppins,
+	Quicksand,
+	Sofia,
+	Ubuntu
+} from 'next/font/google';
 
 export const openSansFont = Open_Sans({
 	display: 'swap',

@@ -1,6 +1,7 @@
 'use server';
 
 import { buildYouTubeSearchUrl } from '@/shadcn_data/lib/youtube';
+import type { ImageCategory, ImageListing } from '@/types/image';
 import type { YouTubeVideo } from '@/types/youtube';
 import fs from 'fs';
 import path from 'path';
@@ -630,7 +631,7 @@ export async function getVideoBySlug(
 					// Filter by is_short if specified
 					let filteredVideos = data.videos;
 					if (isShort !== undefined) {
-						filteredVideos = data.videos.filter((v: any) => 
+						filteredVideos = data.videos.filter((v: any) =>
 							isShort ? v.is_short === true : v.is_short !== true
 						);
 					}
@@ -639,7 +640,7 @@ export async function getVideoBySlug(
 					let video = filteredVideos.find(
 						(v: any) => v.slug === slug && v.status === 'public'
 					);
-					
+
 					// If not found, try exact slug match with URL decoding
 					if (!video) {
 						const decodedSlug = decodeURIComponent(slug);
@@ -647,23 +648,27 @@ export async function getVideoBySlug(
 							(v: any) => v.slug === decodedSlug && v.status === 'public'
 						);
 					}
-					
+
 					// If not found, try to extract video ID from slug and match by ID
 					// Slugs typically end with the video ID (e.g., "title-videoId")
 					if (!video) {
 						// Try multiple methods to extract video ID from slug
 						let potentialVideoId: string | null = null;
-						
+
 						// Method 1: Check if slug ends with a video ID (11 characters after last hyphen)
 						const slugParts = slug.split('-');
 						if (slugParts.length > 0) {
 							const lastPart = slugParts[slugParts.length - 1];
 							// YouTube video IDs are exactly 11 characters
-							if (lastPart && lastPart.length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(lastPart)) {
+							if (
+								lastPart &&
+								lastPart.length === 11 &&
+								/^[a-zA-Z0-9_-]{11}$/.test(lastPart)
+							) {
 								potentialVideoId = lastPart;
 							}
 						}
-						
+
 						// Method 2: If slug ends with video ID directly (no hyphen before it)
 						// Extract last 11 characters if they match video ID pattern
 						if (!potentialVideoId && slug.length >= 11) {
@@ -672,7 +677,7 @@ export async function getVideoBySlug(
 								potentialVideoId = last11;
 							}
 						}
-						
+
 						// Try to find video by extracted ID (this is the most reliable method)
 						if (potentialVideoId) {
 							video = filteredVideos.find(
@@ -681,7 +686,7 @@ export async function getVideoBySlug(
 									v.status === 'public'
 							);
 						}
-						
+
 						// Method 3: Try case-insensitive exact slug match
 						if (!video) {
 							video = filteredVideos.find(
@@ -691,7 +696,7 @@ export async function getVideoBySlug(
 									v.status === 'public'
 							);
 						}
-						
+
 						// Method 4: Last resort - try to find video ID anywhere in slug, but prioritize exact matches
 						// Only use this if we haven't found a match yet and the slug looks like it might contain a video ID
 						if (!video && slug.length >= 11) {
@@ -708,7 +713,8 @@ export async function getVideoBySlug(
 											v.youtube_video_id === testVideoId &&
 											v.status === 'public' &&
 											// Additional check: ensure the stored slug also contains or ends with this ID
-											(v.slug?.endsWith(`-${testVideoId}`) || v.slug?.endsWith(testVideoId))
+											(v.slug?.endsWith(`-${testVideoId}`) ||
+												v.slug?.endsWith(testVideoId))
 									);
 									if (foundVideo) {
 										video = foundVideo;
@@ -718,7 +724,7 @@ export async function getVideoBySlug(
 							}
 						}
 					}
-					
+
 					if (video) {
 						const videoId = video.youtube_video_id;
 						const title = video.title || '';
@@ -729,9 +735,16 @@ export async function getVideoBySlug(
 						let embedUrl: string | undefined = undefined;
 						if (!video.is_short) {
 							try {
-								const jsonFilePath = path.join(process.cwd(), 'public', 'json_youtube.json');
+								const jsonFilePath = path.join(
+									process.cwd(),
+									'public',
+									'json_youtube.json'
+								);
 								if (fs.existsSync(jsonFilePath)) {
-									const jsonFileContents = fs.readFileSync(jsonFilePath, 'utf-8');
+									const jsonFileContents = fs.readFileSync(
+										jsonFilePath,
+										'utf-8'
+									);
 									const jsonData = JSON.parse(jsonFileContents);
 									if (Array.isArray(jsonData)) {
 										// Find matching video by video ID
@@ -818,4 +831,492 @@ export async function getVideoBySlug(
 		console.error('Error getting video by slug:', error);
 		return null;
 	}
+}
+
+/**
+ * Loads images from image_listings.json file and groups them by category
+ * @returns Array of image categories with their images
+ */
+/**
+ * Normalizes category ID to handle variations like "monument" vs "monuments"
+ * @param categoryId - Raw category ID
+ * @returns Normalized category ID
+ */
+function normalizeCategory(categoryId: string): string {
+	let normalized = categoryId.toLowerCase().trim();
+
+	// Replace ampersand with 'and'
+	normalized = normalized.replace(/\s+&\s+/g, ' and ');
+
+	// Handle singular/plural variations manually for better accuracy
+	const mappings: Record<string, string> = {
+		monument: 'monuments',
+		temple: 'temples',
+		building: 'buildings',
+		'local market': 'local markets'
+	};
+
+	if (mappings[normalized]) {
+		return mappings[normalized];
+	}
+
+	return normalized;
+}
+
+/**
+ * Formats category ID to a readable name (title case)
+ * @param categoryId - Category ID string
+ * @returns Formatted category name
+ */
+function formatCategoryName(categoryId: string): string {
+	return categoryId
+		.split(' ')
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+		.join(' ');
+}
+
+/**
+ * Loads images from image_listings.json file and groups them by category
+ * @returns Array of image categories with their images
+ */
+export async function loadImagesFromJSON(): Promise<ImageCategory[]> {
+	try {
+		const filePath = path.join(process.cwd(), 'public', 'image_listings.json');
+		const fileContents = fs.readFileSync(filePath, 'utf-8');
+		const images: ImageListing[] = JSON.parse(fileContents);
+
+		if (!Array.isArray(images)) {
+			throw new Error('JSON file should contain an array of images');
+		}
+
+		// Filter only public images
+		const publicImages = images.filter((img) => img.status === 'public');
+
+		// Group images by category
+		const categoryMap = new Map<string, ImageListing[]>();
+
+		publicImages.forEach((image) => {
+			const rawCategory = image.image_category_id || 'uncategorized';
+			const categoryId = normalizeCategory(rawCategory);
+
+			if (!categoryMap.has(categoryId)) {
+				categoryMap.set(categoryId, []);
+			}
+			categoryMap.get(categoryId)!.push(image);
+		});
+
+		// Convert map to array of categories
+		const categories: ImageCategory[] = Array.from(categoryMap.entries()).map(
+			([categoryId, categoryImages]) => {
+				// Get slug from first image in category
+				const firstImage = categoryImages[0];
+				const categorySlug =
+					(firstImage as any).category_slug ||
+					normalizeCategory(categoryId).replace(/\s+/g, '-');
+
+				return {
+					categoryId,
+					categoryName: formatCategoryName(categoryId),
+					categorySlug,
+					images: categoryImages.sort((a, b) => b.priority - a.priority) // Sort by priority
+				};
+			}
+		);
+
+		// Sort categories alphabetically
+		categories.sort((a, b) => a.categoryName.localeCompare(b.categoryName));
+
+		return categories;
+	} catch (error) {
+		console.error('Error loading images from JSON:', error);
+		throw error instanceof Error
+			? error
+			: new Error('Failed to load images from JSON file');
+	}
+}
+
+/**
+ * Searches for images in the image_listings.json file
+ * @param query - Search query string
+ * @returns Array of image categories matching the search query
+ */
+export async function searchImagesInDatabase(
+	query: string
+): Promise<ImageCategory[]> {
+	try {
+		if (!query || query.trim().length === 0) {
+			return [];
+		}
+
+		const searchTerm = query.toLowerCase().trim();
+		const filePath = path.join(process.cwd(), 'public', 'image_listings.json');
+		const fileContents = fs.readFileSync(filePath, 'utf-8');
+		const images: ImageListing[] = JSON.parse(fileContents);
+
+		if (!Array.isArray(images)) {
+			throw new Error('JSON file should contain an array of images');
+		}
+
+		// Search in title, description, location, category, and other relevant fields
+		const filteredImages = images.filter((image) => {
+			if (image.status !== 'public') return false;
+
+			const title = (image.title || '').toLowerCase();
+			const description = (image.description || '').toLowerCase();
+			const category = (image.image_category_id || '').toLowerCase();
+			const city = (image.city || '').toLowerCase();
+			const state = (image.state || '').toLowerCase();
+			const location = (image.captured_location || '').toLowerCase();
+
+			return (
+				title.includes(searchTerm) ||
+				description.includes(searchTerm) ||
+				category.includes(searchTerm) ||
+				city.includes(searchTerm) ||
+				state.includes(searchTerm) ||
+				location.includes(searchTerm)
+			);
+		});
+
+		// Group filtered images by category
+		const categoryMap = new Map<string, ImageListing[]>();
+
+		filteredImages.forEach((image) => {
+			const rawCategory = image.image_category_id || 'uncategorized';
+			const categoryId = normalizeCategory(rawCategory);
+
+			if (!categoryMap.has(categoryId)) {
+				categoryMap.set(categoryId, []);
+			}
+			categoryMap.get(categoryId)!.push(image);
+		});
+
+		// Convert map to array of categories
+		const categories: ImageCategory[] = Array.from(categoryMap.entries()).map(
+			([categoryId, categoryImages]) => {
+				// Get slug from first image in category
+				const firstImage = categoryImages[0];
+				const categorySlug =
+					(firstImage as any).category_slug ||
+					normalizeCategory(categoryId).replace(/\s+/g, '-');
+
+				return {
+					categoryId,
+					categoryName: formatCategoryName(categoryId),
+					categorySlug,
+					images: categoryImages.sort((a, b) => b.priority - a.priority)
+				};
+			}
+		);
+
+		// Sort categories alphabetically
+		categories.sort((a, b) => a.categoryName.localeCompare(b.categoryName));
+
+		return categories;
+	} catch (error) {
+		console.error('Error searching images:', error);
+		throw error instanceof Error ? error : new Error('Failed to search images');
+	}
+}
+
+/**
+ * Normalizes category slug to handle variations
+ * @param categorySlug - Raw category slug
+ * @returns Normalized category slug
+ */
+function normalizeCategorySlug(categorySlug: string): string {
+	return categorySlug.toLowerCase().trim().replace(/\s+/g, '-');
+}
+
+/**
+ * Gets images by category slug from JSON file with pagination
+ * @param categorySlug - Category slug (e.g., "black-and-white")
+ * @param limit - Number of images per page (default: 10)
+ * @param skip - Number of images to skip (for pagination)
+ * @returns Object with images array and total count
+ */
+export async function getImagesByCategorySlug(
+	categorySlug: string,
+	limit: number = 10,
+	skip: number = 0
+): Promise<{ images: ImageListing[]; total: number }> {
+	try {
+		const filePath = path.join(process.cwd(), 'public', 'image_listings.json');
+		const fileContents = fs.readFileSync(filePath, 'utf-8');
+		const allImages: ImageListing[] = JSON.parse(fileContents);
+
+		if (!Array.isArray(allImages)) {
+			throw new Error('JSON file should contain an array of images');
+		}
+
+		// Normalize the category slug
+		const normalizedSlug = normalizeCategorySlug(categorySlug);
+
+		// Filter images by category_slug and status
+		const filteredImages = allImages.filter((image) => {
+			if (image.status !== 'public') return false;
+			const imageCategorySlug = (image as any).category_slug || '';
+			return normalizeCategorySlug(imageCategorySlug) === normalizedSlug;
+		});
+
+		// Sort by priority (highest first)
+		const sortedImages = filteredImages.sort((a, b) => b.priority - a.priority);
+
+		// Apply pagination
+		const paginatedImages = sortedImages.slice(skip, skip + limit);
+
+		return {
+			images: paginatedImages,
+			total: sortedImages.length
+		};
+	} catch (error) {
+		console.error('Error loading images by category slug:', error);
+		throw error instanceof Error
+			? error
+			: new Error('Failed to load images by category slug');
+	}
+}
+
+/**
+ * Gets all unique categories from JSON file
+ * @returns Array of category objects with slug and name
+ */
+export async function getAllCategories(): Promise<
+	Array<{ slug: string; name: string }>
+> {
+	try {
+		const filePath = path.join(process.cwd(), 'public', 'image_listings.json');
+		const fileContents = fs.readFileSync(filePath, 'utf-8');
+		const allImages: ImageListing[] = JSON.parse(fileContents);
+
+		if (!Array.isArray(allImages)) {
+			throw new Error('JSON file should contain an array of images');
+		}
+
+		// Get unique categories
+		const categoryMap = new Map<string, string>();
+
+		allImages.forEach((image) => {
+			if (image.status === 'public') {
+				const categorySlug = (image as any).category_slug || '';
+				const categoryName = image.image_category_id || 'Uncategorized';
+				if (categorySlug && !categoryMap.has(categorySlug)) {
+					categoryMap.set(categorySlug, categoryName);
+				}
+			}
+		});
+
+		return Array.from(categoryMap.entries()).map(([slug, name]) => ({
+			slug,
+			name: formatCategoryName(name)
+		}));
+	} catch (error) {
+		console.error('Error loading categories:', error);
+		throw error instanceof Error
+			? error
+			: new Error('Failed to load categories');
+	}
+}
+
+/**
+ * Gets a single image by slug from JSON file
+ * @param slug - Image slug
+ * @returns ImageListing object or null if not found
+ */
+export async function getImageBySlug(
+	slug: string
+): Promise<ImageListing | null> {
+	try {
+		const filePath = path.join(process.cwd(), 'public', 'image_listings.json');
+		const fileContents = fs.readFileSync(filePath, 'utf-8');
+		const allImages: ImageListing[] = JSON.parse(fileContents);
+
+		if (!Array.isArray(allImages)) {
+			throw new Error('JSON file should contain an array of images');
+		}
+
+		// Find image by slug (exact match first, then try URL decoded)
+		let image = allImages.find(
+			(img) => img.slug === slug && img.status === 'public'
+		);
+
+		if (!image) {
+			const decodedSlug = decodeURIComponent(slug);
+			image = allImages.find(
+				(img) => img.slug === decodedSlug && img.status === 'public'
+			);
+		}
+
+		return image || null;
+	} catch (error) {
+		console.error('Error getting image by slug:', error);
+		return null;
+	}
+}
+
+/**
+ * Gets suggested images (from same category or random) from JSON file
+ * @param currentImageId - ID of the current image to exclude
+ * @param categorySlug - Optional category slug to get images from same category
+ * @param limit - Number of images to return (default: 8)
+ * @returns Array of ImageListing objects
+ */
+export async function getSuggestedImages(
+	currentImageId: number,
+	categorySlug?: string,
+	limit: number = 8
+): Promise<ImageListing[]> {
+	try {
+		const filePath = path.join(process.cwd(), 'public', 'image_listings.json');
+		const fileContents = fs.readFileSync(filePath, 'utf-8');
+		const allImages: ImageListing[] = JSON.parse(fileContents);
+
+		if (!Array.isArray(allImages)) {
+			throw new Error('JSON file should contain an array of images');
+		}
+
+		// Filter public images, exclude current image
+		let candidates = allImages.filter(
+			(img) => img.status === 'public' && img.id !== currentImageId
+		);
+
+		// If categorySlug is provided, prioritize images from same category
+		if (categorySlug) {
+			const normalizedSlug = normalizeCategorySlug(categorySlug);
+			const sameCategory = candidates.filter((img) => {
+				const imageCategorySlug = (img as any).category_slug || '';
+				return normalizeCategorySlug(imageCategorySlug) === normalizedSlug;
+			});
+
+			// If we have enough images from same category, use those
+			if (sameCategory.length >= limit) {
+				candidates = sameCategory;
+			} else {
+				// Mix same category with others
+				candidates = [
+					...sameCategory,
+					...candidates.filter((img) => {
+						const imageCategorySlug = (img as any).category_slug || '';
+						return normalizeCategorySlug(imageCategorySlug) !== normalizedSlug;
+					})
+				];
+			}
+		}
+
+		// Sort by priority and shuffle
+		const sorted = candidates.sort((a, b) => b.priority - a.priority);
+		const shuffled = sorted.sort(() => 0.5 - Math.random());
+		const suggested = shuffled.slice(0, limit);
+
+		return suggested;
+	} catch (error) {
+		console.error('Error getting suggested images:', error);
+		return [];
+	}
+}
+
+/**
+ * Gets suggested videos (random) from the database
+ * @param currentVideoId - ID of the current video to exclude
+ * @param limit - Number of videos to return (default: 8)
+ * @returns Array of random YouTube videos
+ */
+export async function getSuggestedVideos(
+	currentVideoId: string,
+	limit: number = 8
+): Promise<YouTubeVideo[]> {
+	try {
+		const filePath = path.join(
+			process.cwd(),
+			'public',
+			'tellme_videohub_db_2025-07-18_171335.json'
+		);
+		const fileContents = fs.readFileSync(filePath, 'utf-8');
+		const data = JSON.parse(fileContents);
+
+		if (!data.videos || !Array.isArray(data.videos)) {
+			return [];
+		}
+
+		// Filter public videos, exclude current video and shorts
+		const candidates = data.videos
+			.filter(
+				(video: any) =>
+					video.youtube_video_id &&
+					video.status === 'public' &&
+					!video.is_short &&
+					video.youtube_video_id !== currentVideoId
+			)
+			.map((video: any) => {
+				const videoId = video.youtube_video_id;
+				const title = video.title || '';
+				const slug = video.slug || generateSlug(title, videoId);
+
+				return {
+					id: videoId,
+					title: title,
+					description: video.description || '',
+					thumbnail:
+						video.thumbnail_url ||
+						`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+					publishedAt:
+						video.published_on ||
+						video.last_modified ||
+						new Date().toISOString(),
+					channelName: 'Tellme360',
+					slug: slug,
+					recordingLocation: video.recording_location || undefined,
+					isShort: false
+				} as YouTubeVideo;
+			});
+
+		// Remove duplicates based on ID
+		const uniqueCandidates = Array.from(
+			new Map(candidates.map((v: any) => [v.id, v])).values()
+		);
+
+		// Shuffle and take limit
+		const shuffled = uniqueCandidates.sort(() => 0.5 - Math.random());
+		const suggested = shuffled.slice(0, limit);
+
+		return suggested as YouTubeVideo[]; // Cast to ensure type compatibility
+	} catch (error) {
+		console.error('Error getting suggested videos:', error);
+		return [];
+	}
+}
+
+/**
+ * Server-side function to generate a protected image URL with access token
+ * This should be used in server components to generate secure URLs
+ */
+export async function getProtectedImageUrlServer(
+	originalUrl: string
+): Promise<string> {
+	// If already a proxy URL, return as is
+	if (originalUrl.includes('/api/images/proxy')) {
+		return originalUrl;
+	}
+
+	// If already a signed URL, return as is
+	if (
+		originalUrl.includes('GoogleAccessId') ||
+		originalUrl.includes('Expires')
+	) {
+		return originalUrl;
+	}
+
+	// Generate access token server-side
+	const crypto = await import('crypto');
+	const secret =
+		process.env.IMAGE_PROXY_SECRET || 'default-secret-change-in-production';
+	const expiresIn = 3600; // 1 hour
+	const timestamp = Math.floor(Date.now() / 1000) + expiresIn;
+	const data = `${originalUrl}|${timestamp}`;
+	const hash = crypto.createHmac('sha256', secret).update(data).digest('hex');
+	const token = `${timestamp}:${hash}`;
+
+	// Encode the original URL and create proxy URL with token
+	const encodedUrl = encodeURIComponent(originalUrl);
+	return `/api/images/proxy?url=${encodedUrl}&token=${encodeURIComponent(token)}`;
 }

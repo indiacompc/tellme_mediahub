@@ -6,20 +6,28 @@ import {
 	searchVideosInDatabase
 } from '@/lib/actions';
 import type { YouTubeVideo } from '@/types/youtube';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import ErrorState from './Error';
+import ImageGrid from './ImageGrid';
 import SearchBar from './SearchBar';
 import VideoCard from './video-card';
 import VideoSkeleton from './VideoSkeleton';
 
 interface VideoGridProps {
 	onVideoSelect?: (video: YouTubeVideo) => void;
+	initialFilter?: FilterType;
+	hideNavigation?: boolean;
 }
 
-type FilterType = 'videos' | 'shorts';
+type FilterType = 'videos' | 'shorts' | 'images';
 
-export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
+export default function VideoGrid({
+	onVideoSelect,
+	initialFilter = 'videos',
+	hideNavigation = false
+}: VideoGridProps) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [videos, setVideos] = useState<YouTubeVideo[]>([]);
@@ -30,16 +38,18 @@ export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
 	const [error, setError] = useState<string | null>(null);
 	const [searchQuery, setSearchQuery] = useState('');
 
-	// Initialize filter from URL params, default to "videos"
+	// Initialize filter from URL params or prop
 	const urlFilter = searchParams.get('filter') as FilterType | null;
-	const [filter, setFilter] = useState<FilterType>(
-		urlFilter === 'shorts' ? 'shorts' : 'videos'
-	);
+	const [filter, setFilter] = useState<FilterType>(urlFilter || initialFilter);
 
 	// Update filter when URL param changes
 	useEffect(() => {
 		const urlFilter = searchParams.get('filter') as FilterType | null;
-		if (urlFilter === 'shorts' || urlFilter === 'videos') {
+		if (
+			urlFilter === 'shorts' ||
+			urlFilter === 'videos' ||
+			urlFilter === 'images'
+		) {
 			setFilter(urlFilter);
 		}
 	}, [searchParams]);
@@ -48,10 +58,10 @@ export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
 		// Include filter in URL so back button knows where to return
 		const filterParam =
 			filter === 'shorts' ? '?filter=shorts' : '?filter=videos';
-		// Route shorts to /short/ and regular videos to /video/
-		const route = video.isShort ? '/short' : '/video';
+		// Route shorts to /shorts/ and regular videos to /video/
+		const route = video.isShort ? '/shorts' : '/video';
 		const url = `${route}/${video.slug}${filterParam}`;
-		
+
 		console.log('[VideoGrid] Navigating to:', {
 			videoId: video.id,
 			videoSlug: video.slug,
@@ -59,7 +69,7 @@ export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
 			isShort: video.isShort,
 			url: url
 		});
-		
+
 		router.push(url);
 		onVideoSelect?.(video);
 	};
@@ -228,30 +238,45 @@ export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
 			<SearchBar onSearch={handleSearch} />
 
 			{/* Modern Segmented Control */}
-			<div className='mb-6 flex justify-center sm:mb-8'>
-				<div className='bg-muted/50 border-border inline-flex items-center rounded-lg border p-1 shadow-sm'>
-					<button
-						onClick={() => setFilter('videos')}
-						className={`relative rounded-md px-6 py-2 text-sm font-ci transition-all duration-200 sm:px-8 sm:py-2.5 sm:text-base ${
-							filter === 'videos'
-								? 'bg-primary text-primary-foreground shadow-sm'
-								: 'text-muted-foreground hover:text-foreground'
-						} `}
-					>
-						Videos
-					</button>
-					<button
-						onClick={() => setFilter('shorts')}
-						className={`relative rounded-md px-6 py-2 text-sm font-medium transition-all duration-200 sm:px-8 sm:py-2.5 sm:text-base ${
-							filter === 'shorts'
-								? 'bg-primary text-primary-foreground shadow-sm'
-								: 'text-muted-foreground hover:text-foreground'
-						} `}
-					>
-						Shorts
-					</button>
+			{!hideNavigation && (
+				<div className='mb-6 flex justify-center sm:mb-8'>
+					<div className='bg-muted/50 border-border inline-flex items-center rounded-lg border p-1 shadow-sm'>
+						<Link
+							href='/?filter=videos'
+							scroll={false}
+							className={`font-ci relative rounded-md px-6 py-2 text-sm transition-all duration-200 sm:px-8 sm:py-2.5 sm:text-base ${
+								filter === 'videos'
+									? 'bg-primary text-primary-foreground shadow-sm'
+									: 'text-muted-foreground hover:text-foreground'
+							} `}
+						>
+							Videos
+						</Link>
+						<Link
+							href='/?filter=shorts'
+							scroll={false}
+							className={`relative rounded-md px-6 py-2 text-sm font-medium transition-all duration-200 sm:px-8 sm:py-2.5 sm:text-base ${
+								filter === 'shorts'
+									? 'bg-primary text-primary-foreground shadow-sm'
+									: 'text-muted-foreground hover:text-foreground'
+							} `}
+						>
+							Shorts
+						</Link>
+						<Link
+							href='/?filter=images'
+							scroll={false}
+							className={`relative rounded-md px-6 py-2 text-sm font-medium transition-all duration-200 sm:px-8 sm:py-2.5 sm:text-base ${
+								filter === 'images'
+									? 'bg-primary text-primary-foreground shadow-sm'
+									: 'text-muted-foreground hover:text-foreground'
+							} `}
+						>
+							Images
+						</Link>
+					</div>
 				</div>
-			</div>
+			)}
 
 			{isSearching && (
 				<div className='text-muted-foreground mb-4 text-sm'>
@@ -269,112 +294,119 @@ export default function VideoGrid({ onVideoSelect }: VideoGridProps) {
 				</div>
 			) : (
 				<>
-					{/* Regular Videos Section */}
-					{regularVideos.length > 0 && (
-						<div className='mb-8 sm:mb-12'>
-							<h2 className='text-foreground mb-6 text-2xl font-semibold font-cinzel sm:mb-8 sm:text-3xl lg:text-4xl'>
-								Videos
-							</h2>
-							<div className='grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-4'>
-								{regularVideos.map((video) => (
-									<VideoCard
-										key={video.slug || video.id}
-										video={video}
-										onClick={() => handleVideoSelect(video)}
-									/>
-								))}
-
-								{/* "For More Videos Search" Card */}
-								{!isSearching && (
-									<div
-										onClick={() => {
-											// Scroll to top and focus search bar
-											window.scrollTo({ top: 0, behavior: 'smooth' });
-											// Try to focus search if it exists
-											setTimeout(() => {
-												const searchInput = document.querySelector(
-													'input[type="search"], input[name="query"], input[placeholder*="search" i]'
-												) as HTMLInputElement;
-												if (searchInput) {
-													searchInput.focus();
-												}
-											}, 500);
-										}}
-										className='border-primary/50 hover:border-primary bg-card/50 hover:bg-card group flex min-h-50 cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed transition-all duration-300 hover:shadow-lg active:scale-95'
-									>
-										<div className='p-6 text-center'>
-											<div className='bg-primary/10 group-hover:bg-primary/20 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full transition-colors'>
-												<svg
-													className='text-primary h-8 w-8'
-													fill='none'
-													stroke='currentColor'
-													viewBox='0 0 24 24'
-												>
-													<path
-														strokeLinecap='round'
-														strokeLinejoin='round'
-														strokeWidth={2}
-														d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
-													/>
-												</svg>
-											</div>
-											<h4 className='text-foreground group-hover:text-primary mb-2 text-base font-semibold font-quicksand transition-colors sm:text-lg'>
-												For More Videos
-											</h4>
-											<p className='text-muted-foreground text-sm'>
-												Search Now
-											</p>
-										</div>
-									</div>
-								)}
-							</div>
-						</div>
-					)}
-
-					{/* Shorts Section - Show when not searching (main page) or when search has shorts */}
-					{displayedShorts.length > 0 && (
-						<div>
-							<h2 className='text-foreground mb-6 text-2xl font-semibold font-cinzel sm:mb-8 sm:text-3xl lg:text-4xl'>
-								Shorts
-							</h2>
-							{/* Mobile/Tablet: Horizontal Scrolling */}
-							<div className='-mx-4 overflow-x-auto px-4 pb-4 sm:-mx-6 sm:px-6 lg:hidden'>
-								<div className='flex min-w-max gap-3 sm:gap-4'>
-									{displayedShorts.map((video) => (
-										<div
-											key={video.slug || video.id}
-											className='w-40 shrink-0 sm:w-45 md:w-50'
-										>
+					{/* Images Section - Show when filter is images */}
+					{filter === 'images' ? (
+						<ImageGrid searchQuery={searchQuery} searching={searching} />
+					) : (
+						<>
+							{/* Regular Videos Section */}
+							{regularVideos.length > 0 && (
+								<div className='mb-8 sm:mb-12'>
+									<h2 className='text-foreground font-cinzel mb-6 text-2xl font-semibold sm:mb-8 sm:text-3xl lg:text-4xl'>
+										Videos
+									</h2>
+									<div className='grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-4'>
+										{regularVideos.map((video) => (
 											<VideoCard
+												key={video.slug || video.id}
 												video={video}
 												onClick={() => handleVideoSelect(video)}
 											/>
-										</div>
-									))}
-								</div>
-							</div>
-							{/* Desktop: 6-Column Grid */}
-							<div className='hidden lg:grid lg:grid-cols-6 lg:gap-4 xl:gap-6'>
-								{displayedShorts.map((video) => (
-									<VideoCard
-										key={video.slug || video.id}
-										video={video}
-										onClick={() => handleVideoSelect(video)}
-									/>
-								))}
-							</div>
-						</div>
-					)}
+										))}
 
-					{/* Show message if no videos found */}
-					{regularVideos.length === 0 && displayedShorts.length === 0 && (
-						<ErrorState
-							message={
-								isSearching
-									? `No videos found for "${searchQuery}"`
-									: 'No videos found'
-							}
-						/>
+										{/* "For More Videos Search" Card */}
+										{!isSearching && (
+											<div
+												onClick={() => {
+													// Scroll to top and focus search bar
+													window.scrollTo({ top: 0, behavior: 'smooth' });
+													// Try to focus search if it exists
+													setTimeout(() => {
+														const searchInput = document.querySelector(
+															'input[type="search"], input[name="query"], input[placeholder*="search" i]'
+														) as HTMLInputElement;
+														if (searchInput) {
+															searchInput.focus();
+														}
+													}, 500);
+												}}
+												className='border-primary/50 hover:border-primary bg-card/50 hover:bg-card group flex min-h-50 cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed transition-all duration-300 hover:shadow-lg active:scale-95'
+											>
+												<div className='p-6 text-center'>
+													<div className='bg-primary/10 group-hover:bg-primary/20 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full transition-colors'>
+														<svg
+															className='text-primary h-8 w-8'
+															fill='none'
+															stroke='currentColor'
+															viewBox='0 0 24 24'
+														>
+															<path
+																strokeLinecap='round'
+																strokeLinejoin='round'
+																strokeWidth={2}
+																d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
+															/>
+														</svg>
+													</div>
+													<h4 className='text-foreground group-hover:text-primary font-quicksand mb-2 text-base font-semibold transition-colors sm:text-lg'>
+														For More Videos
+													</h4>
+													<p className='text-muted-foreground text-sm'>
+														Search Now
+													</p>
+												</div>
+											</div>
+										)}
+									</div>
+								</div>
+							)}
+
+							{/* Shorts Section - Show when not searching (main page) or when search has shorts */}
+							{displayedShorts.length > 0 && (
+								<div>
+									<h2 className='text-foreground font-cinzel mb-6 text-2xl font-semibold sm:mb-8 sm:text-3xl lg:text-4xl'>
+										Shorts
+									</h2>
+									{/* Mobile/Tablet: Horizontal Scrolling */}
+									<div className='-mx-4 overflow-x-auto px-4 pb-4 sm:-mx-6 sm:px-6 lg:hidden'>
+										<div className='flex min-w-max gap-3 sm:gap-4'>
+											{displayedShorts.map((video) => (
+												<div
+													key={video.slug || video.id}
+													className='w-40 shrink-0 sm:w-45 md:w-50'
+												>
+													<VideoCard
+														video={video}
+														onClick={() => handleVideoSelect(video)}
+													/>
+												</div>
+											))}
+										</div>
+									</div>
+									{/* Desktop: 6-Column Grid */}
+									<div className='hidden lg:grid lg:grid-cols-6 lg:gap-4 xl:gap-6'>
+										{displayedShorts.map((video) => (
+											<VideoCard
+												key={video.slug || video.id}
+												video={video}
+												onClick={() => handleVideoSelect(video)}
+											/>
+										))}
+									</div>
+								</div>
+							)}
+
+							{/* Show message if no videos found */}
+							{regularVideos.length === 0 && displayedShorts.length === 0 && (
+								<ErrorState
+									message={
+										isSearching
+											? `No videos found for "${searchQuery}"`
+											: 'No videos found'
+									}
+								/>
+							)}
+						</>
 					)}
 				</>
 			)}

@@ -37,7 +37,10 @@ export default function ShortsLayout({
 	// Find the index of the current video in the shorts list
 	useEffect(() => {
 		// Reset if video changed
-		if (previousVideoIdRef.current !== null && previousVideoIdRef.current !== video.id) {
+		if (
+			previousVideoIdRef.current !== null &&
+			previousVideoIdRef.current !== video.id
+		) {
 			// Video changed, reset expanded states and allow scroll to new video
 			console.log('[ShortsLayout] Video changed:', {
 				previousId: previousVideoIdRef.current,
@@ -52,26 +55,26 @@ export default function ShortsLayout({
 
 		// Try multiple matching strategies - prioritize ID matching as it's most reliable
 		let index = shortsList.findIndex((s) => s.id === video.id);
-		
+
 		// If not found by ID, try matching by slug (exact match)
 		if (index === -1 && video.slug) {
 			index = shortsList.findIndex((s) => s.slug === video.slug);
 		}
-		
+
 		// If still not found, try matching by slug that ends with video ID
 		if (index === -1 && video.id) {
-			index = shortsList.findIndex((s) => 
-				s.slug && s.slug.endsWith(`-${video.id}`)
+			index = shortsList.findIndex(
+				(s) => s.slug && s.slug.endsWith(`-${video.id}`)
 			);
 		}
-		
+
 		// If still not found, try case-insensitive ID match
 		if (index === -1 && video.id) {
-			index = shortsList.findIndex((s) => 
-				s.id.toLowerCase() === video.id.toLowerCase()
+			index = shortsList.findIndex(
+				(s) => s.id.toLowerCase() === video.id.toLowerCase()
 			);
 		}
-		
+
 		if (index !== -1) {
 			console.log('[ShortsLayout] Found video at index:', {
 				videoId: video.id,
@@ -87,8 +90,8 @@ export default function ShortsLayout({
 				videoId: video.id,
 				videoSlug: video.slug,
 				shortsListLength: shortsList.length,
-				shortsListIds: shortsList.slice(0, 10).map(s => s.id),
-				shortsListSlugs: shortsList.slice(0, 10).map(s => s.slug)
+				shortsListIds: shortsList.slice(0, 10).map((s) => s.id),
+				shortsListSlugs: shortsList.slice(0, 10).map((s) => s.slug)
 			});
 			setCurrentVideoIndex(0);
 			currentVideoIndexRef.current = 0;
@@ -167,7 +170,9 @@ export default function ShortsLayout({
 							// Update URL using Next.js router for proper navigation
 							const newVideo = shortsList[index];
 							if (newVideo && newVideo.slug) {
-								router.replace(`/short/${newVideo.slug}?filter=shorts`, { scroll: false });
+								router.replace(`/shorts/${newVideo.slug}?filter=shorts`, {
+									scroll: false
+								});
 							}
 						}
 					}
@@ -298,7 +303,7 @@ export default function ShortsLayout({
 												onClick={() => toggleExpanded(short.id)}
 												className='max-w-xs text-left'
 											>
-												<h1 className='text-foreground text-lg leading-tight font-bold font-cinzel xl:text-xl'>
+												<h1 className='text-foreground font-cinzel text-lg leading-tight font-bold xl:text-xl'>
 													{short.title}
 												</h1>
 												<p className='text-muted-foreground mt-1 text-xs'>
@@ -337,7 +342,7 @@ export default function ShortsLayout({
 											<div className='animate-in fade-in slide-in-from-left-4 space-y-6 duration-300'>
 												{/* Channel Name */}
 												<div className='animate-in fade-in slide-in-from-left-2 delay-75 duration-300'>
-													<p className='text-muted-foreground text-lg font-cinzel'>
+													<p className='text-muted-foreground font-cinzel text-lg'>
 														{short.title}
 													</p>
 													<p className='text-muted-foreground text-sm'>
@@ -449,7 +454,7 @@ export default function ShortsLayout({
 											onClick={() => toggleExpanded(short.id)}
 											className='pointer-events-auto w-full text-left'
 										>
-											<h1 className='line-clamp-2 text-xs leading-tight font-semibold font-cinzel text-white sm:text-sm'>
+											<h1 className='font-cinzel line-clamp-2 text-xs leading-tight font-semibold text-white sm:text-sm'>
 												{short.title}
 											</h1>
 											<p className='mt-1 text-[10px] text-white/70 sm:text-xs'>
@@ -482,7 +487,7 @@ export default function ShortsLayout({
 											<div className='space-y-4 pt-2 sm:space-y-6'>
 												{/* Channel Name */}
 												<div className='animate-in fade-in slide-in-from-bottom-2 delay-75 duration-300'>
-													<h2 className='text-sm font-semibold font-cinzel text-white sm:text-base'>
+													<h2 className='font-cinzel text-sm font-semibold text-white sm:text-base'>
 														{short.title}
 													</h2>
 													<p className='text-xs text-white/70 sm:text-sm'>

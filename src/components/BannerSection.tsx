@@ -1,7 +1,7 @@
 'use client';
 
 import IframeClient from '@/components/IframeClient';
-import Navbar from '@/components/Navbar';
+import { getYouTubeThumbnailFallbacks } from '@/lib/youtube-thumbnails';
 import {
 	Carousel,
 	CarouselContent,
@@ -9,7 +9,6 @@ import {
 	CarouselNext,
 	CarouselPrevious
 } from '@/shadcn_data/components/ui/carousel';
-import { getYouTubeThumbnailFallbacks } from '@/lib/youtube-thumbnails';
 import type { YouTubeVideo } from '@/types/youtube';
 import { Play } from 'lucide-react';
 import { motion } from 'motion/react';
@@ -93,7 +92,7 @@ function FeaturedVideoCard({
 
 			{/* Content */}
 			<div className='flex flex-1 flex-col p-3 sm:p-4'>
-				<h3 className='text-foreground group-hover:text-primary line-clamp-2 text-sm font-semibold font-cinzel transition-colors duration-300 sm:text-base'>
+				<h3 className='text-foreground group-hover:text-primary font-cinzel line-clamp-2 text-sm font-semibold transition-colors duration-300 sm:text-base'>
 					{video.title}
 				</h3>
 				<p className='text-muted-foreground mt-2 text-xs sm:text-sm'>
@@ -220,19 +219,16 @@ export default function BannerSection({ tellme_logo }: BannerSectionProps) {
 
 	return (
 		<>
-		{/* Video Banner Section */}
-		<div className='md:text-foreground relative min-h-[70vh] w-full overflow-hidden text-white sm:min-h-[80vh] md:h-[85vh] lg:h-[90vh] xl:h-[95vh] 2xl:h-[100vh]'>
-			<div className='md:hidden'>
-				<VideoBackground />
-			</div>
-			<div className='md:bg-background/40 absolute top-0 right-0 bottom-0 left-0 z-1 bg-black/40 md:dark:bg-black/40' />
-				<div className='absolute top-0 right-0 left-0 z-20'>
-					<Navbar tellme_logo={tellme_logo} />
+			{/* Video Banner Section */}
+			<div className='md:text-foreground relative min-h-[70vh] w-full overflow-hidden text-white sm:min-h-[80vh] md:h-[85vh] lg:h-[90vh] xl:h-[95vh] 2xl:h-screen'>
+				<div className='md:hidden'>
+					<VideoBackground />
 				</div>
+				<div className='md:bg-background/40 absolute top-0 right-0 bottom-0 left-0 z-1 bg-black/40 md:dark:bg-black/40' />
 				<section className='content absolute top-0 right-0 bottom-0 left-0 z-10 flex h-auto w-full flex-col items-start justify-center px-3 pt-16 sm:px-4 sm:pt-20 md:px-6 md:pt-24 lg:px-8 lg:pt-28 xl:px-12 xl:pt-12 2xl:px-16 2xl:pt-16'>
 					<div className='mx-auto w-full max-w-7xl lg:flex lg:items-center lg:justify-between lg:gap-8 xl:gap-12'>
 						<div className='w-full max-w-full sm:max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-[calc(100%-320px)] 2xl:max-w-[calc(100%-380px)]'>
-							<h2 className='mb-3 font-semibold font-cinzel sm:mb-4 md:mb-5 md:font-normal'>
+							<h2 className='font-cinzel mb-3 font-semibold sm:mb-4 md:mb-5 md:font-normal'>
 								<motion.span
 									className='text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl'
 									initial={{ opacity: 0 }}
@@ -280,7 +276,7 @@ export default function BannerSection({ tellme_logo }: BannerSectionProps) {
 									transition={{ duration: 0.6, delay: 0.5 }}
 									className='mt-6 hidden w-full pr-0 md:mt-8 md:block md:pr-25 lg:pr-25 xl:pr-25 2xl:mt-10 2xl:pr-40'
 								>
-									<h3 className='text-foreground mb-5 text-xl font-semibold font-quicksand xl:mb-6 xl:text-2xl 2xl:mb-8 2xl:text-3xl'>
+									<h3 className='text-foreground font-quicksand mb-5 text-xl font-semibold xl:mb-6 xl:text-2xl 2xl:mb-8 2xl:text-3xl'>
 										Featured Videos
 									</h3>
 									<Carousel
@@ -300,12 +296,12 @@ export default function BannerSection({ tellme_logo }: BannerSectionProps) {
 													key={video.id}
 													className='basis-[85%] pl-4 sm:basis-[70%] md:basis-[75%] lg:basis-1/3 xl:basis-[40%] xl:pl-5 2xl:basis-[45%] 2xl:pl-6'
 												>
-												<FeaturedVideoCard
-													video={video}
+													<FeaturedVideoCard
+														video={video}
 														onClick={() =>
 															router.push(`/video/${video.slug}?filter=videos`)
 														}
-												/>
+													/>
 												</CarouselItem>
 											))}
 										</CarouselContent>
@@ -334,7 +330,7 @@ export default function BannerSection({ tellme_logo }: BannerSectionProps) {
 												{shortsList.map((short, index) => (
 													<div
 														key={short.id}
-														className='h-full min-h-full w-full flex-shrink-0 snap-start snap-always'
+														className='h-full min-h-full w-full shrink-0 snap-start snap-always'
 													>
 														<IframeClient
 															key={`desktop-short-${short.id}-${index}`}
@@ -412,7 +408,7 @@ export default function BannerSection({ tellme_logo }: BannerSectionProps) {
 							transition={{ duration: 0.6, delay: 0.5 }}
 							className='w-full md:hidden'
 						>
-							<h3 className='text-foreground mb-6 text-xl font-semibold font-quicksand sm:mb-8 sm:text-2xl md:mb-10 md:text-3xl lg:text-4xl'>
+							<h3 className='text-foreground font-quicksand mb-6 text-xl font-semibold sm:mb-8 sm:text-2xl md:mb-10 md:text-3xl lg:text-4xl'>
 								Featured Videos
 							</h3>
 							<Carousel

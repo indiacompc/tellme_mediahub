@@ -1,198 +1,216 @@
+'use client';
+import SiGooglemybusiness from '@/assets/icons/SiGooglemybusiness';
+import logo from '@/assets/images/tellme_logo.png';
+import Image from 'next/image';
 import Link from 'next/link';
-import {
-	FaFacebookF,
-	FaInstagram,
-	FaLinkedin,
-	FaPinterest,
-	FaYoutube
-} from 'react-icons/fa';
+import { FaInstagram, FaPinterest, FaYoutube } from 'react-icons/fa';
+// import { SiGooglemybusiness } from 'react-icons/si';
 import { FaXTwitter } from 'react-icons/fa6';
+import { ImFacebook2 } from 'react-icons/im';
+
+// This site is best viewed at a resolution of 1920x1080 pixels and 100% to 125% scale for optimal experience.
 
 const Footer = () => {
 	return (
-		<footer className='w-full bg-gray-800 text-gray-300'>
-			<div className='container mx-auto px-4 sm:px-6 lg:px-8'>
-				{/* Main Footer Content */}
-				<div className='py-4 sm:py-6 lg:py-8'>
-					<div className='grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10'>
-						{/* About The Company */}
-						<section className='space-y-4'>
-							<h2 className='text-lg font-semibold font-quicksand sm:text-xl'>
-								About The Company
-							</h2>
-							<ul className='space-y-2 text-sm sm:text-base'>
-								<li>TELLME DIGIINFOTECH PVT LTD</li>
-								<li>tellmemediahub.com</li>
-								<li>CIN: U72900PN2016PTC217592</li>
-							</ul>
-						</section>
-
-						{/* Find Us */}
-						<section className='space-y-4'>
-							<h2 className='text-lg font-semibold font-quicksand sm:text-xl'>Find Us</h2>
-							<address className='space-y-2 text-sm not-italic sm:text-base'>
-								<p>Office No. 228, B Wing,</p>
-								<p>Akshay Complex, Dhole Patil Road,</p>
-								<p>Pune - 411001,</p>
-								<p>Maharashtra, India</p>
-							</address>
-						</section>
-
-						{/* Location Map */}
-						<section className='space-y-4'>
-							<h2 className='text-lg font-semibold font-quicksand sm:text-xl'>Location Map</h2>
-							<div className='w-full overflow-hidden rounded-lg'>
-								<iframe
-									src='https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3782.819044800587!2d73.8704232!3d18.5370777!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2c1df117160bd%3A0xb4d52baabbd93eed!2sTellme%20Digiinfotech%20Pvt.%20Ltd.!5e0!3m2!1sen!2sin!4v1722407994735!5m2!1sen!2sin'
-									width='100%'
-									height='200'
-									style={{ border: 0 }}
-									allowFullScreen={true}
-									loading='lazy'
-									referrerPolicy='no-referrer-when-downgrade'
-									className='w-full'
-								></iframe>
-							</div>
-						</section>
-
-						{/* Connect With Us */}
-						<section className='space-y-4'>
-							<h2 className='text-lg font-semibold font-quicksand sm:text-xl'>
-								Connect With Us
-							</h2>
-							<div className='space-y-4'>
-								<ul className='flex items-center justify-start gap-3 sm:gap-4'>
-									<li>
-										<Link
-											target='_blank'
-											href='https://www.facebook.com/Tellme360/'
-											title='Tellme Digiinfotech Facebook'
-											className='transition-colors hover:text-white'
-										>
-											<FaFacebookF size={20} />
-										</Link>
-									</li>
-									<li>
-										<Link
-											target='_blank'
-											href='https://x.com/TeamIndiacom'
-											title='Tellme Digiinfotech Twitter'
-											className='transition-colors hover:text-white'
-										>
-											<FaXTwitter size={20} />
-										</Link>
-									</li>
-									<li>
-										<Link
-											target='_blank'
-											href='https://www.instagram.com/tellme360/'
-											title='Tellme Digiinfotech Instagram'
-											className='transition-colors hover:text-white'
-										>
-											<FaInstagram size={20} />
-										</Link>
-									</li>
-									<li>
-										<Link
-											target='_blank'
-											href='https://www.youtube.com/channel/UCtp_qdzendr0tf5_tpR9vPg'
-											title='Tellme Digiinfotech YouTube Channel'
-											className='transition-colors hover:text-white'
-										>
-											<FaYoutube size={20} />
-										</Link>
-									</li>
-									<li>
-										<Link
-											target='_blank'
-											href='https://www.linkedin.com/company/tellme-digiinfotech-private-limited/'
-											title='Tellme Digiinfotech LinkedIn Page'
-											className='transition-colors hover:text-white'
-										>
-											<FaLinkedin size={20} />
-										</Link>
-									</li>
-									<li>
-										<Link
-											target='_blank'
-											href='https://www.pinterest.co.uk/Tellme360/'
-											title='Tellme Digiinfotech Pinterest Page'
-											className='transition-colors hover:text-white'
-										>
-											<FaPinterest size={20} />
-										</Link>
-									</li>
-								</ul>
-								<ul className='space-y-2 text-sm sm:text-base'>
-									<li>
-										<a
-											href='tel:+917030238122'
-											className='transition-colors hover:text-white'
-										>
-											+91 703 023 8122
-										</a>
-									</li>
-									<li>
-										<a
-											href='mailto:tellmedigi@outlook.com'
-											className='transition-colors hover:text-white'
-										>
-											tellmedigi@outlook.com
-										</a>
-									</li>
-								</ul>
-							</div>
-						</section>
-					</div>
-				</div>
-
-				{/* Footer Bottom */}
-				<div className='border-t border-gray-700 py-6'>
-					<div className='flex flex-col items-center justify-between gap-4 sm:flex-row'>
-						<p className='text-center text-sm sm:text-left'>
-							© 2024-25&nbsp;
-							<Link
-								href='/'
-								className='transition-colors hover:text-white hover:underline'
-							>
-								Tellme Digiinfotech Pvt. Ltd.
-							</Link>
-							&nbsp;All Rights Reserved.
+		<footer
+			role='contentinfo'
+			className='w-full bg-[#121212] py-5 text-[#AF7423]'
+		>
+			<div className='container mx-auto px-10'>
+				<div className='grid gap-12 sm:grid-cols-2 lg:grid-cols-4'>
+					{/* Column 1: Logo and Company Info */}
+					<div className='flex flex-col items-start space-y-4'>
+						<div className='logo'>
+							<Image
+								src={logo}
+								alt='tellme logo'
+								className='h-auto rounded-2xl'
+								height={60}
+								priority={true}
+							/>
+						</div>
+						<p className='mt-2'>
+							Delivering Immersive Experiences and delighting consumers and
+							empowering enterprises.
 						</p>
-						<ul className='flex flex-wrap items-center justify-center gap-4 text-sm sm:gap-6'>
+						<p className='mt-auto pt-4'>
+							&copy; Copyright 2025. Tellme Digiinfotech Pvt. Ltd.
+						</p>
+					</div>
+
+					{/* Column 2: Quick Links */}
+					<div className='flex flex-col items-center space-y-4 sm:items-start xl:ml-16 2xl:ml-32'>
+						<h2 className='font-cinzel pb-3 text-2xl'>Quick Links</h2>
+						<ul className='flex w-full flex-col items-center gap-3 font-light uppercase sm:items-start'>
+							<li>
+								<Link href='/' className='transition-colors hover:text-white'>
+									Home
+								</Link>
+							</li>
 							<li>
 								<Link
-									href='/about-us'
-									className='transition-colors hover:text-white hover:underline'
+									href='/about-us/'
+									className='transition-colors hover:text-white'
 								>
 									About
 								</Link>
 							</li>
+							{/* <li>
+								<Link href="#" className="hover:text-white transition-colors">
+									Services
+								</Link>
+							</li> */}
+							{/* <li>
+								<Link href="#" className="hover:text-white transition-colors">
+									Blogs
+								</Link>
+							</li> */}
 							<li>
 								<Link
-									href='/contact'
-									className='transition-colors hover:text-white hover:underline'
+									href='/india/photos/'
+									className='transition-colors hover:text-white'
 								>
-									Contact
+									Photos
 								</Link>
 							</li>
 							<li>
 								<Link
-									href='/terms-and-conditions'
-									className='transition-colors hover:text-white hover:underline'
+									href='/india/videos/'
+									className='transition-colors hover:text-white'
 								>
-									Terms &amp; Conditions
+									Videos
 								</Link>
 							</li>
 							<li>
 								<Link
-									href='/privacy-policy'
-									className='transition-colors hover:text-white hover:underline'
+									href='/india/vr/'
+									className='transition-colors hover:text-white'
+								>
+									VR 360°
+								</Link>
+							</li>
+							<li>
+								<Link
+									href='/contact-us/'
+									className='transition-colors hover:text-white'
+								>
+									Contact Us
+								</Link>
+							</li>
+						</ul>
+					</div>
+
+					{/* Column 3: Licence */}
+					<div className='flex flex-col items-center space-y-4 sm:items-start xl:ml-10 2xl:ml-20'>
+						<h2 className='font-cinzel pb-3 text-2xl'></h2>
+						<ul className='flex w-full flex-col items-center gap-3 font-light uppercase sm:items-start'>
+							<li>
+								<Link
+									href='/privacy_policy'
+									className='transition-colors hover:text-white'
 								>
 									Privacy Policy
 								</Link>
 							</li>
+							<li>
+								<Link
+									href='/terms-and-conditions/'
+									className='transition-colors hover:text-white'
+								>
+									Terms of Service
+								</Link>
+							</li>
+							{/* <li>
+								<Link href="#" className="hover:text-white transition-colors">
+									Cookie Policy
+								</Link>
+							</li> */}
+							<li>
+								<Link
+									href='/cancellation-refund-policy'
+									className='transition-colors hover:text-white'
+								>
+									Refund Policy
+								</Link>
+							</li>
 						</ul>
+					</div>
+
+					{/* Column 4: Follow Us and Contact */}
+					<div className='flex flex-col items-center space-y-4 sm:items-start'>
+						<h2 className='font-cinzel pb-3 text-2xl uppercase'>
+							Follow us now
+						</h2>
+						<div className='flex justify-center gap-5 pb-5 sm:justify-start'>
+							<Link
+								href='https://www.instagram.com/tellme360/'
+								aria-label='Instagram'
+								title='Instagram'
+								target='_blank'
+								rel='noopener noreferrer'
+							>
+								<FaInstagram className='text-2xl transition-colors hover:text-white' />
+							</Link>
+							<Link
+								href='https://www.facebook.com/Tellme360'
+								aria-label='Facebook'
+								title='Facebook'
+								target='_blank'
+								rel='noopener noreferrer'
+							>
+								<ImFacebook2 className='text-2xl transition-colors hover:text-white' />
+							</Link>
+							<Link
+								href='https://www.youtube.com/@Tellme360'
+								aria-label='YouTube'
+								title='YouTube'
+								target='_blank'
+								rel='noopener noreferrer'
+							>
+								<FaYoutube className='text-2xl transition-colors hover:text-white' />
+							</Link>
+							<Link
+								href='https://x.com/tellme_360'
+								aria-label='Twitter'
+								title='Twitter'
+								target='_blank'
+								rel='noopener noreferrer'
+							>
+								<FaXTwitter className='text-2xl transition-colors hover:text-white' />
+							</Link>
+							<Link
+								href='https://in.pinterest.com/Tellme360/'
+								aria-label='Pinterest'
+								title='Pinterest'
+								target='_blank'
+								rel='noopener noreferrer'
+							>
+								<FaPinterest className='text-2xl transition-colors hover:text-white' />
+							</Link>
+							<Link
+								href='https://www.google.com/search?q=tellme+digiinfotech+private+limited'
+								aria-label='GMB'
+								title='GMB'
+								target='_blank'
+								rel='noopener noreferrer'
+							>
+								<SiGooglemybusiness className='text-2xl transition-colors hover:text-white' />
+							</Link>
+						</div>
+
+						{/* <h3 className="font-cinzel text-2xl pt-2">Contact Us</h3> */}
+						<div className='flex w-full flex-col items-center gap-2 font-light sm:items-start'>
+							<div className='text-center sm:text-left'>
+								<p className='font-medium'>Registered & Corporate office:</p>
+								<p>
+									No. 218, B Wing, Akshay Complex, Dhole Patil Road, Pune -
+									411001&nbsp;
+								</p>
+							</div>
+							<div className='text-center sm:text-left'>
+								<p>CIN: U72900PN2016PTC217592</p>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

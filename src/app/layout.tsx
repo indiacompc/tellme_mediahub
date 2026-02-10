@@ -1,19 +1,11 @@
+import { cinzelFont, poppinsFont, quicksandFont } from '@/assets/fonts';
+import tellme_logo from '@/assets/images/tellme_logo.png';
+import Footer from '@/components/Footer';
+import Navbar from '@/components/Navbar';
+import { organizationJsonLd, websiteJsonLd } from '@/lib/globalVariables';
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Providers } from './providers';
-// import tellme_logo from '@/assets/images/tellme_logo.png'
-import { cinzelFont, poppinsFont, quicksandFont, ubuntuFont } from '@/assets/fonts';
-import Footer from '@/components/Footer';
-// import Navbar from "@/components/Navbar";
-// import Footer from '@/components/Footer';
-// import dynamic from "next/dynamic";
-// import { GoogleAnalytics } from '@next/third-parties/google';
-// import { Organization, WebSite, WithContext } from 'schema-dts';
-import { organizationJsonLd, websiteJsonLd } from '@/lib/globalVariables';
-
-// const Navbar = dynamic(() => import('@/components/Navbar'), {
-//   ssr: false
-// })
 
 export const fetchCache = 'default-no-store';
 
@@ -123,7 +115,7 @@ export default function RootLayout({
 				className='w-full'
 			>
 				<Providers>
-					{/* <Navbar tellme_logo={tellme_logo} /> */}
+					<Navbar tellme_logo={tellme_logo} />
 					{children}
 					<Footer />
 					<script

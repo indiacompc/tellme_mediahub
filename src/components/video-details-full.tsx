@@ -33,7 +33,7 @@ export default function VideoDetailsFull({ video }: VideoDetailsFullProps) {
 			<main className='w-full lg:w-2/3 xl:w-[65%] 2xl:w-[70%]'>
 				{/* Video Title */}
 				<div className='mb-4 sm:mb-6'>
-					<h1 className='text-foreground mb-2 text-2xl font-semibold font-cinzel sm:mb-3 sm:text-2xl lg:text-3xl xl:text-4xl'>
+					<h1 className='text-foreground font-cinzel mb-2 text-2xl font-semibold sm:mb-3 sm:text-2xl lg:text-3xl xl:text-4xl'>
 						{video.title}
 					</h1>
 					<p className='text-muted-foreground text-sm sm:text-base'>
@@ -44,7 +44,7 @@ export default function VideoDetailsFull({ video }: VideoDetailsFullProps) {
 				{/* Video Description with View More/Less */}
 				{video.description && (
 					<div className='mb-6 sm:mb-8 lg:mb-10'>
-						<h2 className='mb-3 text-lg font-semibold font-quicksand sm:mb-4 sm:text-xl lg:text-2xl'>
+						<h2 className='font-quicksand mb-3 text-lg font-semibold sm:mb-4 sm:text-xl lg:text-2xl'>
 							Description
 						</h2>
 						<div className='text-muted-foreground text-sm leading-relaxed whitespace-pre-wrap sm:text-base'>
@@ -107,7 +107,7 @@ export default function VideoDetailsFull({ video }: VideoDetailsFullProps) {
 			{/* Sidebar */}
 			<aside className='w-full lg:w-1/3 xl:w-[35%] 2xl:w-[30%]'>
 				<div className='bg-card border-border rounded-lg border p-4 sm:p-6 lg:p-8'>
-					<h3 className='mb-4 text-lg font-semibold font-quicksand sm:mb-6 sm:text-xl lg:text-2xl'>
+					<h3 className='font-quicksand mb-4 text-lg font-semibold sm:mb-6 sm:text-xl lg:text-2xl'>
 						Video Details
 					</h3>
 					<div className='space-y-3 text-sm sm:space-y-4 sm:text-base'>
