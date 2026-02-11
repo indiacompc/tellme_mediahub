@@ -266,11 +266,19 @@ export const removeCartItemById = async (id: number) => {
 export const getNextPageImageListingsData = async (
 	categorySlug: string,
 	pageNumber: number,
-	limit: number
+	limit: number,
+	stateFilter?: string,
+	cityFilter?: string
 ) => {
 	const { getImagesByCategorySlug } = await import('@/lib/actions');
 	const skip = (pageNumber - 1) * limit;
-	const { images } = await getImagesByCategorySlug(categorySlug, limit, skip);
+	const { images } = await getImagesByCategorySlug(
+		categorySlug,
+		limit,
+		skip,
+		stateFilter,
+		cityFilter
+	);
 	return images;
 };
 

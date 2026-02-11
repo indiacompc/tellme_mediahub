@@ -25,6 +25,8 @@ const MasonryLayout = ({
 }) => {
 	const router = useRouter();
 	const searchParams = useSearchParams();
+	const stateFilter = searchParams.get('state') || undefined;
+	const cityFilter = searchParams.get('city') || undefined;
 	const [allImages, setAllImages] = useState(images);
 	const [currentPage, setCurrentPage] = useState(pageNumber);
 	const [loading, setLoading] = useState(false);
@@ -46,7 +48,9 @@ const MasonryLayout = ({
 			const newImages = await getNextPageImageListingsData(
 				categorySlug,
 				nextPage,
-				limit
+				limit,
+				stateFilter,
+				cityFilter
 			);
 			if (newImages.length > 0) {
 				setAllImages((prev) => [...prev, ...newImages]);
@@ -74,7 +78,9 @@ const MasonryLayout = ({
 		limit,
 		hasMore,
 		router,
-		searchParams
+		searchParams,
+		stateFilter,
+		cityFilter
 	]);
 
 	return (

@@ -1,5 +1,6 @@
 import ImageDetailsFull from '@/components/image-details-full';
 import ImageWithLoading from '@/components/ImageWithLoading';
+import PanoramaImageLoader from './PanoramaImageLoader';
 import ProtectedImageWrapper from '@/components/ProtectedImageWrapper';
 import RecommendedImages from '@/components/RecommendedImages';
 import {
@@ -100,23 +101,30 @@ export default async function ImageDetailPage({
 					<div className='mb-6 flex h-[40dvh] w-full items-center justify-center overflow-hidden rounded-lg bg-transparent sm:mb-8 lg:mb-10 lg:h-[60dvh]'>
 						<ProtectedImageWrapper>
 							<div className='relative flex h-full w-full items-center justify-center'>
-								<ImageWithLoading
-									src={protectedImageUrl}
-									alt={image.title}
-									width={image.width}
-									height={image.height}
-									className='h-full w-full object-contain'
-									style={{
-										aspectRatio: `${image.width} / ${image.height}`
-									}}
-									sizes={
-										image.width > image.height
-											? '(max-width: 640px) 100vw, (max-width: 768px) 75vw, 66vw'
-											: '(max-width: 640px) 80vw, (max-width: 768px) 50vw, 40vw'
-									}
-									priority
-									unoptimized
-								/>
+								{image.is_vr_pano ? (
+									<PanoramaImageLoader
+										imageListingData={image}
+										src={protectedImageUrl}
+									/>
+								) : (
+									<ImageWithLoading
+										src={protectedImageUrl}
+										alt={image.title}
+										width={image.width}
+										height={image.height}
+										className='h-full w-full object-contain'
+										style={{
+											aspectRatio: `${image.width} / ${image.height}`
+										}}
+										sizes={
+											image.width > image.height
+												? '(max-width: 640px) 100vw, (max-width: 768px) 75vw, 66vw'
+												: '(max-width: 640px) 80vw, (max-width: 768px) 50vw, 40vw'
+										}
+										priority
+										unoptimized
+									/>
+								)}
 							</div>
 						</ProtectedImageWrapper>
 					</div>

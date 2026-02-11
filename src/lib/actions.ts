@@ -1029,16 +1029,20 @@ function normalizeCategorySlug(categorySlug: string): string {
 }
 
 /**
- * Gets images by category slug from JSON file with pagination
+ * Gets images by category slug from JSON file with pagination and optional location filters
  * @param categorySlug - Category slug (e.g., "black-and-white")
  * @param limit - Number of images per page (default: 10)
  * @param skip - Number of images to skip (for pagination)
+ * @param stateFilter - Optional state name to filter by (e.g., "madhya pradesh")
+ * @param cityFilter - Optional city name to filter by (e.g., "orchha")
  * @returns Object with images array and total count
  */
 export async function getImagesByCategorySlug(
 	categorySlug: string,
 	limit: number = 10,
-	skip: number = 0
+	skip: number = 0,
+	stateFilter?: string,
+	cityFilter?: string
 ): Promise<{ images: ImageListing[]; total: number }> {
 	try {
 		const filePath = path.join(process.cwd(), 'public', 'image_listings.json');
@@ -1052,11 +1056,35 @@ export async function getImagesByCategorySlug(
 		// Normalize the category slug
 		const normalizedSlug = normalizeCategorySlug(categorySlug);
 
-		// Filter images by category_slug and status
+		// Filter images by category_slug, status, and location filters
 		const filteredImages = allImages.filter((image) => {
 			if (image.status !== 'public') return false;
+			
+			// Category filter
 			const imageCategorySlug = (image as any).category_slug || '';
-			return normalizeCategorySlug(imageCategorySlug) === normalizedSlug;
+			if (normalizeCategorySlug(imageCategorySlug) !== normalizedSlug) {
+				return false;
+			}
+
+			// State filter (case-insensitive)
+			if (stateFilter) {
+				const imageState = (image.state || '').toLowerCase().trim();
+				const filterState = stateFilter.toLowerCase().trim();
+				if (imageState !== filterState) {
+					return false;
+				}
+			}
+
+			// City filter (case-insensitive)
+			if (cityFilter) {
+				const imageCity = (image.city || '').toLowerCase().trim();
+				const filterCity = cityFilter.toLowerCase().trim();
+				if (imageCity !== filterCity) {
+					return false;
+				}
+			}
+
+			return true;
 		});
 
 		// Sort by priority (highest first)
@@ -1074,6 +1102,76 @@ export async function getImagesByCategorySlug(
 		throw error instanceof Error
 			? error
 			: new Error('Failed to load images by category slug');
+	}
+}
+
+/**
+ * Gets all unique states and cities from images in a specific category
+ * @param categorySlug - Category slug to get locations for
+ * @param stateFilter - Optional state to filter cities by
+ * @returns Object with unique states and cities arrays (cities filtered by state if provided)
+ */
+export async function getCategoryLocations(
+	categorySlug: string,
+	stateFilter?: string
+): Promise<{ states: string[]; cities: string[] }> {
+	try {
+		const filePath = path.join(process.cwd(), 'public', 'image_listings.json');
+		const fileContents = fs.readFileSync(filePath, 'utf-8');
+		const allImages: ImageListing[] = JSON.parse(fileContents);
+
+		if (!Array.isArray(allImages)) {
+			throw new Error('JSON file should contain an array of images');
+		}
+
+		// Normalize the category slug
+		const normalizedSlug = normalizeCategorySlug(categorySlug);
+
+		// Filter images by category
+		let categoryImages = allImages.filter((image) => {
+			if (image.status !== 'public') return false;
+			const imageCategorySlug = (image as any).category_slug || '';
+			return normalizeCategorySlug(imageCategorySlug) === normalizedSlug;
+		});
+
+		// If state filter is provided, filter images by state first
+		if (stateFilter) {
+			const normalizedStateFilter = stateFilter.toLowerCase().trim();
+			categoryImages = categoryImages.filter((image) => {
+				const imageState = (image.state || '').toLowerCase().trim();
+				return imageState === normalizedStateFilter;
+			});
+		}
+
+		// Extract unique states
+		const statesSet = new Set<string>();
+		allImages
+			.filter((image) => {
+				if (image.status !== 'public') return false;
+				const imageCategorySlug = (image as any).category_slug || '';
+				return normalizeCategorySlug(imageCategorySlug) === normalizedSlug;
+			})
+			.forEach((image) => {
+				if (image.state && image.state.trim()) {
+					statesSet.add(image.state.trim().toLowerCase());
+				}
+			});
+
+		// Extract unique cities (from filtered category images)
+		const citiesSet = new Set<string>();
+		categoryImages.forEach((image) => {
+			if (image.city && image.city.trim()) {
+				citiesSet.add(image.city.trim().toLowerCase());
+			}
+		});
+
+		return {
+			states: Array.from(statesSet).sort(),
+			cities: Array.from(citiesSet).sort()
+		};
+	} catch (error) {
+		console.error('Error getting category locations:', error);
+		return { states: [], cities: [] };
 	}
 }
 

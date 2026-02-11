@@ -21,6 +21,7 @@ export interface ImageListing {
 	last_modified: string;
 	latitude?: number;
 	longitude?: number;
+	is_vr_pano: boolean;
 }
 
 export interface ImageCategory {

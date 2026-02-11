@@ -8,11 +8,14 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import { LuArrowLeft } from 'react-icons/lu';
 import MasonryLayout from './[category]/MasonryLayout';
+import CategoryImagesFilter from './[category]/CategoryImagesFilter';
 
 function ImagesPageContent() {
 	const searchParams = useSearchParams();
 	const filter = searchParams.get('filter');
 	const page = searchParams.get('page');
+	const stateFilter = searchParams.get('state') || undefined;
+	const cityFilter = searchParams.get('city') || undefined;
 
 	const [searchQuery, setSearchQuery] = useState('');
 	const [searching, setSearching] = useState(false);
@@ -45,7 +48,9 @@ function ImagesPageContent() {
 					const { images, total } = await getImagesByCategorySlug(
 						filter,
 						limit,
-						skip
+						skip,
+						stateFilter,
+						cityFilter
 					);
 					setFilteredImages(images);
 					setTotalImages(total);
@@ -62,7 +67,7 @@ function ImagesPageContent() {
 		};
 
 		loadFilteredImages();
-	}, [filter, currentPage]);
+	}, [filter, currentPage, stateFilter, cityFilter]);
 
 	const handleSearch = (query: string) => {
 		setSearching(true);
@@ -87,7 +92,18 @@ function ImagesPageContent() {
 							</Link>
 							<h1 className='font-cinzel text-foreground text-xl font-semibold sm:text-2xl'>
 								{categoryName}
+								{stateFilter && (
+									<span className='text-muted-foreground ml-2 text-base font-normal'>
+										• {stateFilter}
+									</span>
+								)}
+								{cityFilter && (
+									<span className='text-muted-foreground ml-2 text-base font-normal'>
+										• {cityFilter}
+									</span>
+								)}
 							</h1>
+							<CategoryImagesFilter categorySlug={filter} />
 						</div>
 					)}
 
