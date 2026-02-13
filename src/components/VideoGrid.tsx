@@ -25,7 +25,7 @@ type FilterType = 'videos' | 'shorts' | 'images';
 
 export default function VideoGrid({
 	onVideoSelect,
-	initialFilter = 'videos',
+	initialFilter = 'images',
 	hideNavigation = false
 }: VideoGridProps) {
 	const router = useRouter();
@@ -197,9 +197,9 @@ export default function VideoGrid({
 	const allRegularVideos = isSearching
 		? filteredSearchResults
 		: videos.sort(
-				(a, b) =>
-					new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-			);
+			(a, b) =>
+				new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+		);
 
 	const allShorts = isSearching ? filteredSearchResults : shorts;
 
@@ -242,37 +242,34 @@ export default function VideoGrid({
 				<div className='mb-6 flex justify-center sm:mb-8'>
 					<div className='bg-muted/50 border-border inline-flex items-center rounded-lg border p-1 shadow-sm'>
 						<Link
-							href='/?filter=videos'
+							href='/?filter=images'
 							scroll={false}
-							className={`font-ci relative rounded-md px-6 py-2 text-sm transition-all duration-200 sm:px-8 sm:py-2.5 sm:text-base ${
-								filter === 'videos'
+							className={`relative rounded-md px-6 py-2 text-sm font-medium transition-all duration-200 sm:px-8 sm:py-2.5 sm:text-base ${filter === 'images'
 									? 'bg-primary text-primary-foreground shadow-sm'
 									: 'text-muted-foreground hover:text-foreground'
-							} `}
+								} `}
+						>
+							Images
+						</Link>
+						<Link
+							href='/?filter=videos'
+							scroll={false}
+							className={`font-ci relative rounded-md px-6 py-2 text-sm transition-all duration-200 sm:px-8 sm:py-2.5 sm:text-base ${filter === 'videos'
+									? 'bg-primary text-primary-foreground shadow-sm'
+									: 'text-muted-foreground hover:text-foreground'
+								} `}
 						>
 							Videos
 						</Link>
 						<Link
 							href='/?filter=shorts'
 							scroll={false}
-							className={`relative rounded-md px-6 py-2 text-sm font-medium transition-all duration-200 sm:px-8 sm:py-2.5 sm:text-base ${
-								filter === 'shorts'
+							className={`relative rounded-md px-6 py-2 text-sm font-medium transition-all duration-200 sm:px-8 sm:py-2.5 sm:text-base ${filter === 'shorts'
 									? 'bg-primary text-primary-foreground shadow-sm'
 									: 'text-muted-foreground hover:text-foreground'
-							} `}
+								} `}
 						>
 							Shorts
-						</Link>
-						<Link
-							href='/?filter=images'
-							scroll={false}
-							className={`relative rounded-md px-6 py-2 text-sm font-medium transition-all duration-200 sm:px-8 sm:py-2.5 sm:text-base ${
-								filter === 'images'
-									? 'bg-primary text-primary-foreground shadow-sm'
-									: 'text-muted-foreground hover:text-foreground'
-							} `}
-						>
-							Images
 						</Link>
 					</div>
 				</div>

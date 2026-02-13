@@ -115,7 +115,7 @@ const ManualControls = ({
 		const getTouchDistance = (t1: Touch, t2: Touch) => {
 			return Math.sqrt(
 				Math.pow(t1.clientX - t2.clientX, 2) +
-					Math.pow(t1.clientY - t2.clientY, 2)
+				Math.pow(t1.clientY - t2.clientY, 2)
 			);
 		};
 
@@ -186,44 +186,16 @@ const SphereWithImageTexture = ({ imageUrl }: { imageUrl: string }) => {
 
 const PanoramaViewer = (props: PanoramaViewerProps) => {
 	const { imageUrl, children, className, ...remianingProps } = props;
-	// const cameraRotation = useRef({ x: 0, y: 0 });
 	const cameraRotation = useRef({ x: THREE.MathUtils.degToRad(270), y: 0 });
-	// const [orbitEnabled, setOrbitEnabled] = useState(true);
 
 	return (
 		<div className={cn('relative size-full', className)} {...remianingProps}>
-			{/* SEO + Optimization */}
-			{/* <Image
-        id={imageId}
-				src={imageUrl}
-				alt="360 Panorama View"
-				fill
-				priority
-				sizes="100vw"
-				className={cn(
-					'object-cover transition-opacity duration-700',
-					canvasVisible ? 'opacity-0' : 'opacity-100 animate-pulse'
-				)}
-        onLoad={() => setCanvasVisible(true)}
-			/> */}
-
-			{/* Hidden img to be used for canvas texture */}
-			{/* <img
-				id={imageId}
-				src={imageUrl}
-				alt=""
-				className="hidden"
-				onLoad={() => setCanvasVisible(true)}
-			/> */}
 			{children && children}
 
 			<Canvas
-				// camera={{ position: [0, 0, 0.1], fov: 75 }}
-				// onCreated={() => setCanvasVisible(true)}
 				className='absolute inset-0 z-0 rounded-lg'
 				camera={{ fov: 75, position: [0, 0, 0.1] }}
 				onCreated={({ gl }) => {
-					// setCanvasVisible(true)
 					gl.outputColorSpace = THREE.SRGBColorSpace;
 					gl.toneMapping = THREE.NoToneMapping;
 				}}
@@ -236,13 +208,7 @@ const PanoramaViewer = (props: PanoramaViewerProps) => {
 					<Locomotion />
 					<SphereWithImageTexture imageUrl={imageUrl} />
 				</XR>
-				{/* <ambientLight /> */}
-				{/* <ManualControls enabled={true} cameraRotation={cameraRotation} />
-					<DeviceOrientationControls /> */}
 			</Canvas>
-			{/* <style jsx>{`
-			.webxr-button { display: none !important; }
-			`}</style> */}
 		</div>
 	);
 };

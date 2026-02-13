@@ -6,7 +6,6 @@ import {
 } from 'next/dist/shared/lib/get-img-props';
 import Image from 'next/image';
 import React, { useState } from 'react';
-// import { siteUrl } from '@/auth/ConfigManager';
 
 const ImageWithLoading = (
 	props: React.JSX.IntrinsicAttributes &

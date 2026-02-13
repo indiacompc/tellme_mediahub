@@ -37,67 +37,55 @@ export async function GET(request: NextRequest) {
 		const imageUrl = searchParams.get('url');
 		const token = searchParams.get('token');
 
+		const isDev = process.env.NODE_ENV === 'development';
+
 		if (!imageUrl) {
-			return NextResponse.json(
-				{ error: 'Image URL is required' },
-				{ status: 400 }
-			);
+			return NextResponse.json({ error: 'Image URL is required' }, { status: 400 });
 		}
 
-		// Decode the URL
-		const decodedUrl = decodeURIComponent(imageUrl);
+		// Security Context
+		const referer = request.headers.get('referer') || '';
+		const originHeader = request.headers.get('origin') || '';
+		const hostHeader = request.headers.get('host') || '';
+		const forwardedHost = request.headers.get('x-forwarded-host') || '';
+		const currentHost = (forwardedHost || hostHeader).toLowerCase();
 
-		// Validate that it's a Firebase Storage URL
-		if (
-			!decodedUrl.includes('storage.googleapis.com') &&
-			!decodedUrl.includes('firebasestorage.app')
-		) {
-			return NextResponse.json(
-				{
-					error: 'Invalid image source. Only Firebase Storage URLs are allowed.'
-				},
-				{ status: 400 }
-			);
-		}
+		// Verify Token (works everywhere)
+		const hasValidToken = token ? (
+			verifyAccessToken(imageUrl, token) ||
+			verifyAccessToken(decodeURIComponent(imageUrl), token)
+		) : false;
 
-		// Check referrer AND token for security
-		const referer = request.headers.get('referer');
-		const origin = request.headers.get('origin');
-		const host = request.headers.get('host') || '';
-
-		// Check if request comes from same origin
+		// Verify Origin (robust check for Vercel/Localhost)
+		const currentHostname = currentHost.split(':')[0];
 		const isSameOrigin =
-			referer?.includes(host) ||
-			origin?.includes(host) ||
-			referer?.includes('localhost') ||
-			origin?.includes('localhost');
+			currentHostname.includes('localhost') ||
+			currentHostname.includes('127.0.0.1') ||
+			currentHostname.includes('vercel.app') ||
+			currentHostname.includes('tellme-mediahub') ||
+			(referer && referer.toLowerCase().includes(currentHostname)) ||
+			(originHeader && originHeader.toLowerCase().includes(currentHostname));
 
-		// Verify token if provided
-		const hasValidToken = token ? verifyAccessToken(decodedUrl, token) : false;
-
-		// Allow access if:
-		// 1. Valid token is provided (works even without referrer - for Next.js Image component)
-		// 2. Same origin request with referrer (from your website)
-		// 3. Development mode ONLY if same origin (for testing)
-		const isAllowed =
-			hasValidToken ||
-			(isSameOrigin && (referer || origin)) || // Must have referrer or origin
-			(process.env.NODE_ENV === 'development' && isSameOrigin && referer); // Dev mode still requires referrer
+		// Permission logic:
+		// ALWAYS require a Referer header — this blocks direct URL pasting in the browser.
+		// Browsers always send Referer when loading <img> resources on a page,
+		// but do NOT send Referer when you paste a URL directly in the address bar.
+		// Additionally, require either a valid token or same-origin.
+		const hasReferer = referer !== '';
+		const isAllowed = hasReferer && (hasValidToken || isSameOrigin);
 
 		if (!isAllowed) {
-			// Log the attempt for monitoring
-			console.warn('Blocked direct image access attempt:', {
-				referer,
-				origin,
-				hasToken: !!token,
-				url: decodedUrl.substring(0, 100)
-			});
+			console.warn('Image Proxy Blocked:', { currentHost, isDev, hasValidToken, isSameOrigin });
 			return NextResponse.json(
 				{
-					error:
-						'Access denied. Images can only be accessed through the website.',
-					message:
-						'Please visit the image page on our website to view this image.'
+					error: 'Access denied.',
+					debug: isDev ? {
+						currentHost,
+						referer,
+						hasValidToken,
+						isSameOrigin,
+						isDev
+					} : undefined
 				},
 				{ status: 403 }
 			);
@@ -105,18 +93,18 @@ export async function GET(request: NextRequest) {
 
 		// Try to convert to signed URL if it's a Firebase Storage URL
 		// This ensures access even if the bucket is private
-		let imageUrlToFetch = decodedUrl;
+		let imageUrlToFetch = imageUrl;
 		try {
 			if (
-				decodedUrl.includes('storage.googleapis.com') ||
-				decodedUrl.includes('firebasestorage.app')
+				imageUrl.includes('storage.googleapis.com') ||
+				imageUrl.includes('firebasestorage.app')
 			) {
 				// Try to get signed URL (will use original if Firebase Admin not configured)
-				imageUrlToFetch = await convertToSignedUrl(decodedUrl, 3600); // 1 hour expiration
+				imageUrlToFetch = await convertToSignedUrl(imageUrl, 3600); // 1 hour expiration
 
 				// Log for debugging (remove in production)
 				if (process.env.NODE_ENV === 'development') {
-					console.log('Generated signed URL for:', decodedUrl.substring(0, 80));
+					console.log('Generated signed URL for:', imageUrl.substring(0, 80));
 				}
 			}
 		} catch (error) {
@@ -126,15 +114,25 @@ export async function GET(request: NextRequest) {
 		}
 
 		// Fetch the image from Firebase Storage (or signed URL)
-		const imageResponse = await fetch(imageUrlToFetch, {
-			headers: {
-				'User-Agent': 'Mozilla/5.0 (compatible; Tellme360-Image-Proxy/1.0)'
-			}
-		});
+		let imageResponse;
+		try {
+			imageResponse = await fetch(imageUrlToFetch, {
+				headers: {
+					'User-Agent': 'Mozilla/5.0 (compatible; Tellme360-Image-Proxy/1.0)'
+				}
+			});
+		} catch (fetchError) {
+			console.error('[Image Proxy Fetch Error]:', fetchError, 'URL:', imageUrlToFetch);
+			return NextResponse.json(
+				{ error: 'Failed to connect to image source', details: isDev ? String(fetchError) : undefined },
+				{ status: 502 }
+			);
+		}
 
 		if (!imageResponse.ok) {
+			console.error('[Image Proxy Source Error]:', imageResponse.status, imageResponse.statusText, 'URL:', imageUrlToFetch);
 			return NextResponse.json(
-				{ error: 'Failed to fetch image' },
+				{ error: 'Image source returned error', status: imageResponse.status },
 				{ status: imageResponse.status }
 			);
 		}
@@ -143,10 +141,6 @@ export async function GET(request: NextRequest) {
 		const imageBuffer = await imageResponse.arrayBuffer();
 		const contentType =
 			imageResponse.headers.get('content-type') || 'image/jpeg';
-
-		// Check if quality parameter is requested (for bandwidth optimization)
-		const qualityParam = searchParams.get('q');
-		const requestedQuality = qualityParam ? parseInt(qualityParam) : null;
 
 		// Return the image with appropriate headers
 		// Note: For server-side compression, you would need to install 'sharp' package
@@ -161,7 +155,7 @@ export async function GET(request: NextRequest) {
 				// Prevent direct linking
 				'X-Frame-Options': 'SAMEORIGIN',
 				// Add CORS headers to allow same-origin requests
-				'Access-Control-Allow-Origin': origin || '*',
+				'Access-Control-Allow-Origin': originHeader || '*',
 				'Access-Control-Allow-Methods': 'GET',
 				'Access-Control-Allow-Headers': 'Content-Type',
 				// Compression hint

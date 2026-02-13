@@ -29,11 +29,11 @@ const Footer = () => {
 								priority={true}
 							/>
 						</div>
-						<p className='mt-2'>
+						<p className='mt-2 text-white'>
 							Delivering Immersive Experiences and delighting consumers and
 							empowering enterprises.
 						</p>
-						<p className='mt-auto pt-4'>
+						<p className='mt-auto pt-4 text-white'>
 							&copy; Copyright 2025. Tellme Digiinfotech Pvt. Ltd.
 						</p>
 					</div>
