@@ -1059,7 +1059,7 @@ export async function getImagesByCategorySlug(
 		// Filter images by category_slug, status, and location filters
 		const filteredImages = allImages.filter((image) => {
 			if (image.status !== 'public') return false;
-			
+
 			// Category filter
 			const imageCategorySlug = (image as any).category_slug || '';
 			if (normalizeCategorySlug(imageCategorySlug) !== normalizedSlug) {

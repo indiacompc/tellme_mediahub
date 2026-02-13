@@ -7,8 +7,8 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import { LuArrowLeft } from 'react-icons/lu';
-import MasonryLayout from './[category]/MasonryLayout';
 import CategoryImagesFilter from './[category]/CategoryImagesFilter';
+import MasonryLayout from './[category]/MasonryLayout';
 
 function ImagesPageContent() {
 	const searchParams = useSearchParams();

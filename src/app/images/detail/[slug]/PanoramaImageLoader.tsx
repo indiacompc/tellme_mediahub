@@ -1,9 +1,9 @@
 'use client';
-import { Fragment, Suspense, useState } from 'react';
+import PanoramaViewer from '@/components/PanoramaViewer';
 import { cn } from '@/shadcn_data/lib/utils';
 import type { ImageListing } from '@/types/image';
-import PanoramaViewer from '@/components/PanoramaViewer';
 import Image from 'next/image';
+import { Fragment, Suspense, useState } from 'react';
 
 const PanoramaImageLoader = ({
 	imageListingData,

@@ -40,7 +40,10 @@ export async function GET(request: NextRequest) {
 		const isDev = process.env.NODE_ENV === 'development';
 
 		if (!imageUrl) {
-			return NextResponse.json({ error: 'Image URL is required' }, { status: 400 });
+			return NextResponse.json(
+				{ error: 'Image URL is required' },
+				{ status: 400 }
+			);
 		}
 
 		// Security Context
@@ -51,10 +54,10 @@ export async function GET(request: NextRequest) {
 		const currentHost = (forwardedHost || hostHeader).toLowerCase();
 
 		// Verify Token (works everywhere)
-		const hasValidToken = token ? (
-			verifyAccessToken(imageUrl, token) ||
-			verifyAccessToken(decodeURIComponent(imageUrl), token)
-		) : false;
+		const hasValidToken = token
+			? verifyAccessToken(imageUrl, token) ||
+				verifyAccessToken(decodeURIComponent(imageUrl), token)
+			: false;
 
 		// Verify Origin (robust check for Vercel/Localhost)
 		const currentHostname = currentHost.split(':')[0];
@@ -75,17 +78,24 @@ export async function GET(request: NextRequest) {
 		const isAllowed = hasReferer && (hasValidToken || isSameOrigin);
 
 		if (!isAllowed) {
-			console.warn('Image Proxy Blocked:', { currentHost, isDev, hasValidToken, isSameOrigin });
+			console.warn('Image Proxy Blocked:', {
+				currentHost,
+				isDev,
+				hasValidToken,
+				isSameOrigin
+			});
 			return NextResponse.json(
 				{
 					error: 'Access denied.',
-					debug: isDev ? {
-						currentHost,
-						referer,
-						hasValidToken,
-						isSameOrigin,
-						isDev
-					} : undefined
+					debug: isDev
+						? {
+								currentHost,
+								referer,
+								hasValidToken,
+								isSameOrigin,
+								isDev
+							}
+						: undefined
 				},
 				{ status: 403 }
 			);
@@ -122,15 +132,29 @@ export async function GET(request: NextRequest) {
 				}
 			});
 		} catch (fetchError) {
-			console.error('[Image Proxy Fetch Error]:', fetchError, 'URL:', imageUrlToFetch);
+			console.error(
+				'[Image Proxy Fetch Error]:',
+				fetchError,
+				'URL:',
+				imageUrlToFetch
+			);
 			return NextResponse.json(
-				{ error: 'Failed to connect to image source', details: isDev ? String(fetchError) : undefined },
+				{
+					error: 'Failed to connect to image source',
+					details: isDev ? String(fetchError) : undefined
+				},
 				{ status: 502 }
 			);
 		}
 
 		if (!imageResponse.ok) {
-			console.error('[Image Proxy Source Error]:', imageResponse.status, imageResponse.statusText, 'URL:', imageUrlToFetch);
+			console.error(
+				'[Image Proxy Source Error]:',
+				imageResponse.status,
+				imageResponse.statusText,
+				'URL:',
+				imageUrlToFetch
+			);
 			return NextResponse.json(
 				{ error: 'Image source returned error', status: imageResponse.status },
 				{ status: imageResponse.status }
@@ -150,7 +174,8 @@ export async function GET(request: NextRequest) {
 			headers: {
 				'Content-Type': contentType,
 				// Aggressive caching to reduce bandwidth on repeat visits
-				'Cache-Control': 'public, max-age=31536000, s-maxage=31536000, immutable',
+				'Cache-Control':
+					'public, max-age=31536000, s-maxage=31536000, immutable',
 				'X-Content-Type-Options': 'nosniff',
 				// Prevent direct linking
 				'X-Frame-Options': 'SAMEORIGIN',
@@ -160,7 +185,7 @@ export async function GET(request: NextRequest) {
 				'Access-Control-Allow-Headers': 'Content-Type',
 				// Compression hint
 				'Content-Encoding': 'identity',
-				'Vary': 'Accept-Encoding'
+				Vary: 'Accept-Encoding'
 			}
 		});
 	} catch (error) {

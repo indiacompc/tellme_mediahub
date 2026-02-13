@@ -1,5 +1,6 @@
 'use client';
 
+import { getCategoryLocations } from '@/lib/actions';
 import { ScrollArea } from '@/shadcn_data/components/ui/scroll-area';
 import {
 	Sheet,
@@ -14,9 +15,8 @@ import {
 import { cn } from '@/shadcn_data/lib/utils';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { LuFilter } from 'react-icons/lu';
-import { getCategoryLocations } from '@/lib/actions';
 
 interface CategoryImagesFilterProps {
 	categorySlug: string;
@@ -56,7 +56,7 @@ const CategoryImagesFilter = ({ categorySlug }: CategoryImagesFilterProps) => {
 	// Build query params
 	const buildQuery = (newState?: string, newCity?: string) => {
 		const params = new URLSearchParams(searchParams.toString());
-		
+
 		// Preserve filter (category)
 		if (searchParams.get('filter')) {
 			params.set('filter', searchParams.get('filter')!);
@@ -91,22 +91,28 @@ const CategoryImagesFilter = ({ categorySlug }: CategoryImagesFilterProps) => {
 
 	return (
 		<div className='absolute top-0 right-0 py-4 sm:px-6 sm:py-8 lg:px-8'>
-			<Sheet open={showFilters} onOpenChange={(openValue) => setShowFilters(openValue)}>
+			<Sheet
+				open={showFilters}
+				onOpenChange={(openValue) => setShowFilters(openValue)}
+			>
 				<SheetTrigger asChild>
 					<button
 						onClick={() => setShowFilters(!showFilters)}
-						className='flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 sm:px-4 sm:py-2'
+						className='flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 hover:bg-gray-200 sm:px-4 sm:py-2 dark:bg-gray-800 dark:hover:bg-gray-700'
 						aria-label='Open filters'
 					>
 						<LuFilter className='h-4 w-4 sm:h-5 sm:w-5' />
 						<span className='font-poppins text-sm sm:text-base'>Filters</span>
 					</button>
 				</SheetTrigger>
-				<SheetContent className='w-[90%] bg-white/75 dark:bg-gray-900/75 sm:max-w-md'>
+				<SheetContent className='w-[90%] bg-white/75 sm:max-w-md dark:bg-gray-900/75'>
 					<SheetHeader>
-						<SheetTitle className='font-cinzel uppercase'>Location Filters</SheetTitle>
+						<SheetTitle className='font-cinzel uppercase'>
+							Location Filters
+						</SheetTitle>
 						<SheetDescription className='font-poppins text-gray-700 dark:text-gray-300'>
-							Filter images by state and city. Click apply when you&apos;re done.
+							Filter images by state and city. Click apply when you&apos;re
+							done.
 						</SheetDescription>
 					</SheetHeader>
 
@@ -206,7 +212,7 @@ const CategoryImagesFilter = ({ categorySlug }: CategoryImagesFilterProps) => {
 						<SheetClose asChild>
 							<button
 								onClick={() => setShowFilters(false)}
-								className='font-poppins w-full rounded-md bg-black px-4 py-2 text-sm text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 sm:w-auto sm:text-base'
+								className='font-poppins w-full rounded-md bg-black px-4 py-2 text-sm text-white hover:bg-gray-800 sm:w-auto sm:text-base dark:bg-white dark:text-black dark:hover:bg-gray-200'
 							>
 								Close
 							</button>

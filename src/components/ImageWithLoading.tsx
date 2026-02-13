@@ -76,7 +76,9 @@ const ImageWithLoading = (
 			alt={alt}
 			className={cn(
 				className,
-				isloaded ? '' : loadingClassName || 'animate-pulse bg-gray-200 dark:bg-gray-700'
+				isloaded
+					? ''
+					: loadingClassName || 'animate-pulse bg-gray-200 dark:bg-gray-700'
 			)}
 			unoptimized={shouldUseUnoptimized}
 			quality={shouldUseUnoptimized ? undefined : imageQuality}

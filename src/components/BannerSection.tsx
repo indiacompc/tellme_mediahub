@@ -12,7 +12,7 @@ import {
 import type { YouTubeVideo } from '@/types/youtube';
 import { Play } from 'lucide-react';
 import { motion } from 'motion/react';
-import Image, { type StaticImageData } from 'next/image';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import VideoBackground from './VideoBackground';

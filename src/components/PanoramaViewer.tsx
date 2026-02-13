@@ -115,7 +115,7 @@ const ManualControls = ({
 		const getTouchDistance = (t1: Touch, t2: Touch) => {
 			return Math.sqrt(
 				Math.pow(t1.clientX - t2.clientX, 2) +
-				Math.pow(t1.clientY - t2.clientY, 2)
+					Math.pow(t1.clientY - t2.clientY, 2)
 			);
 		};
 

@@ -40,19 +40,19 @@ export default function RecommendedImages({
 							className='group bg-muted relative overflow-hidden rounded-lg transition-transform duration-300 hover:scale-105 hover:shadow-lg'
 						>
 							<div className='relative aspect-4/3 w-full overflow-hidden'>
-							<ImageWithLoading
-								src={
-									isFirebaseStorageUrl(image.src)
-										? getProtectedImageUrl(image.src)
-										: image.src
-								}
-								alt={image.title}
-								fill
-								className='object-cover transition-transform duration-300 group-hover:scale-110'
-								sizes='(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw'
-								loading='lazy'
-								quality={70}
-							/>
+								<ImageWithLoading
+									src={
+										isFirebaseStorageUrl(image.src)
+											? getProtectedImageUrl(image.src)
+											: image.src
+									}
+									alt={image.title}
+									fill
+									className='object-cover transition-transform duration-300 group-hover:scale-110'
+									sizes='(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw'
+									loading='lazy'
+									quality={70}
+								/>
 								<div className='absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/20' />
 							</div>
 							<div className='absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black/80 to-transparent p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100'>

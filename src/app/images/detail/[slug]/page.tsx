@@ -1,6 +1,5 @@
 import ImageDetailsFull from '@/components/image-details-full';
 import ImageWithLoading from '@/components/ImageWithLoading';
-import PanoramaImageLoader from './PanoramaImageLoader';
 import ProtectedImageWrapper from '@/components/ProtectedImageWrapper';
 import RecommendedImages from '@/components/RecommendedImages';
 import {
@@ -13,6 +12,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import PanoramaImageLoader from './PanoramaImageLoader';
 
 type ParamsType = {
 	params: Promise<{
