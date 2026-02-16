@@ -1,5 +1,9 @@
 'use client';
 
+import {
+	getProtectedImageUrl,
+	isFirebaseStorageUrl
+} from '@/lib/imageProtection';
 import type { ImageCategorySummary } from '@/types/image';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -22,11 +26,12 @@ export default function CategoryCard({ category }: CategoryCardProps) {
 		router.push(`/images?filter=${slug}`);
 	};
 
-	// For category card thumbnails, use the original Firebase Storage URL directly
-	// Next.js will optimize it via _next/image (resize, WebP/AVIF, caching)
-	// since storage.googleapis.com is in remotePatterns.
-	// Only use proxy for non-Firebase URLs that need protection.
-	const imgSrc = category.thumbnailSrc;
+	// Route Firebase Storage images through the proxy (bucket is private)
+	const imgSrc = isFirebaseStorageUrl(category.thumbnailSrc)
+		? getProtectedImageUrl(category.thumbnailSrc)
+		: category.thumbnailSrc;
+
+	const isProxied = isFirebaseStorageUrl(category.thumbnailSrc);
 
 	return (
 		<div
@@ -43,7 +48,8 @@ export default function CategoryCard({ category }: CategoryCardProps) {
 						sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
 						className='object-cover transition-transform duration-500 group-hover:scale-110'
 						loading='lazy'
-						quality={50}
+						unoptimized={isProxied}
+						quality={isProxied ? undefined : 50}
 						onError={() => setImgError(true)}
 					/>
 				) : (
