@@ -30,3 +30,16 @@ export interface ImageCategory {
 	categorySlug?: string; // URL-friendly slug
 	images: ImageListing[];
 }
+
+/**
+ * Lightweight category summary for home page grid
+ * Contains only what's needed to render a category card (no full image list)
+ */
+export interface ImageCategorySummary {
+	categoryId: string;
+	categoryName: string;
+	categorySlug: string;
+	imageCount: number;
+	thumbnailSrc: string;
+	thumbnailTitle: string;
+}

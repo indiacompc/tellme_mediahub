@@ -1,38 +1,32 @@
 'use client';
 
-import {
-	getProtectedImageUrl,
-	isFirebaseStorageUrl
-} from '@/lib/imageProtection';
-import type { ImageCategory } from '@/types/image';
+import type { ImageCategorySummary } from '@/types/image';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 interface CategoryCardProps {
-	category: ImageCategory;
+	category: ImageCategorySummary;
 }
 
 export default function CategoryCard({ category }: CategoryCardProps) {
 	const router = useRouter();
+	const [imgError, setImgError] = useState(false);
 
-	// Filter checks for valid src
-	const validImages = category.images.filter((img) => img.src);
-
-	if (validImages.length === 0) {
+	if (!category.thumbnailSrc) {
 		return null;
 	}
 
-	// Get the first image from the category (preferably with priority 1)
-	const thumbnailImage =
-		validImages.find((img) => img.priority === 1) || validImages[0];
-
 	const handleClick = () => {
-		// Navigate to images page with filter query parameter
-		const slug =
-			category.categorySlug ||
-			category.categoryId.toLowerCase().replace(/\s+/g, '-');
+		const slug = category.categorySlug || category.categoryId.toLowerCase().replace(/\s+/g, '-');
 		router.push(`/images?filter=${slug}`);
 	};
+
+	// For category card thumbnails, use the original Firebase Storage URL directly
+	// Next.js will optimize it via _next/image (resize, WebP/AVIF, caching)
+	// since storage.googleapis.com is in remotePatterns.
+	// Only use proxy for non-Firebase URLs that need protection.
+	const imgSrc = category.thumbnailSrc;
 
 	return (
 		<div
@@ -41,20 +35,22 @@ export default function CategoryCard({ category }: CategoryCardProps) {
 		>
 			{/* Image Container */}
 			<div className='bg-muted relative aspect-video w-full overflow-hidden'>
-				<Image
-					src={
-						isFirebaseStorageUrl(thumbnailImage.src)
-							? getProtectedImageUrl(thumbnailImage.src)
-							: thumbnailImage.src
-					}
-					alt={thumbnailImage.title}
-					fill
-					sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-					className='object-cover transition-transform duration-500 group-hover:scale-110'
-					loading='lazy'
-					unoptimized={isFirebaseStorageUrl(thumbnailImage.src)}
-					quality={isFirebaseStorageUrl(thumbnailImage.src) ? undefined : 70}
-				/>
+				{!imgError ? (
+					<Image
+						src={imgSrc}
+						alt={category.thumbnailTitle}
+						fill
+						sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
+						className='object-cover transition-transform duration-500 group-hover:scale-110'
+						loading='lazy'
+						quality={50}
+						onError={() => setImgError(true)}
+					/>
+				) : (
+					<div className='bg-muted flex h-full w-full items-center justify-center'>
+						<span className='text-muted-foreground text-sm'>Image unavailable</span>
+					</div>
+				)}
 
 				{/* Black Overlay */}
 				<div className='absolute inset-0 bg-black/20 transition-colors duration-300 group-hover:bg-black/40' />
@@ -70,8 +66,8 @@ export default function CategoryCard({ category }: CategoryCardProps) {
 					{/* Count - Bottom Right */}
 					<div className='rounded-full bg-black/60 px-3 py-1 backdrop-blur-sm transition-transform duration-300 group-hover:scale-105'>
 						<p className='text-xs font-semibold text-white'>
-							{validImages.length}{' '}
-							{validImages.length === 1 ? 'Image' : 'Images'}
+							{category.imageCount}{' '}
+							{category.imageCount === 1 ? 'Image' : 'Images'}
 						</p>
 					</div>
 				</div>

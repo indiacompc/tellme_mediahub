@@ -1,7 +1,8 @@
 'use client';
 
-import { loadImagesFromJSON, searchImagesInDatabase } from '@/lib/actions';
+import { loadImageCategorySummaries, searchImagesInDatabase } from '@/lib/actions';
 import type { ImageCategory } from '@/types/image';
+import type { ImageCategorySummary } from '@/types/image';
 import { useEffect, useState } from 'react';
 import CategoryCard from './CategoryCard';
 import ErrorState from './Error';
@@ -16,23 +17,29 @@ export default function ImageGrid({
 	searchQuery = '',
 	searching = false
 }: ImageGridProps) {
-	const [categories, setCategories] = useState<ImageCategory[]>([]);
+	// Use lightweight summaries for the default view
+	const [categorySummaries, setCategorySummaries] = useState<ImageCategorySummary[]>([]);
+	// Full categories only loaded when searching
+	const [searchCategories, setSearchCategories] = useState<ImageCategory[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
+	const isSearching = searchQuery && searchQuery.trim().length > 0;
+
 	useEffect(() => {
-		const loadImages = async () => {
+		const loadData = async () => {
 			try {
 				setLoading(true);
 				setError(null);
 
-				if (searchQuery && searchQuery.trim().length > 0) {
+				if (isSearching) {
 					const searchResults = await searchImagesInDatabase(searchQuery);
-					setCategories(searchResults);
+					setSearchCategories(searchResults);
 				} else {
-					const imageCategories = await loadImagesFromJSON();
-					setCategories(imageCategories);
+					// Use lightweight summaries — much faster than loading all images
+					const summaries = await loadImageCategorySummaries();
+					setCategorySummaries(summaries);
 				}
 			} catch (err) {
 				setError(err instanceof Error ? err.message : 'Failed to load images');
@@ -41,25 +48,36 @@ export default function ImageGrid({
 			}
 		};
 
-		loadImages();
-	}, [searchQuery]);
+		loadData();
+	}, [searchQuery, isSearching]);
 
-	// Reset selected category when categories change (e.g. searching)
+	// Reset selected category when data changes
 	useEffect(() => {
 		setSelectedCategory('all');
-	}, [categories]);
+	}, [categorySummaries, searchCategories]);
 
-	const validCategories = categories
-		.map((cat) => ({
-			...cat,
-			images: cat.images.filter((img) => img.src)
-		}))
-		.filter((cat) => cat.images.length > 0);
+	// Determine what to display based on search state
+	const displayItems = isSearching
+		? searchCategories
+			.map((cat) => ({
+				...cat,
+				images: cat.images.filter((img) => img.src)
+			}))
+			.filter((cat) => cat.images.length > 0)
+			.map((cat) => ({
+				categoryId: cat.categoryId,
+				categoryName: cat.categoryName,
+				categorySlug: cat.categorySlug || cat.categoryId.toLowerCase().replace(/\s+/g, '-'),
+				imageCount: cat.images.length,
+				thumbnailSrc: (cat.images.find((img) => img.priority === 1) || cat.images[0]).src,
+				thumbnailTitle: (cat.images.find((img) => img.priority === 1) || cat.images[0]).title,
+			} as ImageCategorySummary))
+		: categorySummaries;
 
-	const displayedCategories =
+	const filteredItems =
 		selectedCategory === 'all'
-			? validCategories
-			: validCategories.filter((cat) => cat.categoryId === selectedCategory);
+			? displayItems
+			: displayItems.filter((item) => item.categoryId === selectedCategory);
 
 	if (loading || searching) {
 		return (
@@ -75,7 +93,7 @@ export default function ImageGrid({
 		return <ErrorState message={error} />;
 	}
 
-	if (validCategories.length === 0) {
+	if (displayItems.length === 0) {
 		return (
 			<ErrorState
 				message={
@@ -89,7 +107,6 @@ export default function ImageGrid({
 
 	return (
 		<div className='space-y-6'>
-			{/* Category Dropdown Filter */}
 			{/* Header with Title and Filter */}
 			<div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
 				<h2 className='font-cinzel text-foreground text-2xl font-bold'>
@@ -103,17 +120,17 @@ export default function ImageGrid({
 					aria-label='Filter by category'
 				>
 					<option value='all'>All Categories</option>
-					{validCategories.map((category) => (
-						<option key={category.categoryId} value={category.categoryId}>
-							{category.categoryName}
+					{displayItems.map((item) => (
+						<option key={item.categoryId} value={item.categoryId}>
+							{item.categoryName}
 						</option>
 					))}
 				</select>
 			</div>
 
 			<div className='grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3'>
-				{displayedCategories.map((category) => (
-					<CategoryCard key={category.categoryId} category={category} />
+				{filteredItems.map((item) => (
+					<CategoryCard key={item.categoryId} category={item} />
 				))}
 			</div>
 		</div>

@@ -1,10 +1,37 @@
 'use server';
 
 import { buildYouTubeSearchUrl } from '@/shadcn_data/lib/youtube';
-import type { ImageCategory, ImageListing } from '@/types/image';
+import type { ImageCategory, ImageCategorySummary, ImageListing } from '@/types/image';
 import type { YouTubeVideo } from '@/types/youtube';
 import fs from 'fs';
 import path from 'path';
+
+/**
+ * In-memory cache for the large image_listings.json file
+ * Avoids re-reading and re-parsing 2.4MB JSON on every request
+ */
+let cachedImageListings: ImageListing[] | null = null;
+let imageCacheTimestamp = 0;
+const IMAGE_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+function getCachedImageListings(): ImageListing[] {
+	const now = Date.now();
+	if (cachedImageListings && now - imageCacheTimestamp < IMAGE_CACHE_TTL) {
+		return cachedImageListings;
+	}
+
+	const filePath = path.join(process.cwd(), 'public', 'image_listings.json');
+	const fileContents = fs.readFileSync(filePath, 'utf-8');
+	const images: ImageListing[] = JSON.parse(fileContents);
+
+	if (!Array.isArray(images)) {
+		throw new Error('JSON file should contain an array of images');
+	}
+
+	cachedImageListings = images;
+	imageCacheTimestamp = now;
+	return images;
+}
 
 /**
  * Generates a URL-friendly slug from a title and video ID
@@ -881,13 +908,7 @@ function formatCategoryName(categoryId: string): string {
  */
 export async function loadImagesFromJSON(): Promise<ImageCategory[]> {
 	try {
-		const filePath = path.join(process.cwd(), 'public', 'image_listings.json');
-		const fileContents = fs.readFileSync(filePath, 'utf-8');
-		const images: ImageListing[] = JSON.parse(fileContents);
-
-		if (!Array.isArray(images)) {
-			throw new Error('JSON file should contain an array of images');
-		}
+		const images = getCachedImageListings();
 
 		// Filter only public images
 		const publicImages = images.filter((img) => img.status === 'public');
@@ -936,6 +957,72 @@ export async function loadImagesFromJSON(): Promise<ImageCategory[]> {
 }
 
 /**
+ * Loads lightweight category summaries for the home page grid.
+ * Only returns category metadata and a single thumbnail URL per category,
+ * instead of all images — drastically reducing data transfer.
+ * @returns Array of lightweight category summaries
+ */
+export async function loadImageCategorySummaries(): Promise<ImageCategorySummary[]> {
+	try {
+		const images = getCachedImageListings();
+
+		// Filter only public images with valid src
+		const publicImages = images.filter((img) => img.status === 'public' && img.src);
+
+		// Group images by category — but only track count and best thumbnail
+		const categoryMap = new Map<string, {
+			count: number;
+			bestImage: ImageListing;
+			categorySlug: string;
+		}>();
+
+		publicImages.forEach((image) => {
+			const rawCategory = image.image_category_id || 'uncategorized';
+			const categoryId = normalizeCategory(rawCategory);
+
+			const existing = categoryMap.get(categoryId);
+			if (!existing) {
+				categoryMap.set(categoryId, {
+					count: 1,
+					bestImage: image,
+					categorySlug:
+						(image as any).category_slug ||
+						normalizeCategory(categoryId).replace(/\s+/g, '-'),
+				});
+			} else {
+				existing.count++;
+				// Prefer higher priority image as thumbnail
+				if (image.priority > existing.bestImage.priority) {
+					existing.bestImage = image;
+				}
+			}
+		});
+
+		// Convert to lightweight summaries
+		const summaries: ImageCategorySummary[] = Array.from(categoryMap.entries())
+			.map(([categoryId, data]) => ({
+				categoryId,
+				categoryName: formatCategoryName(categoryId),
+				categorySlug: data.categorySlug,
+				imageCount: data.count,
+				thumbnailSrc: data.bestImage.src,
+				thumbnailTitle: data.bestImage.title,
+			}))
+			.filter((s) => s.imageCount > 0);
+
+		// Sort categories alphabetically
+		summaries.sort((a, b) => a.categoryName.localeCompare(b.categoryName));
+
+		return summaries;
+	} catch (error) {
+		console.error('Error loading image category summaries:', error);
+		throw error instanceof Error
+			? error
+			: new Error('Failed to load image category summaries');
+	}
+}
+
+/**
  * Searches for images in the image_listings.json file
  * @param query - Search query string
  * @returns Array of image categories matching the search query
@@ -949,13 +1036,7 @@ export async function searchImagesInDatabase(
 		}
 
 		const searchTerm = query.toLowerCase().trim();
-		const filePath = path.join(process.cwd(), 'public', 'image_listings.json');
-		const fileContents = fs.readFileSync(filePath, 'utf-8');
-		const images: ImageListing[] = JSON.parse(fileContents);
-
-		if (!Array.isArray(images)) {
-			throw new Error('JSON file should contain an array of images');
-		}
+		const images = getCachedImageListings();
 
 		// Search in title, description, location, category, and other relevant fields
 		const filteredImages = images.filter((image) => {

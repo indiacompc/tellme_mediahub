@@ -56,18 +56,24 @@ export async function GET(request: NextRequest) {
 		// Verify Token (works everywhere)
 		const hasValidToken = token
 			? verifyAccessToken(imageUrl, token) ||
-				verifyAccessToken(decodeURIComponent(imageUrl), token)
+			verifyAccessToken(decodeURIComponent(imageUrl), token)
 			: false;
 
-		// Verify Origin (robust check for Vercel/Localhost)
+		// Verify Origin (robust check for Vercel/Localhost/Production)
 		const currentHostname = currentHost.split(':')[0];
+		const refererLower = referer.toLowerCase();
+		const originLower = originHeader.toLowerCase();
+
 		const isSameOrigin =
 			currentHostname.includes('localhost') ||
 			currentHostname.includes('127.0.0.1') ||
 			currentHostname.includes('vercel.app') ||
 			currentHostname.includes('tellme360') ||
-			(referer && referer.toLowerCase().includes(currentHostname)) ||
-			(originHeader && originHeader.toLowerCase().includes(currentHostname));
+			// Allow tellme360.media as a trusted origin
+			refererLower.includes('tellme360.media') ||
+			originLower.includes('tellme360.media') ||
+			(referer && refererLower.includes(currentHostname)) ||
+			(originHeader && originLower.includes(currentHostname));
 
 		// Permission logic:
 		// ALWAYS require a Referer header — this blocks direct URL pasting in the browser.
@@ -89,12 +95,12 @@ export async function GET(request: NextRequest) {
 					error: 'Access denied.',
 					debug: isDev
 						? {
-								currentHost,
-								referer,
-								hasValidToken,
-								isSameOrigin,
-								isDev
-							}
+							currentHost,
+							referer,
+							hasValidToken,
+							isSameOrigin,
+							isDev
+						}
 						: undefined
 				},
 				{ status: 403 }

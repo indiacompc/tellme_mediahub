@@ -82,7 +82,8 @@
     "status": "public",
     "language": "english",
     "captured_date": "2025-02-07",
-    "captured_location": "chaturbhuj temple",    "src": "https://storage.googleapis.com/tellme360media.firebasestorage.app/images/Chaturbhuj%20from%20the%20Skies.jpg",
+    "captured_location": "chaturbhuj temple",    
+	"src": "https://storage.googleapis.com/tellme360media.firebasestorage.app/images/Chaturbhuj%20from%20the%20Skies.jpg",
 
     "dpi_x": 300,
     "dpi_y": 300,
@@ -21110,14 +21111,14 @@
     "src": "https://storage.googleapis.com/tellme360media.firebasestorage.app/images/Guardian%20of%20the%20Caves.jpg",
     "dpi_x": 300,
     "dpi_y": 300,
-    "image_category_id": "Statue",
+    "image_category_id": "Monuments",
     "state": "Andhra Pradesh",
     "city": "Vijaywada",
     "created_by_id": null,
     "latitude": 16.4973523,
     "longitude": 80.58197,
     "Url": "\\\\Synology\\Tellmedigi\\Stock\\Images\\Best 500 Images\\Andhra Pradesh\\Guardian of the Caves",
-    "category_slug": "statue"
+    "category_slug": "monuments"
   },
   {
     "id": 753,
