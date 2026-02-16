@@ -67,7 +67,7 @@ const Footer = () => {
 							</li> */}
 							<li>
 								<Link
-									href='/india/photos/'
+									href='/filter=photos/'
 									className='transition-colors hover:text-white'
 								>
 									Photos
@@ -75,23 +75,23 @@ const Footer = () => {
 							</li>
 							<li>
 								<Link
-									href='/india/videos/'
+									href='/?filter=videos/'
 									className='transition-colors hover:text-white'
 								>
 									Videos
 								</Link>
 							</li>
-							<li>
+							{/* <li>
 								<Link
 									href='/india/vr/'
 									className='transition-colors hover:text-white'
 								>
 									VR 360°
 								</Link>
-							</li>
+							</li> */}
 							<li>
 								<Link
-									href='/contact-us/'
+									href='/contact/'
 									className='transition-colors hover:text-white'
 								>
 									Contact Us
@@ -106,7 +106,7 @@ const Footer = () => {
 						<ul className='flex w-full flex-col items-center gap-3 font-light uppercase sm:items-start'>
 							<li>
 								<Link
-									href='/privacy_policy'
+									href='/privacy-policy'
 									className='transition-colors hover:text-white'
 								>
 									Privacy Policy
@@ -125,14 +125,14 @@ const Footer = () => {
 									Cookie Policy
 								</Link>
 							</li> */}
-							<li>
+							{/* <li>
 								<Link
 									href='/cancellation-refund-policy'
 									className='transition-colors hover:text-white'
 								>
 									Refund Policy
 								</Link>
-							</li>
+							</li> */}
 						</ul>
 					</div>
 
