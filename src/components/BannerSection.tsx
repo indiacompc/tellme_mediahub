@@ -18,7 +18,7 @@ import { useEffect, useState } from 'react';
 import VideoBackground from './VideoBackground';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface BannerSectionProps {}
+interface BannerSectionProps { }
 
 // Featured Video Card Component matching VideoCard design
 function FeaturedVideoCard({
@@ -102,7 +102,7 @@ function FeaturedVideoCard({
 	);
 }
 
-export default function BannerSection({}: BannerSectionProps) {
+export default function BannerSection({ }: BannerSectionProps) {
 	const router = useRouter();
 	const descriptionText =
 		'Accelerate your creative projects with premium 4K stock footage—licensed in hours, not months. Choose from thousands of curated clips across travel, heritage, nature, and tourism themes with transparent pricing and usage rights.';
@@ -226,7 +226,7 @@ export default function BannerSection({}: BannerSectionProps) {
 				<div className='md:bg-background/40 absolute top-0 right-0 bottom-0 left-0 z-1 bg-black/40 md:dark:bg-black/40' />
 				<section className='content absolute top-0 right-0 bottom-0 left-0 z-10 flex h-auto w-full flex-col items-start justify-center px-3 pt-16 sm:px-4 sm:pt-20 md:px-6 md:pt-24 lg:px-8 lg:pt-28 xl:px-12 xl:pt-12 2xl:px-16 2xl:pt-16'>
 					<div className='mx-auto w-full max-w-7xl lg:flex lg:items-center lg:justify-between lg:gap-8 xl:gap-12'>
-						<div className='w-full max-w-full sm:max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-[calc(100%-320px)] 2xl:max-w-[calc(100%-380px)]'>
+						<div className='w-full max-w-full sm:max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-[calc(100%-360px)] 2xl:max-w-[calc(100%-420px)]'>
 							<h2 className='font-cinzel mb-3 font-semibold sm:mb-4 md:mb-5 md:font-normal'>
 								<motion.span
 									className='text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl'
@@ -276,7 +276,7 @@ export default function BannerSection({}: BannerSectionProps) {
 									className='mt-6 hidden w-full pr-0 md:mt-8 md:block md:pr-25 lg:pr-25 xl:pr-25 2xl:mt-10 2xl:pr-40'
 								>
 									<h3 className='text-foreground font-quicksand mb-5 text-xl font-semibold xl:mb-6 xl:text-2xl 2xl:mb-8 2xl:text-3xl'>
-										Featured Videos
+										Trending Videos
 									</h3>
 									<Carousel
 										opts={{
@@ -314,7 +314,7 @@ export default function BannerSection({}: BannerSectionProps) {
 						{shortsList.length > 0 && (
 							<div className='absolute top-1/2 right-4 z-10 hidden -translate-y-1/2 md:right-6 md:block lg:right-6 xl:right-6 2xl:right-12'>
 								<div className='rounded-xl'>
-									<div className='h-[calc(100vh-250px)] max-h-137.5 w-65 xl:h-[calc(100vh-220px)] xl:max-h-150 xl:w-70 2xl:max-h-162.5 2xl:w-70'>
+									<div className='h-[calc(100vh-250px)] max-h-137.5 w-75 xl:h-[calc(100vh-220px)] xl:max-h-150 xl:w-80 2xl:max-h-162.5 2xl:w-85'>
 										<div className='border-foreground/20 bg-background relative h-full w-full overflow-hidden rounded-[28px] border shadow-xl xl:rounded-[32px] dark:border-white/20 dark:bg-black'>
 											<div className='absolute top-2 left-1/2 z-10 h-1.5 w-12 -translate-x-1/2 rounded-full bg-neutral-800/80 xl:h-2 xl:w-16' />
 											<div
@@ -364,7 +364,7 @@ export default function BannerSection({}: BannerSectionProps) {
 							className='mb-8 flex w-full justify-center sm:mb-10 md:hidden'
 						>
 							<div className='rounded-xl'>
-								<div className='h-100 w-60 sm:h-120 sm:w-70 md:h-140 md:w-[320px]'>
+								<div className='h-110 w-72 sm:h-130 sm:w-80 md:h-140 md:w-[340px]'>
 									<div className='border-border bg-card relative h-full w-full overflow-hidden rounded-[24px] border shadow-xl sm:rounded-[28px]'>
 										<div className='absolute top-2 left-1/2 z-10 h-1.5 w-12 -translate-x-1/2 rounded-full bg-neutral-800/80' />
 										<div
@@ -408,7 +408,7 @@ export default function BannerSection({}: BannerSectionProps) {
 							className='w-full md:hidden'
 						>
 							<h3 className='text-foreground font-quicksand mb-6 text-xl font-semibold sm:mb-8 sm:text-2xl md:mb-10 md:text-3xl lg:text-4xl'>
-								Featured Videos
+								Trending Videos
 							</h3>
 							<Carousel
 								opts={{
