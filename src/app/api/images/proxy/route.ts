@@ -46,7 +46,12 @@ export async function GET(request: NextRequest) {
 			);
 		}
 
-		// ── Security Context ──
+		// ── Security: Require Referer from our own domains ──
+		// This is the most reliable way to block direct URL access:
+		// - Browser <img> tags ALWAYS send Referer (same-origin request)
+		// - Pasting URL in address bar NEVER sends Referer
+		// - Works on ALL platforms (localhost, Vercel, custom domains)
+		// - No CDN or proxy strips the Referer header
 		const referer = request.headers.get('referer') || '';
 		const originHeader = request.headers.get('origin') || '';
 		const hostHeader = request.headers.get('host') || '';
@@ -54,139 +59,63 @@ export async function GET(request: NextRequest) {
 		const currentHost = (forwardedHost || hostHeader).toLowerCase();
 		const currentHostname = currentHost.split(':')[0];
 		const refererLower = referer.toLowerCase();
-		const originLower = originHeader.toLowerCase();
 
-		// ── Sec-Fetch headers (modern browsers) ──
-		// Sec-Fetch-Dest: "document" = user typed/pasted URL in address bar
-		//                 "image"    = <img> tag load
-		//                 "empty"    = fetch() / XHR
-		//                 ""         = server-side request (no browser)
-		const secFetchDest = request.headers.get('sec-fetch-dest') || '';
-		const secFetchSite = request.headers.get('sec-fetch-site') || '';
-		const isDirectNavigation = secFetchDest === 'document';
+		const hasReferer = referer !== '';
 
-		// ── Token verification (checked FIRST — valid token overrides all other checks) ──
-		const hasValidToken = token
-			? verifyAccessToken(imageUrl, token) ||
-			verifyAccessToken(decodeURIComponent(imageUrl), token)
-			: false;
+		// Verify referer comes from one of our trusted origins
+		const isFromTrustedOrigin =
+			refererLower.includes('localhost') ||
+			refererLower.includes('127.0.0.1') ||
+			refererLower.includes('tellme360.media') ||
+			refererLower.includes('tellmemediahub.com') ||
+			refererLower.includes('vercel.app') ||
+			refererLower.includes(currentHostname);
 
-		// If token is valid, allow immediately (even for direct browser access)
-		if (hasValidToken) {
-			// Token-authenticated request — skip all other checks
-			console.log('[Image Proxy] Allowed via valid token');
-		} else {
-			// ── Block direct navigation without a valid token ──
-			// (user pasting proxy URL in browser address bar without token)
-			if (isDirectNavigation) {
-				console.warn('Image Proxy Blocked: Direct URL navigation without valid token');
-				return NextResponse.json(
-					{ error: 'Direct access not allowed. A valid token is required.' },
-					{ status: 403 }
-				);
-			}
-
-			// ── Origin verification ──
-			// Check if the request host is one of our trusted hosts
-			const isTrustedHost =
-				currentHostname.includes('localhost') ||
-				currentHostname.includes('127.0.0.1') ||
-				currentHostname.includes('vercel.app') ||
-				currentHostname.includes('tellme360') ||
-				currentHostname.includes('tellmemediahub');
-
-			// Check if the request originates from our own pages (via Referer/Origin)
-			const isFromOurPages =
-				refererLower.includes('tellme360.media') ||
-				refererLower.includes('tellmemediahub.com') ||
-				originLower.includes('tellme360.media') ||
-				originLower.includes('tellmemediahub.com') ||
-				refererLower.includes('localhost') ||
-				originLower.includes('localhost') ||
-				refererLower.includes('vercel.app') ||
-				originLower.includes('vercel.app') ||
-				(referer && refererLower.includes(currentHostname)) ||
-				(originHeader && originLower.includes(currentHostname));
-
-			// Check if request is same-origin (browser sets this reliably)
-			const isBrowserSameOrigin = secFetchSite === 'same-origin';
-
-			// Server-side requests (SSR, Next.js image optimization) don't have
-			// Sec-Fetch headers — they come from the Node.js server itself
-			const isServerSideRequest = !secFetchDest && !secFetchSite;
-
-			// ── Permission logic (no valid token) ──
-			// Allow if ANY of these is true:
-			// 1. Browser same-origin request (Sec-Fetch-Site: same-origin)
-			// 2. Referer/Origin from our own pages
-			// 3. Server-side request on a trusted host (SSR / Next.js internal)
-			// 4. Development mode on a trusted host
-			const isAllowed =
-				isBrowserSameOrigin ||
-				isFromOurPages ||
-				(isServerSideRequest && isTrustedHost) ||
-				(isDev && isTrustedHost);
-
-			if (!isAllowed) {
-				console.warn('Image Proxy Blocked:', {
-					currentHost,
-					isDev,
-					hasValidToken,
-					isTrustedHost,
-					isFromOurPages,
-					isBrowserSameOrigin,
-					isServerSideRequest,
-					secFetchDest,
-					secFetchSite
-				});
-				return NextResponse.json(
-					{
-						error: 'Access denied.',
-						debug: isDev
-							? {
-								currentHost,
-								referer: referer.substring(0, 100),
-								origin: originHeader,
-								secFetchDest,
-								secFetchSite,
-								hasValidToken,
-								isTrustedHost,
-								isFromOurPages,
-								isBrowserSameOrigin,
-								isServerSideRequest
-							}
-							: undefined
-					},
-					{ status: 403 }
-				);
-			}
+		// BLOCK if: no Referer OR Referer is not from our trusted origins
+		if (!hasReferer || !isFromTrustedOrigin) {
+			console.warn('Image Proxy Blocked:', {
+				reason: !hasReferer ? 'No Referer header (direct URL access)' : 'Referer not from trusted origin',
+				referer: referer.substring(0, 100) || '(empty)',
+				currentHost
+			});
+			return NextResponse.json(
+				{
+					error: 'Access denied.',
+					debug: isDev
+						? {
+							reason: !hasReferer
+								? 'No Referer header — direct URL access is not allowed'
+								: 'Referer is not from a trusted origin',
+							referer: referer.substring(0, 100) || '(empty)',
+							currentHost,
+							currentHostname
+						}
+						: undefined
+				},
+				{ status: 403 }
+			);
 		}
 
-		// ── Image Fetching (reached by both token-auth and origin-auth paths) ──
+		// ── Fetch and serve the image ──
 
 		// Try to convert to signed URL if it's a Firebase Storage URL
-		// This ensures access even if the bucket is private
 		let imageUrlToFetch = imageUrl;
 		try {
 			if (
 				imageUrl.includes('storage.googleapis.com') ||
 				imageUrl.includes('firebasestorage.app')
 			) {
-				// Try to get signed URL (will use original if Firebase Admin not configured)
-				imageUrlToFetch = await convertToSignedUrl(imageUrl, 3600); // 1 hour expiration
+				imageUrlToFetch = await convertToSignedUrl(imageUrl, 3600);
 
-				// Log for debugging (remove in production)
-				if (process.env.NODE_ENV === 'development') {
+				if (isDev) {
 					console.log('Generated signed URL for:', imageUrl.substring(0, 80));
 				}
 			}
 		} catch (error) {
 			console.error('Failed to generate signed URL:', error);
-			// Continue with original URL - this will fail if bucket is private
-			// but that's expected behavior
 		}
 
-		// Fetch the image from Firebase Storage (or signed URL)
+		// Fetch the image
 		let imageResponse;
 		try {
 			imageResponse = await fetch(imageUrlToFetch, {
@@ -234,17 +163,13 @@ export async function GET(request: NextRequest) {
 			status: 200,
 			headers: {
 				'Content-Type': contentType,
-				// Aggressive caching to reduce bandwidth on repeat visits
-				'Cache-Control':
-					'public, max-age=31536000, s-maxage=31536000, immutable',
+				// Cache for 1 day (not immutable, so security updates take effect)
+				'Cache-Control': 'public, max-age=86400, s-maxage=86400',
 				'X-Content-Type-Options': 'nosniff',
-				// Prevent direct linking
 				'X-Frame-Options': 'SAMEORIGIN',
-				// Add CORS headers to allow same-origin requests
 				'Access-Control-Allow-Origin': originHeader || '*',
 				'Access-Control-Allow-Methods': 'GET',
 				'Access-Control-Allow-Headers': 'Content-Type',
-				// Compression hint
 				'Content-Encoding': 'identity',
 				Vary: 'Accept-Encoding'
 			}
