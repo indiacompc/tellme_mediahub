@@ -67,7 +67,7 @@ const Footer = () => {
 							</li> */}
 							<li>
 								<Link
-									href='/filter=photos/'
+									href='/?filter=photos'
 									className='transition-colors hover:text-white'
 								>
 									Photos
@@ -75,7 +75,7 @@ const Footer = () => {
 							</li>
 							<li>
 								<Link
-									href='/?filter=videos/'
+									href='/?filter=videos'
 									className='transition-colors hover:text-white'
 								>
 									Videos

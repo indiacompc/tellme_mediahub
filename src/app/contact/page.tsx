@@ -3,7 +3,7 @@
 import ContactForm from '@/components/ContactForm';
 import { motion } from 'motion/react';
 import { Suspense } from 'react';
-import { FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaEnvelope, FaMapMarkerAlt, FaPhone } from 'react-icons/fa';
 
 export default function ContactPage() {
 	return (
@@ -53,6 +53,21 @@ export default function ContactPage() {
 												className='text-muted-foreground hover:text-primary transition-colors'
 											>
 												digital@tellmedigi.com
+											</a>
+										</div>
+									</div>
+
+									<div className='flex items-start gap-4'>
+										<div className='bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full'>
+											<FaPhone className='text-primary' />
+										</div>
+										<div>
+											<h3 className='mb-1 font-semibold'>Phone</h3>
+											<a
+												href='tel:+917030238122'
+												className='text-muted-foreground hover:text-primary transition-colors'
+											>
+												+91 7030238122
 											</a>
 										</div>
 									</div>
