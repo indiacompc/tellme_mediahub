@@ -63,99 +63,106 @@ export async function GET(request: NextRequest) {
 		//                 ""         = server-side request (no browser)
 		const secFetchDest = request.headers.get('sec-fetch-dest') || '';
 		const secFetchSite = request.headers.get('sec-fetch-site') || '';
-
-		// Block direct navigation (user pasting proxy URL in browser address bar)
 		const isDirectNavigation = secFetchDest === 'document';
-		if (isDirectNavigation) {
-			console.warn('Image Proxy Blocked: Direct URL navigation attempt');
-			return NextResponse.json(
-				{ error: 'Direct access not allowed.' },
-				{ status: 403 }
-			);
-		}
 
-		// ── Token verification ──
+		// ── Token verification (checked FIRST — valid token overrides all other checks) ──
 		const hasValidToken = token
 			? verifyAccessToken(imageUrl, token) ||
 			verifyAccessToken(decodeURIComponent(imageUrl), token)
 			: false;
 
-		// ── Origin verification ──
-		// Check if the request host is one of our trusted hosts
-		const isTrustedHost =
-			currentHostname.includes('localhost') ||
-			currentHostname.includes('127.0.0.1') ||
-			currentHostname.includes('vercel.app') ||
-			currentHostname.includes('tellme360') ||
-			currentHostname.includes('tellmemediahub');
+		// If token is valid, allow immediately (even for direct browser access)
+		if (hasValidToken) {
+			// Token-authenticated request — skip all other checks
+			console.log('[Image Proxy] Allowed via valid token');
+		} else {
+			// ── Block direct navigation without a valid token ──
+			// (user pasting proxy URL in browser address bar without token)
+			if (isDirectNavigation) {
+				console.warn('Image Proxy Blocked: Direct URL navigation without valid token');
+				return NextResponse.json(
+					{ error: 'Direct access not allowed. A valid token is required.' },
+					{ status: 403 }
+				);
+			}
 
-		// Check if the request originates from our own pages (via Referer/Origin)
-		const isFromOurPages =
-			refererLower.includes('tellme360.media') ||
-			refererLower.includes('tellmemediahub.com') ||
-			originLower.includes('tellme360.media') ||
-			originLower.includes('tellmemediahub.com') ||
-			refererLower.includes('localhost') ||
-			originLower.includes('localhost') ||
-			refererLower.includes('vercel.app') ||
-			originLower.includes('vercel.app') ||
-			(referer && refererLower.includes(currentHostname)) ||
-			(originHeader && originLower.includes(currentHostname));
+			// ── Origin verification ──
+			// Check if the request host is one of our trusted hosts
+			const isTrustedHost =
+				currentHostname.includes('localhost') ||
+				currentHostname.includes('127.0.0.1') ||
+				currentHostname.includes('vercel.app') ||
+				currentHostname.includes('tellme360') ||
+				currentHostname.includes('tellmemediahub');
 
-		// Check if request is same-origin (browser sets this reliably)
-		const isBrowserSameOrigin = secFetchSite === 'same-origin';
+			// Check if the request originates from our own pages (via Referer/Origin)
+			const isFromOurPages =
+				refererLower.includes('tellme360.media') ||
+				refererLower.includes('tellmemediahub.com') ||
+				originLower.includes('tellme360.media') ||
+				originLower.includes('tellmemediahub.com') ||
+				refererLower.includes('localhost') ||
+				originLower.includes('localhost') ||
+				refererLower.includes('vercel.app') ||
+				originLower.includes('vercel.app') ||
+				(referer && refererLower.includes(currentHostname)) ||
+				(originHeader && originLower.includes(currentHostname));
 
-		// Server-side requests (SSR, Next.js image optimization) don't have
-		// Sec-Fetch headers — they come from the Node.js server itself
-		const isServerSideRequest = !secFetchDest && !secFetchSite;
+			// Check if request is same-origin (browser sets this reliably)
+			const isBrowserSameOrigin = secFetchSite === 'same-origin';
 
-		// ── Permission logic ──
-		// Allow if ANY of these is true:
-		// 1. Valid token (programmatic access)
-		// 2. Browser same-origin request (Sec-Fetch-Site: same-origin)
-		// 3. Referer/Origin from our own pages
-		// 4. Server-side request on a trusted host (SSR / Next.js internal)
-		// 5. Development mode on a trusted host
-		const isAllowed =
-			hasValidToken ||
-			isBrowserSameOrigin ||
-			isFromOurPages ||
-			(isServerSideRequest && isTrustedHost) ||
-			(isDev && isTrustedHost);
+			// Server-side requests (SSR, Next.js image optimization) don't have
+			// Sec-Fetch headers — they come from the Node.js server itself
+			const isServerSideRequest = !secFetchDest && !secFetchSite;
 
-		if (!isAllowed) {
-			console.warn('Image Proxy Blocked:', {
-				currentHost,
-				isDev,
-				hasValidToken,
-				isTrustedHost,
-				isFromOurPages,
-				isBrowserSameOrigin,
-				isServerSideRequest,
-				secFetchDest,
-				secFetchSite
-			});
-			return NextResponse.json(
-				{
-					error: 'Access denied.',
-					debug: isDev
-						? {
-							currentHost,
-							referer: referer.substring(0, 100),
-							origin: originHeader,
-							secFetchDest,
-							secFetchSite,
-							hasValidToken,
-							isTrustedHost,
-							isFromOurPages,
-							isBrowserSameOrigin,
-							isServerSideRequest
-						}
-						: undefined
-				},
-				{ status: 403 }
-			);
+			// ── Permission logic (no valid token) ──
+			// Allow if ANY of these is true:
+			// 1. Browser same-origin request (Sec-Fetch-Site: same-origin)
+			// 2. Referer/Origin from our own pages
+			// 3. Server-side request on a trusted host (SSR / Next.js internal)
+			// 4. Development mode on a trusted host
+			const isAllowed =
+				isBrowserSameOrigin ||
+				isFromOurPages ||
+				(isServerSideRequest && isTrustedHost) ||
+				(isDev && isTrustedHost);
+
+			if (!isAllowed) {
+				console.warn('Image Proxy Blocked:', {
+					currentHost,
+					isDev,
+					hasValidToken,
+					isTrustedHost,
+					isFromOurPages,
+					isBrowserSameOrigin,
+					isServerSideRequest,
+					secFetchDest,
+					secFetchSite
+				});
+				return NextResponse.json(
+					{
+						error: 'Access denied.',
+						debug: isDev
+							? {
+								currentHost,
+								referer: referer.substring(0, 100),
+								origin: originHeader,
+								secFetchDest,
+								secFetchSite,
+								hasValidToken,
+								isTrustedHost,
+								isFromOurPages,
+								isBrowserSameOrigin,
+								isServerSideRequest
+							}
+							: undefined
+					},
+					{ status: 403 }
+				);
+			}
 		}
+
+		// ── Image Fetching (reached by both token-auth and origin-auth paths) ──
 
 		// Try to convert to signed URL if it's a Firebase Storage URL
 		// This ensures access even if the bucket is private
@@ -223,8 +230,6 @@ export async function GET(request: NextRequest) {
 			imageResponse.headers.get('content-type') || 'image/jpeg';
 
 		// Return the image with appropriate headers
-		// Note: For server-side compression, you would need to install 'sharp' package
-		// For now, we return the original image but with aggressive caching
 		return new NextResponse(imageBuffer, {
 			status: 200,
 			headers: {
