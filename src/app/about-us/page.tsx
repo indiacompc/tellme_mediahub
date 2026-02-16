@@ -8,10 +8,6 @@ const AboutUsPage = () => {
 	return (
 		<main className='bg-background min-h-screen'>
 			<div className='text-foreground relative w-full overflow-hidden'>
-				<div className='absolute top-0 right-0 left-0 z-20'>
-					<Navbar tellme_logo={tellme_logo} />
-				</div>
-
 				<section className='px-4 pt-24 pb-12 sm:px-6 md:px-8 lg:px-12 xl:px-16'>
 					<div className='mx-auto max-w-4xl'>
 						<motion.div
