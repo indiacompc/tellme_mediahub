@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
 			currentHostname.includes('localhost') ||
 			currentHostname.includes('127.0.0.1') ||
 			currentHostname.includes('vercel.app') ||
-			currentHostname.includes('tellme-mediahub') ||
+			currentHostname.includes('tellme360') ||
 			(referer && referer.toLowerCase().includes(currentHostname)) ||
 			(originHeader && originHeader.toLowerCase().includes(currentHostname));
 
