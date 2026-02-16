@@ -34,7 +34,7 @@ const Footer = () => {
 							empowering enterprises.
 						</p>
 						<p className='mt-auto pt-4 text-white'>
-							&copy; Copyright 2025. Tellme Digiinfotech Pvt. Ltd.
+							&copy; Copyright 2026. Tellme Digiinfotech Pvt. Ltd.
 						</p>
 					</div>
 

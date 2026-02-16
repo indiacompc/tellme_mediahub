@@ -46,61 +46,111 @@ export async function GET(request: NextRequest) {
 			);
 		}
 
-		// Security Context
+		// ── Security Context ──
 		const referer = request.headers.get('referer') || '';
 		const originHeader = request.headers.get('origin') || '';
 		const hostHeader = request.headers.get('host') || '';
 		const forwardedHost = request.headers.get('x-forwarded-host') || '';
 		const currentHost = (forwardedHost || hostHeader).toLowerCase();
-
-		// Verify Token (works everywhere)
-		const hasValidToken = token
-			? verifyAccessToken(imageUrl, token) ||
-				verifyAccessToken(decodeURIComponent(imageUrl), token)
-			: false;
-
-		// Verify Origin (robust check for Vercel/Localhost/Production)
 		const currentHostname = currentHost.split(':')[0];
 		const refererLower = referer.toLowerCase();
 		const originLower = originHeader.toLowerCase();
 
-		const isSameOrigin =
+		// ── Sec-Fetch headers (modern browsers) ──
+		// Sec-Fetch-Dest: "document" = user typed/pasted URL in address bar
+		//                 "image"    = <img> tag load
+		//                 "empty"    = fetch() / XHR
+		//                 ""         = server-side request (no browser)
+		const secFetchDest = request.headers.get('sec-fetch-dest') || '';
+		const secFetchSite = request.headers.get('sec-fetch-site') || '';
+
+		// Block direct navigation (user pasting proxy URL in browser address bar)
+		const isDirectNavigation = secFetchDest === 'document';
+		if (isDirectNavigation) {
+			console.warn('Image Proxy Blocked: Direct URL navigation attempt');
+			return NextResponse.json(
+				{ error: 'Direct access not allowed.' },
+				{ status: 403 }
+			);
+		}
+
+		// ── Token verification ──
+		const hasValidToken = token
+			? verifyAccessToken(imageUrl, token) ||
+			verifyAccessToken(decodeURIComponent(imageUrl), token)
+			: false;
+
+		// ── Origin verification ──
+		// Check if the request host is one of our trusted hosts
+		const isTrustedHost =
 			currentHostname.includes('localhost') ||
 			currentHostname.includes('127.0.0.1') ||
 			currentHostname.includes('vercel.app') ||
 			currentHostname.includes('tellme360') ||
-			// Allow tellme360.media as a trusted origin
+			currentHostname.includes('tellmemediahub');
+
+		// Check if the request originates from our own pages (via Referer/Origin)
+		const isFromOurPages =
 			refererLower.includes('tellme360.media') ||
+			refererLower.includes('tellmemediahub.com') ||
 			originLower.includes('tellme360.media') ||
+			originLower.includes('tellmemediahub.com') ||
+			refererLower.includes('localhost') ||
+			originLower.includes('localhost') ||
+			refererLower.includes('vercel.app') ||
+			originLower.includes('vercel.app') ||
 			(referer && refererLower.includes(currentHostname)) ||
 			(originHeader && originLower.includes(currentHostname));
 
-		// Permission logic:
-		// ALWAYS require a Referer header — this blocks direct URL pasting in the browser.
-		// Browsers always send Referer when loading <img> resources on a page,
-		// but do NOT send Referer when you paste a URL directly in the address bar.
-		// Additionally, require either a valid token or same-origin.
-		const hasReferer = referer !== '';
-		const isAllowed = hasReferer && (hasValidToken || isSameOrigin);
+		// Check if request is same-origin (browser sets this reliably)
+		const isBrowserSameOrigin = secFetchSite === 'same-origin';
+
+		// Server-side requests (SSR, Next.js image optimization) don't have
+		// Sec-Fetch headers — they come from the Node.js server itself
+		const isServerSideRequest = !secFetchDest && !secFetchSite;
+
+		// ── Permission logic ──
+		// Allow if ANY of these is true:
+		// 1. Valid token (programmatic access)
+		// 2. Browser same-origin request (Sec-Fetch-Site: same-origin)
+		// 3. Referer/Origin from our own pages
+		// 4. Server-side request on a trusted host (SSR / Next.js internal)
+		// 5. Development mode on a trusted host
+		const isAllowed =
+			hasValidToken ||
+			isBrowserSameOrigin ||
+			isFromOurPages ||
+			(isServerSideRequest && isTrustedHost) ||
+			(isDev && isTrustedHost);
 
 		if (!isAllowed) {
 			console.warn('Image Proxy Blocked:', {
 				currentHost,
 				isDev,
 				hasValidToken,
-				isSameOrigin
+				isTrustedHost,
+				isFromOurPages,
+				isBrowserSameOrigin,
+				isServerSideRequest,
+				secFetchDest,
+				secFetchSite
 			});
 			return NextResponse.json(
 				{
 					error: 'Access denied.',
 					debug: isDev
 						? {
-								currentHost,
-								referer,
-								hasValidToken,
-								isSameOrigin,
-								isDev
-							}
+							currentHost,
+							referer: referer.substring(0, 100),
+							origin: originHeader,
+							secFetchDest,
+							secFetchSite,
+							hasValidToken,
+							isTrustedHost,
+							isFromOurPages,
+							isBrowserSameOrigin,
+							isServerSideRequest
+						}
 						: undefined
 				},
 				{ status: 403 }

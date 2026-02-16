@@ -37,6 +37,8 @@ export default function VideoGrid({
 	const [searching, setSearching] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [searchQuery, setSearchQuery] = useState('');
+	const [shortsToShow, setShortsToShow] = useState(18);
+	const SHORTS_PER_PAGE = 18;
 
 	// Initialize filter from URL params or prop
 	const urlFilter = searchParams.get('filter') as FilterType | null;
@@ -51,6 +53,8 @@ export default function VideoGrid({
 			urlFilter === 'images'
 		) {
 			setFilter(urlFilter);
+			// Reset shorts pagination when filter changes
+			setShortsToShow(18);
 		}
 	}, [searchParams]);
 
@@ -203,15 +207,17 @@ export default function VideoGrid({
 	const allRegularVideos = isSearching
 		? filteredSearchResults
 		: videos.sort(
-				(a, b) =>
-					new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-			);
+			(a, b) =>
+				new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+		);
 
 	const allShorts = isSearching ? filteredSearchResults : shorts;
 
 	// Apply filter to determine what to display
 	const regularVideos = filter === 'videos' ? allRegularVideos : [];
-	const displayedShorts = filter === 'shorts' ? allShorts : [];
+	const allDisplayedShorts = filter === 'shorts' ? allShorts : [];
+	const displayedShorts = allDisplayedShorts.slice(0, shortsToShow);
+	const hasMoreShorts = allDisplayedShorts.length > shortsToShow;
 
 	if (loading) {
 		return (
@@ -250,33 +256,30 @@ export default function VideoGrid({
 						<Link
 							href='/?filter=images'
 							scroll={false}
-							className={`relative rounded-md px-6 py-2 text-sm font-medium transition-all duration-200 sm:px-8 sm:py-2.5 sm:text-base ${
-								filter === 'images'
+							className={`relative rounded-md px-6 py-2 text-sm font-medium transition-all duration-200 sm:px-8 sm:py-2.5 sm:text-base ${filter === 'images'
 									? 'bg-primary text-primary-foreground shadow-sm'
 									: 'text-muted-foreground hover:text-foreground'
-							} `}
+								} `}
 						>
 							Images
 						</Link>
 						<Link
 							href='/?filter=videos'
 							scroll={false}
-							className={`font-ci relative rounded-md px-6 py-2 text-sm transition-all duration-200 sm:px-8 sm:py-2.5 sm:text-base ${
-								filter === 'videos'
+							className={`font-ci relative rounded-md px-6 py-2 text-sm transition-all duration-200 sm:px-8 sm:py-2.5 sm:text-base ${filter === 'videos'
 									? 'bg-primary text-primary-foreground shadow-sm'
 									: 'text-muted-foreground hover:text-foreground'
-							} `}
+								} `}
 						>
 							Videos
 						</Link>
 						<Link
 							href='/?filter=shorts'
 							scroll={false}
-							className={`relative rounded-md px-6 py-2 text-sm font-medium transition-all duration-200 sm:px-8 sm:py-2.5 sm:text-base ${
-								filter === 'shorts'
+							className={`relative rounded-md px-6 py-2 text-sm font-medium transition-all duration-200 sm:px-8 sm:py-2.5 sm:text-base ${filter === 'shorts'
 									? 'bg-primary text-primary-foreground shadow-sm'
 									: 'text-muted-foreground hover:text-foreground'
-							} `}
+								} `}
 						>
 							Shorts
 						</Link>
@@ -399,11 +402,39 @@ export default function VideoGrid({
 											/>
 										))}
 									</div>
+
+									{/* Show More Button */}
+									{hasMoreShorts && (
+										<div className='mt-8 flex justify-center sm:mt-10'>
+											<button
+												onClick={() => setShortsToShow((prev) => prev + SHORTS_PER_PAGE)}
+												className='bg-primary/10 hover:bg-primary/20 text-primary border-primary/30 group inline-flex items-center gap-2 rounded-full border px-8 py-3 text-sm font-semibold transition-all duration-300 hover:shadow-lg active:scale-95 sm:px-10 sm:py-3.5 sm:text-base'
+											>
+												<span>Show More</span>
+												<svg
+													className='h-4 w-4 transition-transform duration-300 group-hover:translate-y-0.5'
+													fill='none'
+													stroke='currentColor'
+													viewBox='0 0 24 24'
+												>
+													<path
+														strokeLinecap='round'
+														strokeLinejoin='round'
+														strokeWidth={2}
+														d='M19 9l-7 7-7-7'
+													/>
+												</svg>
+												<span className='text-muted-foreground ml-1 text-xs'>
+													({displayedShorts.length} of {allDisplayedShorts.length})
+												</span>
+											</button>
+										</div>
+									)}
 								</div>
 							)}
 
 							{/* Show message if no videos found */}
-							{regularVideos.length === 0 && displayedShorts.length === 0 && (
+							{regularVideos.length === 0 && allDisplayedShorts.length === 0 && (
 								<ErrorState
 									message={
 										isSearching
