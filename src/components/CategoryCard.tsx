@@ -22,7 +22,9 @@ export default function CategoryCard({ category }: CategoryCardProps) {
 	}
 
 	const handleClick = () => {
-		const slug = category.categorySlug || category.categoryId.toLowerCase().replace(/\s+/g, '-');
+		const slug =
+			category.categorySlug ||
+			category.categoryId.toLowerCase().replace(/\s+/g, '-');
 		router.push(`/images?filter=${slug}`);
 	};
 
@@ -54,7 +56,9 @@ export default function CategoryCard({ category }: CategoryCardProps) {
 					/>
 				) : (
 					<div className='bg-muted flex h-full w-full items-center justify-center'>
-						<span className='text-muted-foreground text-sm'>Image unavailable</span>
+						<span className='text-muted-foreground text-sm'>
+							Image unavailable
+						</span>
 					</div>
 				)}
 

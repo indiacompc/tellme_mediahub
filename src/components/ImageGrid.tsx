@@ -1,8 +1,10 @@
 'use client';
 
-import { loadImageCategorySummaries, searchImagesInDatabase } from '@/lib/actions';
-import type { ImageCategory } from '@/types/image';
-import type { ImageCategorySummary } from '@/types/image';
+import {
+	loadImageCategorySummaries,
+	searchImagesInDatabase
+} from '@/lib/actions';
+import type { ImageCategory, ImageCategorySummary } from '@/types/image';
 import { useEffect, useState } from 'react';
 import CategoryCard from './CategoryCard';
 import ErrorState from './Error';
@@ -18,7 +20,9 @@ export default function ImageGrid({
 	searching = false
 }: ImageGridProps) {
 	// Use lightweight summaries for the default view
-	const [categorySummaries, setCategorySummaries] = useState<ImageCategorySummary[]>([]);
+	const [categorySummaries, setCategorySummaries] = useState<
+		ImageCategorySummary[]
+	>([]);
 	// Full categories only loaded when searching
 	const [searchCategories, setSearchCategories] = useState<ImageCategory[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -59,19 +63,28 @@ export default function ImageGrid({
 	// Determine what to display based on search state
 	const displayItems = isSearching
 		? searchCategories
-			.map((cat) => ({
-				...cat,
-				images: cat.images.filter((img) => img.src)
-			}))
-			.filter((cat) => cat.images.length > 0)
-			.map((cat) => ({
-				categoryId: cat.categoryId,
-				categoryName: cat.categoryName,
-				categorySlug: cat.categorySlug || cat.categoryId.toLowerCase().replace(/\s+/g, '-'),
-				imageCount: cat.images.length,
-				thumbnailSrc: (cat.images.find((img) => img.priority === 1) || cat.images[0]).src,
-				thumbnailTitle: (cat.images.find((img) => img.priority === 1) || cat.images[0]).title,
-			} as ImageCategorySummary))
+				.map((cat) => ({
+					...cat,
+					images: cat.images.filter((img) => img.src)
+				}))
+				.filter((cat) => cat.images.length > 0)
+				.map(
+					(cat) =>
+						({
+							categoryId: cat.categoryId,
+							categoryName: cat.categoryName,
+							categorySlug:
+								cat.categorySlug ||
+								cat.categoryId.toLowerCase().replace(/\s+/g, '-'),
+							imageCount: cat.images.length,
+							thumbnailSrc: (
+								cat.images.find((img) => img.priority === 1) || cat.images[0]
+							).src,
+							thumbnailTitle: (
+								cat.images.find((img) => img.priority === 1) || cat.images[0]
+							).title
+						}) as ImageCategorySummary
+				)
 		: categorySummaries;
 
 	const filteredItems =

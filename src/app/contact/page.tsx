@@ -1,8 +1,6 @@
 'use client';
 
-import tellme_logo from '@/assets/images/tellme_logo.png';
 import ContactForm from '@/components/ContactForm';
-import Navbar from '@/components/Navbar';
 import { motion } from 'motion/react';
 import { Suspense } from 'react';
 import { FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';

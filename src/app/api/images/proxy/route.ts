@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
 		// Verify Token (works everywhere)
 		const hasValidToken = token
 			? verifyAccessToken(imageUrl, token) ||
-			verifyAccessToken(decodeURIComponent(imageUrl), token)
+				verifyAccessToken(decodeURIComponent(imageUrl), token)
 			: false;
 
 		// Verify Origin (robust check for Vercel/Localhost/Production)
@@ -95,12 +95,12 @@ export async function GET(request: NextRequest) {
 					error: 'Access denied.',
 					debug: isDev
 						? {
-							currentHost,
-							referer,
-							hasValidToken,
-							isSameOrigin,
-							isDev
-						}
+								currentHost,
+								referer,
+								hasValidToken,
+								isSameOrigin,
+								isDev
+							}
 						: undefined
 				},
 				{ status: 403 }

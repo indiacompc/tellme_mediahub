@@ -1,7 +1,11 @@
 'use server';
 
 import { buildYouTubeSearchUrl } from '@/shadcn_data/lib/youtube';
-import type { ImageCategory, ImageCategorySummary, ImageListing } from '@/types/image';
+import type {
+	ImageCategory,
+	ImageCategorySummary,
+	ImageListing
+} from '@/types/image';
 import type { YouTubeVideo } from '@/types/youtube';
 import fs from 'fs';
 import path from 'path';
@@ -962,19 +966,26 @@ export async function loadImagesFromJSON(): Promise<ImageCategory[]> {
  * instead of all images — drastically reducing data transfer.
  * @returns Array of lightweight category summaries
  */
-export async function loadImageCategorySummaries(): Promise<ImageCategorySummary[]> {
+export async function loadImageCategorySummaries(): Promise<
+	ImageCategorySummary[]
+> {
 	try {
 		const images = getCachedImageListings();
 
 		// Filter only public images with valid src
-		const publicImages = images.filter((img) => img.status === 'public' && img.src);
+		const publicImages = images.filter(
+			(img) => img.status === 'public' && img.src
+		);
 
 		// Group images by category — but only track count and best thumbnail
-		const categoryMap = new Map<string, {
-			count: number;
-			bestImage: ImageListing;
-			categorySlug: string;
-		}>();
+		const categoryMap = new Map<
+			string,
+			{
+				count: number;
+				bestImage: ImageListing;
+				categorySlug: string;
+			}
+		>();
 
 		publicImages.forEach((image) => {
 			const rawCategory = image.image_category_id || 'uncategorized';
@@ -987,7 +998,7 @@ export async function loadImageCategorySummaries(): Promise<ImageCategorySummary
 					bestImage: image,
 					categorySlug:
 						(image as any).category_slug ||
-						normalizeCategory(categoryId).replace(/\s+/g, '-'),
+						normalizeCategory(categoryId).replace(/\s+/g, '-')
 				});
 			} else {
 				existing.count++;
@@ -1006,7 +1017,7 @@ export async function loadImageCategorySummaries(): Promise<ImageCategorySummary
 				categorySlug: data.categorySlug,
 				imageCount: data.count,
 				thumbnailSrc: data.bestImage.src,
-				thumbnailTitle: data.bestImage.title,
+				thumbnailTitle: data.bestImage.title
 			}))
 			.filter((s) => s.imageCount > 0);
 
