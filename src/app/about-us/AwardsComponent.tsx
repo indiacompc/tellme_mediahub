@@ -32,7 +32,7 @@ const AwardsComponentSection = ({ awards }: { awards: Array<string> }) => {
 							<Dialog>
 								<DialogTrigger asChild>
 									<div
-										className='flex h-75 cursor-pointer items-center justify-center rounded-xl bg-white p-4 shadow-lg transition-transform duration-300 hover:scale-105'
+										className='bg-card flex h-75 cursor-pointer items-center justify-center rounded-xl p-4 shadow-lg transition-transform duration-300 hover:scale-105'
 										onClick={() => setSelectedImage(award)}
 									>
 										<Image

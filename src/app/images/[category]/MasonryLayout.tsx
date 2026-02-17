@@ -154,7 +154,7 @@ const MasonryLayout = ({
 							<button
 								onClick={loadMore}
 								disabled={loading}
-								className='rounded-md bg-black px-6 py-2 text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50'
+								className='bg-primary text-primary-foreground hover:bg-primary/80 rounded-md px-6 py-2 transition-colors disabled:cursor-not-allowed disabled:opacity-50'
 							>
 								{loading ? 'Loading...' : 'View More'}
 							</button>
@@ -162,7 +162,7 @@ const MasonryLayout = ({
 					)}
 					{!hasMore && allImages.length > 0 && (
 						<div className='col-span-full flex items-center justify-center p-4'>
-							<span className='text-gray-500'>No more images</span>
+							<span className='text-muted-foreground'>No more images</span>
 						</div>
 					)}
 				</Fragment>

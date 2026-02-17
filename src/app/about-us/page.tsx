@@ -162,9 +162,9 @@ const AboutUsPage = () => {
 				</Link>
 			</div>
 
-			<section id='about-us-slider' className='pt-2'>
+			{/* <section id='about-us-slider' className='pt-2'>
 				<AboutUsSlider />
-			</section>
+			</section> */}
 
 			<section className='font-poppins container mx-auto flex w-full flex-col items-center justify-center space-y-8 px-4 py-12 text-justify text-xl leading-relaxed font-light sm:leading-10'>
 				<p>
@@ -234,7 +234,7 @@ const AboutUsPage = () => {
 							<h3 className='font-cinzel pb-2 text-xl font-[520] uppercase'>
 								{member.name}
 							</h3>
-							<p className='mb-3 text-lg text-gray-500 uppercase'>
+							<p className='text-muted-foreground mb-3 text-lg uppercase'>
 								{member.role}
 							</p>
 							<p className='w-5/6 text-justify'>{member.description}</p>
@@ -276,7 +276,7 @@ const AboutUsPage = () => {
 					Empanelled
 				</p>
 				<div className='grid grid-cols-1 gap-8 text-center sm:grid-cols-2 md:grid-cols-3'>
-					<div className='font-poppins flex flex-col items-center rounded-lg bg-[#fefaf5] p-6 shadow-md transition-shadow duration-300 hover:shadow-xl'>
+					<div className='font-poppins bg-card border-border flex flex-col items-center rounded-lg border p-6 shadow-md transition-shadow duration-300 hover:shadow-xl'>
 						<Image
 							src={nfdc}
 							alt='NFDC logo'
@@ -287,7 +287,7 @@ const AboutUsPage = () => {
 						<h3 className='font-cinzel text-xl font-semibold uppercase'>
 							NFDC
 						</h3>
-						<p className='mt-2 text-gray-700'>
+						<p className='text-muted-foreground mt-2'>
 							Tellme is privileged to be appointed as the official Digital Media
 							Agency for multiple productions by the National Film Development
 							Corporation Ltd (NFDC), the Government of India’s premier film
@@ -297,7 +297,7 @@ const AboutUsPage = () => {
 					</div>
 
 					{/* MPTB */}
-					<div className='font-poppins flex flex-col items-center rounded-lg bg-[#fefaf5] p-6 shadow-md transition-shadow duration-300 hover:shadow-xl'>
+					<div className='font-poppins bg-card border-border flex flex-col items-center rounded-lg border p-6 shadow-md transition-shadow duration-300 hover:shadow-xl'>
 						<Image
 							src={incredibleIndia}
 							alt='MPTB logo'
@@ -308,7 +308,7 @@ const AboutUsPage = () => {
 						<h3 className='font-cinzel text-xl font-semibold uppercase'>
 							MPTB
 						</h3>
-						<p className='mt-2 text-gray-700'>
+						<p className='text-muted-foreground mt-2'>
 							TellMe has been empanelled as photographer and videographer by the
 							Madhya Pradesh Tourism Board - Govt. of Madhya Pradesh, capturing
 							the essence of MP with unmatched precision and artistry.
@@ -316,7 +316,7 @@ const AboutUsPage = () => {
 					</div>
 
 					{/* Kashmir Tourism */}
-					<div className='font-poppins flex flex-col items-center rounded-lg bg-[#fefaf5] p-6 shadow-md transition-shadow duration-300 hover:shadow-xl'>
+					<div className='font-poppins bg-card border-border flex flex-col items-center rounded-lg border p-6 shadow-md transition-shadow duration-300 hover:shadow-xl'>
 						<Image
 							src={jandk}
 							alt='Kashmir Tourism logo'
@@ -327,7 +327,7 @@ const AboutUsPage = () => {
 						<h3 className='font-cinzel text-xl font-semibold uppercase'>
 							Kashmir Tourism
 						</h3>
-						<p className='mt-2 text-gray-700'>
+						<p className='text-muted-foreground mt-2'>
 							TellMe has been empanelled as the Multimedia Agency by Directorate
 							of Tourism, Kashmir, for showcasing the beauty of Jammu & Kashmir
 							through immersive experiences.
@@ -352,7 +352,7 @@ const AboutUsPage = () => {
 						If you have any projects in mind say hello at&nbsp;
 						<a
 							href='mailto:tellmedigi@outlook.com'
-							className='underline hover:text-[#787d62]'
+							className='underline hover:text-primary'
 						>
 							tellmedigi@outlook.com
 						</a>
@@ -362,8 +362,8 @@ const AboutUsPage = () => {
 				</div>
 				<div className='flex gap-2'>
 					<Link
-						href='/contact-us'
-						className='items-center rounded-lg bg-[#d7b56d] px-14 py-5 text-lg font-normal text-white uppercase transition-colors hover:bg-black'
+						href='/contact'
+						className='bg-primary text-primary-foreground hover:bg-primary/80 items-center rounded-lg px-14 py-5 text-lg font-normal uppercase transition-colors'
 					>
 						Contact Us
 					</Link>
