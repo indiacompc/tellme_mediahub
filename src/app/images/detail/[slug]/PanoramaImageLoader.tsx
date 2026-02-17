@@ -1,5 +1,9 @@
 'use client';
 import PanoramaViewer from '@/components/PanoramaViewer';
+import {
+	getProtectedImageUrl,
+	isFirebaseStorageUrl
+} from '@/lib/imageProtection';
 import { cn } from '@/shadcn_data/lib/utils';
 import type { ImageListing } from '@/types/image';
 import Image from 'next/image';
@@ -14,7 +18,13 @@ const PanoramaImageLoader = ({
 }) => {
 	const [isImageLoaded, setIsImageLoaded] = useState(false);
 	const imageId = 'three-js-window-by-images-detail-page';
-	const displaySrc = src || imageListingData.src;
+	// Ensure we use protected URL - if src is provided (already protected), use it,
+	// otherwise protect the imageListingData.src
+	const displaySrc =
+		src ||
+		(isFirebaseStorageUrl(imageListingData.src)
+			? getProtectedImageUrl(imageListingData.src)
+			: imageListingData.src);
 
 	return (
 		<Fragment>

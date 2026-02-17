@@ -7,6 +7,7 @@ import {
 	getProtectedImageUrlServer,
 	getSuggestedImages
 } from '@/lib/actions';
+import { convertToSignedUrl } from '@/lib/firebaseStorage';
 import { isFirebaseStorageUrl } from '@/lib/imageProtection';
 import { ArrowLeft } from 'lucide-react';
 import { Metadata } from 'next';
@@ -35,6 +36,13 @@ export async function generateMetadata({
 		};
 	}
 
+	// Generate signed URL for metadata (social media crawlers need accessible URLs)
+	// Signed URLs are time-limited (24 hours) and work without referer checks
+	// This allows social media crawlers to access preview images while still providing security
+	const metaImageUrl = isFirebaseStorageUrl(image.src)
+		? await convertToSignedUrl(image.src, 86400) // 24 hours expiry for metadata
+		: image.src;
+
 	return {
 		title: image.meta_title || image.title,
 		description: image.meta_description || image.description,
@@ -42,13 +50,13 @@ export async function generateMetadata({
 		openGraph: {
 			title: image.meta_title || image.title,
 			description: image.meta_description || image.description,
-			images: [image.src]
+			images: [metaImageUrl]
 		},
 		twitter: {
 			card: 'summary_large_image',
 			title: image.meta_title || image.title,
 			description: image.meta_description || image.description,
-			images: [image.src]
+			images: [metaImageUrl]
 		}
 	};
 }
