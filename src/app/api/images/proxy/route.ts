@@ -62,20 +62,50 @@ export async function GET(request: NextRequest) {
 
 		const hasReferer = referer !== '';
 
+		// Parse referer URL to check its path
+		let refererPath = '';
+		let refererHostname = '';
+		try {
+			if (referer) {
+				const refererUrl = new URL(referer);
+				refererPath = refererUrl.pathname.toLowerCase();
+				refererHostname = refererUrl.hostname.toLowerCase();
+			}
+		} catch {
+			// Invalid referer URL format
+		}
+
 		// Verify referer comes from one of our trusted origins
 		const isFromTrustedOrigin =
-			refererLower.includes('localhost') ||
-			refererLower.includes('127.0.0.1') ||
-			refererLower.includes('tellme360.media') ||
-			refererLower.includes('tellmemediahub.com') ||
-			refererLower.includes('vercel.app') ||
-			refererLower.includes(currentHostname);
+			refererHostname.includes('localhost') ||
+			refererHostname.includes('127.0.0.1') ||
+			refererHostname.includes('tellme360.media') ||
+			refererHostname.includes('tellmemediahub.com') ||
+			refererHostname.includes('vercel.app') ||
+			refererHostname === currentHostname;
 
-		// BLOCK if: no Referer OR Referer is not from our trusted origins
-		if (!hasReferer || !isFromTrustedOrigin) {
+		// CRITICAL: Block if referer is the proxy API route itself (prevents direct access)
+		const isRefererProxyRoute = refererPath.includes('/api/images/proxy');
+
+		// CRITICAL: Block if referer is any API route (prevents API-to-API access)
+		const isRefererApiRoute = refererPath.startsWith('/api/');
+
+		// BLOCK if:
+		// 1. No Referer header (direct URL access in address bar)
+		// 2. Referer is not from trusted origin
+		// 3. Referer is the proxy route itself (prevents direct access)
+		// 4. Referer is any API route (prevents API-to-API access)
+		if (!hasReferer || !isFromTrustedOrigin || isRefererProxyRoute || isRefererApiRoute) {
 			console.warn('Image Proxy Blocked:', {
-				reason: !hasReferer ? 'No Referer header (direct URL access)' : 'Referer not from trusted origin',
+				reason: !hasReferer
+					? 'No Referer header (direct URL access)'
+					: !isFromTrustedOrigin
+						? 'Referer not from trusted origin'
+						: isRefererProxyRoute
+							? 'Referer is proxy route itself (direct access)'
+							: 'Referer is API route',
 				referer: referer.substring(0, 100) || '(empty)',
+				refererPath,
 				currentHost
 			});
 			return NextResponse.json(
@@ -85,8 +115,13 @@ export async function GET(request: NextRequest) {
 						? {
 							reason: !hasReferer
 								? 'No Referer header — direct URL access is not allowed'
-								: 'Referer is not from a trusted origin',
+								: !isFromTrustedOrigin
+									? 'Referer is not from a trusted origin'
+									: isRefererProxyRoute
+										? 'Referer is the proxy route itself — direct access blocked'
+										: 'Referer is an API route — only page requests allowed',
 							referer: referer.substring(0, 100) || '(empty)',
+							refererPath,
 							currentHost,
 							currentHostname
 						}
