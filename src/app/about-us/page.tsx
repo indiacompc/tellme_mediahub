@@ -152,7 +152,7 @@ const AboutUsPage = () => {
 	return (
 		<main className='m-5 max-w-full px-4'>
 			{/* Back Button */}
-			<div className='pt-16 pb-4 sm:pt-20'>
+			<div className='pt-4 pb-4 sm:pt-4'>
 				<Link
 					href='/'
 					className='text-muted-foreground hover:text-primary group inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 hover:gap-3 sm:text-base'
