@@ -53,7 +53,7 @@ async function getAllVideos(): Promise<Array<{ slug: string }>> {
 
 		// Remove duplicates
 		const uniqueVideos = Array.from(
-			new Map(videos.map((v) => [v.slug, v])).values()
+			new Map<string, { slug: string }>(videos.map((v: { slug: string }) => [v.slug, v])).values()
 		);
 
 		return uniqueVideos;

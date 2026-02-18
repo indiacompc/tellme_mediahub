@@ -82,15 +82,15 @@ export async function generateMetadata({
 		},
 		...(image.state || fullLocation || (image.latitude && image.longitude)
 			? {
-					other: {
-						...(image.state && { 'geo.region': image.state }),
-						...(fullLocation && { 'geo.placename': fullLocation }),
-						...(image.latitude &&
-							image.longitude && {
-								'geo.position': `${image.latitude};${image.longitude}`
-							})
-					}
+				other: {
+					...(image.state && { 'geo.region': image.state }),
+					...(fullLocation && { 'geo.placename': fullLocation }),
+					...(image.latitude &&
+						image.longitude && {
+						'geo.position': `${image.latitude};${image.longitude}`
+					})
 				}
+			}
 			: {})
 	};
 }
@@ -151,8 +151,16 @@ export default async function ImageDetailPage({
 		description: image.meta_description || image.description,
 		image: structuredDataImageUrl,
 		url: imageUrl,
-		width: image.width,
-		height: image.height,
+		width: {
+			'@type': 'QuantitativeValue',
+			value: image.width,
+			unitCode: 'E37'
+		},
+		height: {
+			'@type': 'QuantitativeValue',
+			value: image.height,
+			unitCode: 'E37'
+		},
 		contentUrl: structuredDataImageUrl,
 		encodingFormat: 'image/jpeg',
 		keywords: image.meta_keywords || undefined,
@@ -167,12 +175,12 @@ export default async function ImageDetailPage({
 		}),
 		...(image.latitude &&
 			image.longitude && {
-				geo: {
-					'@type': 'GeoCoordinates',
-					latitude: image.latitude,
-					longitude: image.longitude
-				}
-			}),
+			geo: {
+				'@type': 'GeoCoordinates',
+				latitude: image.latitude,
+				longitude: image.longitude
+			}
+		}),
 		copyrightHolder: {
 			'@type': 'Organization',
 			name: 'Tellme Digiinfotech Private Limited'
