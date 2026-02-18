@@ -70,7 +70,7 @@ const Footer = () => {
 									href='/?filter=images'
 									className='transition-colors hover:text-white'
 								>
-									Photos
+									Images
 								</Link>
 							</li>
 							<li>
