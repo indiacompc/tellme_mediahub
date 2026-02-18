@@ -20,8 +20,8 @@ export default function TermsAndConditionsPage() {
 					Welcome to the website of Tellme Digiinfotech Private Limited
 					(&quot;Tellme&quot;, &quot;we&quot;, &quot;our&quot; or
 					&quot;us&quot;), accessible at&nbsp;
-					<Link href={siteUrl} className='text-blue-600 underline'>
-						{siteUrl}
+					<Link href={"youtellme.ai"} className='text-blue-600 underline'>
+						youtellme.ai
 					</Link>
 					&nbsp; (&quot;Website&quot;). By accessing or using this Website, you
 					agree to comply with and be bound by the following Terms and
