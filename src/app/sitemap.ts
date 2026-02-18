@@ -1,11 +1,8 @@
-import { MetadataRoute } from 'next';
-import {
-	getAllCategories,
-	loadShortsFromJSON
-} from '@/lib/actions';
 import { siteUrl } from '@/auth/ConfigManager';
+import { getAllCategories, loadShortsFromJSON } from '@/lib/actions';
 import type { ImageListing } from '@/types/image';
 import fs from 'fs';
+import { MetadataRoute } from 'next';
 import path from 'path';
 
 // Helper to get all videos from the database
@@ -30,9 +27,7 @@ async function getAllVideos(): Promise<Array<{ slug: string }>> {
 		const videos = data.videos
 			.filter(
 				(video: any) =>
-					video.youtube_video_id &&
-					video.status === 'public' &&
-					!video.is_short
+					video.youtube_video_id && video.status === 'public' && !video.is_short
 			)
 			.map((video: any) => {
 				const title = video.title || '';

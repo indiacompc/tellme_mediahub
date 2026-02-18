@@ -1,10 +1,10 @@
+import { siteUrl } from '@/auth/ConfigManager';
 import { getAllCategories, getImagesByCategorySlug } from '@/lib/actions';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
+import type { CollectionPage, WithContext } from 'schema-dts';
 import MasonryLayout from './MasonryLayout';
-import { siteUrl } from '@/auth/ConfigManager';
-import type { WithContext, CollectionPage } from 'schema-dts';
 
 type PhotoCategoryPageProps = {
 	params: Promise<{ category: string }>;
@@ -51,7 +51,8 @@ export async function generateMetadata({
 		description,
 		keywords,
 		alternates: {
-			canonical: pageNumber > 1 ? `${categoryUrl}&page=${pageNumber}` : categoryUrl
+			canonical:
+				pageNumber > 1 ? `${categoryUrl}&page=${pageNumber}` : categoryUrl
 		},
 		openGraph: {
 			title,
@@ -107,7 +108,7 @@ const PhotoCategoryPage = async ({
 	// Generate structured data for category page
 	const baseUrl = siteUrl.replace(/\/$/, '');
 	const categoryUrl = `${baseUrl}/images?filter=${encodeURIComponent(category.slug)}`;
-	
+
 	const collectionStructuredData: WithContext<CollectionPage> = {
 		'@context': 'https://schema.org',
 		'@type': 'CollectionPage',

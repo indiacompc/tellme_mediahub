@@ -1,3 +1,4 @@
+import { siteUrl } from '@/auth/ConfigManager';
 import ImageDetailsFull from '@/components/image-details-full';
 import ImageWithLoading from '@/components/ImageWithLoading';
 import ProtectedImageWrapper from '@/components/ProtectedImageWrapper';
@@ -9,13 +10,12 @@ import {
 } from '@/lib/actions';
 import { convertToSignedUrl } from '@/lib/firebaseStorage';
 import { isFirebaseStorageUrl } from '@/lib/imageProtection';
-import { siteUrl } from '@/auth/ConfigManager';
 import { ArrowLeft } from 'lucide-react';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import type { ImageObject, WithContext } from 'schema-dts';
 import PanoramaImageLoader from './PanoramaImageLoader';
-import type { WithContext, ImageObject } from 'schema-dts';
 
 type ParamsType = {
 	params: Promise<{
@@ -47,9 +47,11 @@ export async function generateMetadata({
 
 	const baseUrl = siteUrl.replace(/\/$/, '');
 	const categorySlug = (image as any).category_slug;
-	const categoryParam = categorySlug ? `?filter=${encodeURIComponent(categorySlug)}` : '';
+	const categoryParam = categorySlug
+		? `?filter=${encodeURIComponent(categorySlug)}`
+		: '';
 	const canonicalUrl = `${baseUrl}/images/detail/${encodeURIComponent(image.slug)}${categoryParam}`;
-	
+
 	// Build location string for structured data
 	const locationParts = [];
 	if (image.captured_location) locationParts.push(image.captured_location);
@@ -78,13 +80,18 @@ export async function generateMetadata({
 			description: image.meta_description || image.description,
 			images: [metaImageUrl]
 		},
-		other: {
-			'geo.region': image.state || undefined,
-			'geo.placename': fullLocation || undefined,
-			'geo.position': image.latitude && image.longitude 
-				? `${image.latitude};${image.longitude}` 
-				: undefined
-		}
+		...(image.state || fullLocation || (image.latitude && image.longitude)
+			? {
+					other: {
+						...(image.state && { 'geo.region': image.state }),
+						...(fullLocation && { 'geo.placename': fullLocation }),
+						...(image.latitude &&
+							image.longitude && {
+								'geo.position': `${image.latitude};${image.longitude}`
+							})
+					}
+				}
+			: {})
 	};
 }
 
@@ -120,9 +127,11 @@ export default async function ImageDetailPage({
 	// Generate structured data for SEO
 	const baseUrl = siteUrl.replace(/\/$/, '');
 	const categorySlugForStructured = (image as any).category_slug;
-	const categoryParamForStructured = categorySlugForStructured ? `?filter=${encodeURIComponent(categorySlugForStructured)}` : '';
+	const categoryParamForStructured = categorySlugForStructured
+		? `?filter=${encodeURIComponent(categorySlugForStructured)}`
+		: '';
 	const imageUrl = `${baseUrl}/images/detail/${encodeURIComponent(image.slug)}${categoryParamForStructured}`;
-	
+
 	// Build location string
 	const locationParts = [];
 	if (image.captured_location) locationParts.push(image.captured_location);
@@ -156,13 +165,14 @@ export default async function ImageDetailPage({
 		...(image.captured_date && {
 			dateCreated: image.captured_date
 		}),
-		...(image.latitude && image.longitude && {
-			geo: {
-				'@type': 'GeoCoordinates',
-				latitude: image.latitude,
-				longitude: image.longitude
-			}
-		}),
+		...(image.latitude &&
+			image.longitude && {
+				geo: {
+					'@type': 'GeoCoordinates',
+					latitude: image.latitude,
+					longitude: image.longitude
+				}
+			}),
 		copyrightHolder: {
 			'@type': 'Organization',
 			name: 'Tellme Digiinfotech Private Limited'

@@ -12,10 +12,7 @@ import { ImFacebook2 } from 'react-icons/im';
 
 const Footer = () => {
 	return (
-		<footer
-			role='contentinfo'
-			className='w-full bg-[#121212] py-5 text-white'
-		>
+		<footer role='contentinfo' className='w-full bg-[#121212] py-5 text-white'>
 			<div className='container mx-auto px-10'>
 				<div className='grid gap-12 sm:grid-cols-2 lg:grid-cols-4'>
 					{/* Column 1: Logo and Company Info */}

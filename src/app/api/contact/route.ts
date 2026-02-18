@@ -36,8 +36,7 @@ export async function POST(request: NextRequest) {
 		}
 
 		const fromEmail =
-			process.env.RESEND_FROM_EMAIL ||
-			'Tellme Media <onboarding@resend.dev>';
+			process.env.RESEND_FROM_EMAIL || 'Tellme Media <onboarding@resend.dev>';
 
 		// Escape user input for HTML
 		const safeName = escapeHtml(name);

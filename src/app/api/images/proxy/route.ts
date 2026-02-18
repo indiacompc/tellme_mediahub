@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
 		// Layer 1: Token validation (if provided) - must be valid if present
 		// Layer 2: Referer validation - ALWAYS required to block direct URL access
 		// Both layers must pass for access to be granted
-		
+
 		const referer = request.headers.get('referer') || '';
 		const originHeader = request.headers.get('origin') || '';
 		const hostHeader = request.headers.get('host') || '';
@@ -112,14 +112,15 @@ export async function GET(request: NextRequest) {
 		// Allow root path '/' (home page where category thumbnails are displayed)
 		// Also allow specific page paths where images are displayed
 		// Note: Direct URL access typically has NO referer, so empty referer is still blocked
-		const isRefererValidPage = refererPath !== '' &&
+		const isRefererValidPage =
+			refererPath !== '' &&
 			(refererPath === '/' ||
-			refererPath.startsWith('/images') ||
-			refererPath.startsWith('/shorts') ||
-			refererPath.startsWith('/video') ||
-			refererPath.startsWith('/about') ||
-			refererPath.startsWith('/contact') ||
-			refererPath.startsWith('/privacy'));
+				refererPath.startsWith('/images') ||
+				refererPath.startsWith('/shorts') ||
+				refererPath.startsWith('/video') ||
+				refererPath.startsWith('/about') ||
+				refererPath.startsWith('/contact') ||
+				refererPath.startsWith('/privacy'));
 
 		// BLOCK if:
 		// 1. No Referer header (direct URL access in address bar)
@@ -127,34 +128,36 @@ export async function GET(request: NextRequest) {
 		// 3. Referer is the proxy route itself
 		// 4. Referer is any API route
 		// 5. Referer path is not a valid page path
-		if (!hasReferer || 
-			!isFromTrustedOrigin || 
-			isRefererProxyRoute || 
+		if (
+			!hasReferer ||
+			!isFromTrustedOrigin ||
+			isRefererProxyRoute ||
 			isRefererApiRoute ||
-			!isRefererValidPage) {
+			!isRefererValidPage
+		) {
 			console.warn('Image Proxy Blocked:', {
-					reason: !hasReferer
-						? 'No Referer header (direct URL access)'
-						: !isFromTrustedOrigin
-							? 'Referer not from trusted origin'
-							: isRefererProxyRoute
-								? 'Referer is proxy route itself (direct access)'
-								: isRefererApiRoute
-									? 'Referer is API route'
-									: 'Referer is not from a valid page path',
+				reason: !hasReferer
+					? 'No Referer header (direct URL access)'
+					: !isFromTrustedOrigin
+						? 'Referer not from trusted origin'
+						: isRefererProxyRoute
+							? 'Referer is proxy route itself (direct access)'
+							: isRefererApiRoute
+								? 'Referer is API route'
+								: 'Referer is not from a valid page path',
 				referer: referer.substring(0, 100) || '(empty)',
-					refererPath,
-					refererHostname,
-					currentHost,
-					hasToken: !!token
+				refererPath,
+				refererHostname,
+				currentHost,
+				hasToken: !!token
 			});
 			return NextResponse.json(
 				{
 					error: 'Access denied.',
 					debug: isDev
 						? {
-							reason: !hasReferer
-								? 'No Referer header — direct URL access is not allowed'
+								reason: !hasReferer
+									? 'No Referer header — direct URL access is not allowed'
 									: !isFromTrustedOrigin
 										? 'Referer is not from a trusted origin'
 										: isRefererProxyRoute
@@ -162,13 +165,13 @@ export async function GET(request: NextRequest) {
 											: isRefererApiRoute
 												? 'Referer is an API route — only page requests allowed'
 												: 'Referer is not from a valid page path — must be from an actual page',
-							referer: referer.substring(0, 100) || '(empty)',
+								referer: referer.substring(0, 100) || '(empty)',
 								refererPath,
 								refererHostname,
-							currentHost,
+								currentHost,
 								currentHostname,
 								hasToken: !!token
-						}
+							}
 						: undefined
 				},
 				{ status: 403 }

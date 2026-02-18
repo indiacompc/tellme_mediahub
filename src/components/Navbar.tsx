@@ -70,7 +70,7 @@ const Navbar = ({ tellme_logo }: { tellme_logo: StaticImageData }) => {
 				<div className='flex h-full items-center gap-3'>
 					<button
 						onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-						className='flex items-center justify-center gap-2 rounded-lg p-2.5 text-white transition-colors hover:bg-white/10 hover:text-foreground'
+						className='hover:text-foreground flex items-center justify-center gap-2 rounded-lg p-2.5 text-white transition-colors hover:bg-white/10'
 						aria-label='Toggle theme'
 					>
 						{mounted ? (
@@ -86,7 +86,7 @@ const Navbar = ({ tellme_logo }: { tellme_logo: StaticImageData }) => {
 					<Link
 						target='_blank'
 						href='mailto:digital@tellmedigi.com'
-						className='flex items-center justify-center gap-2 rounded-lg p-2.5 text-white transition-colors hover:bg-white/10 hover:text-foreground'
+						className='hover:text-foreground flex items-center justify-center gap-2 rounded-lg p-2.5 text-white transition-colors hover:bg-white/10'
 					>
 						<FaEnvelope size={20} />
 					</Link>

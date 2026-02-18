@@ -11,7 +11,6 @@ import { FaArrowLeft } from 'react-icons/fa';
 import { LuUserRound } from 'react-icons/lu';
 import { MdDraw, MdOutlineShoppingCart } from 'react-icons/md';
 import type { AboutPage, WithContext } from 'schema-dts';
-import AboutUsSlider from './AboutUsSlider';
 import AwardsComponentSection from './AwardsComponent';
 
 export const metadata: Metadata = {
@@ -352,7 +351,7 @@ const AboutUsPage = () => {
 						If you have any projects in mind say hello at&nbsp;
 						<a
 							href='mailto:tellmedigi@outlook.com'
-							className='underline hover:text-primary'
+							className='hover:text-primary underline'
 						>
 							tellmedigi@outlook.com
 						</a>

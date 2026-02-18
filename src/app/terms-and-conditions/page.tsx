@@ -1,4 +1,3 @@
-import { siteUrl } from '@/auth/ConfigManager';
 import Link from 'next/link';
 import { IoArrowBack } from 'react-icons/io5';
 
@@ -12,7 +11,7 @@ export default function TermsAndConditionsPage() {
 				<IoArrowBack className='h-4 w-4' />
 				Back to Home
 			</Link>
-			<div className='mx-10 text-sm leading-relaxed text-foreground'>
+			<div className='text-foreground mx-10 text-sm leading-relaxed'>
 				<h2 className='font-cinzel text-base font-semibold'>Effective Date:</h2>
 				<p className='mb-3'>1st July 2025</p>
 
@@ -20,7 +19,12 @@ export default function TermsAndConditionsPage() {
 					Welcome to the website of Tellme Digiinfotech Private Limited
 					(&quot;Tellme&quot;, &quot;we&quot;, &quot;our&quot; or
 					&quot;us&quot;), accessible at&nbsp;
-					<Link href={"https://youtellme.ai"} className='text-blue-600 underline' target='_blank' rel='noopener noreferrer'>
+					<Link
+						href={'https://youtellme.ai'}
+						className='text-blue-600 underline'
+						target='_blank'
+						rel='noopener noreferrer'
+					>
 						youtellme.ai
 					</Link>
 					&nbsp; (&quot;Website&quot;). By accessing or using this Website, you
