@@ -249,7 +249,7 @@ export default function BannerSection({ }: BannerSectionProps) {
 										delay: 0.1
 									}}
 								>
-									Tellme Media Hub
+									Tellme Media
 								</motion.span>
 							</h2>
 							<p className='py-2 text-xs leading-relaxed wrap-break-word hyphens-none whitespace-normal sm:py-3 sm:text-sm md:py-4 md:text-base lg:py-5 lg:text-lg xl:text-xl'>

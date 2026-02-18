@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
 
 		const fromEmail =
 			process.env.RESEND_FROM_EMAIL ||
-			'Tellme Media Hub <onboarding@resend.dev>';
+			'Tellme Media <onboarding@resend.dev>';
 
 		// Escape user input for HTML
 		const safeName = escapeHtml(name);
@@ -75,14 +75,14 @@ export async function POST(request: NextRequest) {
 			const userEmailResult = await resend.emails.send({
 				from: fromEmail,
 				to: email,
-				subject: 'Thank you for contacting Tellme Media Hub',
+				subject: 'Thank you for contacting Tellme Media',
 				html: `
 					<h2>Thank you for reaching out!</h2>
 					<p>Dear ${safeName},</p>
 					<p>We have received your message and will get back to you as soon as possible.</p>
 					<p><strong>Your message:</strong></p>
 					<p>${safeMessage}</p>
-					<p>Best regards,<br>Tellme Media Hub Team</p>
+					<p>Best regards,<br>Tellme Media Team</p>
 				`
 			});
 

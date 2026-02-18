@@ -6,8 +6,8 @@ export const organizationJsonLd: WithContext<Organization> = {
 	'@type': 'Organization',
 	name: 'Tellme Digiinfotech Private Limited',
 	legalName: 'Tellme Digiinfotech Private Limited',
-	url: 'https://tellmemediahub.com',
-	logo: `https://tellmemediahub.com${tellme_logo.src}`,
+	url: ' https://tellme360.media',
+	logo: ` https://tellme360.media${tellme_logo.src}`,
 	telephone: '+917030238122',
 	email: 'digital@tellmedigi.com',
 	address: {
@@ -52,8 +52,8 @@ export const organizationJsonLd: WithContext<Organization> = {
 export const websiteJsonLd: WithContext<WebSite> = {
 	'@context': 'https://schema.org',
 	'@type': 'WebSite',
-	name: 'Tellme Media Hub',
-	url: 'https://tellmemediahub.com',
+	name: 'Tellme Media',
+	url: ' https://tellme360.media',
 	copyrightHolder: organizationJsonLd,
 	sameAs: [
 		'https://www.facebook.com/Tellme360/',
@@ -64,21 +64,21 @@ export const websiteJsonLd: WithContext<WebSite> = {
 		'https://www.pinterest.co.uk/Tellme360/'
 	],
 	keywords:
-		'tellme,360,mediahub,videohub,tellme360mediahub,tellme Media Hub,videos,tellme360,stock videos,nature',
+		'tellme,360,mediahub,videohub,tellme360mediahub,Tellme Media,videos,tellme360,stock videos,nature',
 	description:
-		'Welcome to TellMe Media Hub, the ultimate resource for high-quality. diverse, and captivating stock footage of all travel and tourism points across the nation.We provide RAW footage straight from the camera to give you the entire editorial control. Search below to find your desired footage.',
+		'Welcome to Tellme Media, the ultimate resource for high-quality. diverse, and captivating stock footage of all travel and tourism points across the nation.We provide RAW footage straight from the camera to give you the entire editorial control. Search below to find your desired footage.',
 	video: {
 		'@type': 'VideoObject',
 		name: 'Tellme 360 WebSite Video',
 		description:
-			'Welcome to TellMe Media Hub, the ultimate resource for high-quality. diverse, and captivating stock footage of all travel and tourism points across the nation.We provide RAW footage straight from the camera to give you the entire editorial control. Search below to find your desired footage.',
-		contentUrl: 'https://tellmemediahub.com/bg_video.mp4'
+			'Welcome to Tellme Media, the ultimate resource for high-quality. diverse, and captivating stock footage of all travel and tourism points across the nation.We provide RAW footage straight from the camera to give you the entire editorial control. Search below to find your desired footage.',
+		contentUrl: ' https://tellme360.media/bg_video.mp4'
 	}
 	// potentialAction: {
 	//   '@type': 'SearchAction',
 	//   target: {
 	//     '@type': 'EntryPoint',
-	//     urlTemplate: 'https://tellmemediahub.com/search/videos?query={search_term_string}',
+	//     urlTemplate: ' https://tellme360.media/search/videos?query={search_term_string}',
 	//   },
 	//   'query-input': 'required name=search_term_string',
 	// },
@@ -87,8 +87,8 @@ export const websiteJsonLd: WithContext<WebSite> = {
 	//   target: {
 	//     '@type': 'EntryPoint',
 	//     urlTemplate:
-	//       'https://tellmemediahub.com/yellow-pages/{search_term_string}',
-	//     // 'target': "https://tellmemediahub.com/yellow-pages/{query}",
+	//       ' https://tellme360.media/yellow-pages/{search_term_string}',
+	//     // 'target': " https://tellme360.media/yellow-pages/{query}",
 	//   },
 	//   'query-input': 'required name=search_term_string',
 	// },

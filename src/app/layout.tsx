@@ -23,16 +23,16 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-	metadataBase: new URL('https://tellmemediahub.com'),
-	title: 'Tellme Media Hub',
+	metadataBase: new URL('https://tellme360.media'),
+	title: 'Tellme Media',
 	description: `${websiteJsonLd.description}`,
 	keywords: `${websiteJsonLd.keywords}`,
 	generator: 'Next.js',
-	applicationName: 'Tellme Media Hub',
+	applicationName: 'Tellme Media',
 	referrer: 'origin-when-cross-origin',
 
-	authors: [{ name: 'Shrikant Dhayaje', url: 'https://github.com/shriekdj' }],
-	creator: 'Indiacom And Tellme Digiinfotech Web Development Team 2024',
+	authors: [{ name: 'Pratik Yawalkar', url: 'https://github.com/pratikviper' }],
+	creator: 'Indiacom And Tellme Digiinfotech Web Development Team 2026',
 	publisher: 'Tellme Digiinfotech Private Limited',
 	verification: {
 		google: 'dOSHHtiuVy9KXC8vLDa-nt25mKjl3CP1GZcukB53ENc',
@@ -57,15 +57,15 @@ export const metadata: Metadata = {
 		apple: '/icon-192x192.png'
 	},
 	openGraph: {
-		title: 'Tellme Media Hub',
+		title: 'Tellme Media',
 		description: `${websiteJsonLd.description}`,
-		siteName: 'Tellme Media Hub',
+		siteName: 'Tellme Media',
 		locale: 'en_US',
 		type: 'website'
 	},
 	twitter: {
 		card: 'summary_large_image',
-		title: 'Tellme Media Hub',
+		title: 'Tellme Media',
 		description: `${websiteJsonLd.description}`,
 		creator: '@TeamIndiacom'
 	},
@@ -88,7 +88,7 @@ export const metadata: Metadata = {
 	},
 	appLinks: {
 		web: {
-			url: 'https://tellmemediahub.com',
+			url: ' https://tellme360.media',
 			should_fallback: true
 		}
 	}
