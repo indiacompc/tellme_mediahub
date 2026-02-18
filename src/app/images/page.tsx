@@ -10,6 +10,9 @@ import { LuArrowLeft } from 'react-icons/lu';
 import CategoryImagesFilter from './[category]/CategoryImagesFilter';
 import MasonryLayout from './[category]/MasonryLayout';
 
+// Metadata is handled in layout or we can create a separate metadata file
+// For client components, we'll add metadata via a parent server component wrapper if needed
+
 function ImagesPageContent() {
 	const searchParams = useSearchParams();
 	const filter = searchParams.get('filter');

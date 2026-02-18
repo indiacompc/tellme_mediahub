@@ -9,11 +9,13 @@ import {
 } from '@/lib/actions';
 import { convertToSignedUrl } from '@/lib/firebaseStorage';
 import { isFirebaseStorageUrl } from '@/lib/imageProtection';
+import { siteUrl } from '@/auth/ConfigManager';
 import { ArrowLeft } from 'lucide-react';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import PanoramaImageLoader from './PanoramaImageLoader';
+import type { WithContext, ImageObject } from 'schema-dts';
 
 type ParamsType = {
 	params: Promise<{
@@ -43,20 +45,45 @@ export async function generateMetadata({
 		? await convertToSignedUrl(image.src, 86400) // 24 hours expiry for metadata
 		: image.src;
 
+	const baseUrl = siteUrl.replace(/\/$/, '');
+	const categorySlug = (image as any).category_slug;
+	const categoryParam = categorySlug ? `?filter=${encodeURIComponent(categorySlug)}` : '';
+	const canonicalUrl = `${baseUrl}/images/detail/${encodeURIComponent(image.slug)}${categoryParam}`;
+	
+	// Build location string for structured data
+	const locationParts = [];
+	if (image.captured_location) locationParts.push(image.captured_location);
+	if (image.city) locationParts.push(image.city);
+	if (image.state) locationParts.push(image.state);
+	const fullLocation = locationParts.join(', ');
+
 	return {
 		title: image.meta_title || image.title,
 		description: image.meta_description || image.description,
-		keywords: image.meta_keywords,
+		keywords: image.meta_keywords || undefined,
+		alternates: {
+			canonical: canonicalUrl
+		},
 		openGraph: {
 			title: image.meta_title || image.title,
 			description: image.meta_description || image.description,
-			images: [metaImageUrl]
+			images: [metaImageUrl],
+			type: 'website',
+			url: canonicalUrl,
+			siteName: 'Tellme Media'
 		},
 		twitter: {
 			card: 'summary_large_image',
 			title: image.meta_title || image.title,
 			description: image.meta_description || image.description,
 			images: [metaImageUrl]
+		},
+		other: {
+			'geo.region': image.state || undefined,
+			'geo.placename': fullLocation || undefined,
+			'geo.position': image.latitude && image.longitude 
+				? `${image.latitude};${image.longitude}` 
+				: undefined
 		}
 	};
 }
@@ -90,6 +117,63 @@ export default async function ImageDetailPage({
 		? await getProtectedImageUrlServer(image.src)
 		: image.src;
 
+	// Generate structured data for SEO
+	const baseUrl = siteUrl.replace(/\/$/, '');
+	const categorySlugForStructured = (image as any).category_slug;
+	const categoryParamForStructured = categorySlugForStructured ? `?filter=${encodeURIComponent(categorySlugForStructured)}` : '';
+	const imageUrl = `${baseUrl}/images/detail/${encodeURIComponent(image.slug)}${categoryParamForStructured}`;
+	
+	// Build location string
+	const locationParts = [];
+	if (image.captured_location) locationParts.push(image.captured_location);
+	if (image.city) locationParts.push(image.city);
+	if (image.state) locationParts.push(image.state);
+	const fullLocation = locationParts.join(', ');
+
+	// Generate signed URL for structured data image
+	const structuredDataImageUrl = isFirebaseStorageUrl(image.src)
+		? await convertToSignedUrl(image.src, 86400)
+		: image.src;
+
+	const imageStructuredData: WithContext<ImageObject> = {
+		'@context': 'https://schema.org',
+		'@type': 'ImageObject',
+		name: image.meta_title || image.title,
+		description: image.meta_description || image.description,
+		image: structuredDataImageUrl,
+		url: imageUrl,
+		width: image.width,
+		height: image.height,
+		contentUrl: structuredDataImageUrl,
+		encodingFormat: 'image/jpeg',
+		keywords: image.meta_keywords || undefined,
+		...(fullLocation && {
+			contentLocation: {
+				'@type': 'Place',
+				name: fullLocation
+			}
+		}),
+		...(image.captured_date && {
+			dateCreated: image.captured_date
+		}),
+		...(image.latitude && image.longitude && {
+			geo: {
+				'@type': 'GeoCoordinates',
+				latitude: image.latitude,
+				longitude: image.longitude
+			}
+		}),
+		copyrightHolder: {
+			'@type': 'Organization',
+			name: 'Tellme Digiinfotech Private Limited'
+		},
+		license: `${baseUrl}/terms-and-conditions`,
+		creator: {
+			'@type': 'Organization',
+			name: 'Tellme Digiinfotech Private Limited'
+		}
+	};
+
 	return (
 		<div className='mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 md:px-8 lg:px-10 lg:py-10 xl:max-w-6xl 2xl:max-w-7xl'>
 			{/* Back Button */}
@@ -117,7 +201,7 @@ export default async function ImageDetailPage({
 								) : (
 									<ImageWithLoading
 										src={protectedImageUrl}
-										alt={image.title}
+										alt={image.meta_title || image.title}
 										width={image.width}
 										height={image.height}
 										className='h-full w-full object-contain'
@@ -146,6 +230,15 @@ export default async function ImageDetailPage({
 			<RecommendedImages
 				images={suggestedImages}
 				currentCategorySlug={categoryFilter}
+			/>
+
+			{/* Structured Data for SEO */}
+			<script
+				id='imageStructuredData'
+				type='application/ld+json'
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(imageStructuredData)
+				}}
 			/>
 		</div>
 	);

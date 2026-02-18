@@ -115,7 +115,7 @@ const MasonryLayout = ({
 											}
 											width={Math.min(item.width, 800)}
 											height={Math.min(item.height, 1200)}
-											alt={item.title}
+											alt={(item as any).meta_title || item.title}
 											className='h-full w-full rounded-lg object-cover shadow-lg transition-shadow duration-300 group-hover:shadow-xl dark:shadow-gray-900/50 dark:group-hover:shadow-gray-800/60'
 											style={{
 												aspectRatio: `${item.width} / ${item.height}`

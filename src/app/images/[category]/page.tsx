@@ -3,6 +3,8 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import MasonryLayout from './MasonryLayout';
+import { siteUrl } from '@/auth/ConfigManager';
+import type { WithContext, CollectionPage } from 'schema-dts';
 
 type PhotoCategoryPageProps = {
 	params: Promise<{ category: string }>;
@@ -37,21 +39,38 @@ export async function generateMetadata({
 		notFound();
 	}
 
+	const { siteUrl } = await import('@/auth/ConfigManager');
+	const baseUrl = siteUrl.replace(/\/$/, '');
+	const categoryUrl = `${baseUrl}/images?filter=${encodeURIComponent(category.slug)}`;
 	const title = `${category.name}${pageNumber > 1 ? ` | Page ${pageNumber}` : ''}`;
+	const description = `Browse our collection of ${category.name} images. High-quality stock photos and images available for licensing.`;
+	const keywords = `${category.name}, images, stock photos, ${category.name} photography, ${category.name} pictures`;
 
 	return {
 		title,
-		description: `Browse ${category.name} images`,
-		category: 'Image Category Gallery',
+		description,
+		keywords,
+		alternates: {
+			canonical: pageNumber > 1 ? `${categoryUrl}&page=${pageNumber}` : categoryUrl
+		},
 		openGraph: {
 			title,
-			description: `Browse ${category.name} images`,
-			type: 'website'
+			description,
+			type: 'website',
+			url: pageNumber > 1 ? `${categoryUrl}&page=${pageNumber}` : categoryUrl,
+			siteName: 'Tellme Media'
 		},
 		twitter: {
 			card: 'summary_large_image',
 			title,
-			description: `Browse ${category.name} images`
+			description
+		},
+		robots: {
+			index: true,
+			follow: true,
+			...(pageNumber > 1 && {
+				noindex: false // Allow pagination pages to be indexed
+			})
 		}
 	};
 }
@@ -88,6 +107,54 @@ const PhotoCategoryPage = async ({
 	const { images: imageListingsData, total: total_images } =
 		await getImagesByCategorySlug(paramsAwaited.category, limit, skip);
 
+	// Generate structured data for category page
+	const baseUrl = siteUrl.replace(/\/$/, '');
+	const categoryUrl = `${baseUrl}/images?filter=${encodeURIComponent(category.slug)}`;
+	
+	const collectionStructuredData: WithContext<CollectionPage> = {
+		'@context': 'https://schema.org',
+		'@type': 'CollectionPage',
+		name: category.name,
+		description: `Browse our collection of ${category.name} images. High-quality stock photos and images available for licensing.`,
+		url: pageNumber > 1 ? `${categoryUrl}&page=${pageNumber}` : categoryUrl,
+		mainEntity: {
+			'@type': 'ItemList',
+			numberOfItems: total_images,
+			itemListElement: imageListingsData.slice(0, 10).map((image, index) => ({
+				'@type': 'ListItem',
+				position: skip + index + 1,
+				item: {
+					'@type': 'ImageObject',
+					name: (image as any).meta_title || image.title,
+					url: `${baseUrl}/images/detail/${encodeURIComponent(image.slug)}${category.slug ? `?filter=${encodeURIComponent(category.slug)}` : ''}`
+				}
+			}))
+		},
+		breadcrumb: {
+			'@type': 'BreadcrumbList',
+			itemListElement: [
+				{
+					'@type': 'ListItem',
+					position: 1,
+					name: 'Home',
+					item: baseUrl
+				},
+				{
+					'@type': 'ListItem',
+					position: 2,
+					name: 'Images',
+					item: `${baseUrl}/images`
+				},
+				{
+					'@type': 'ListItem',
+					position: 3,
+					name: category.name,
+					item: categoryUrl
+				}
+			]
+		}
+	};
+
 	return (
 		<main className='min-h-screen'>
 			<div className='relative container mx-auto px-4 py-4 sm:px-6 sm:py-8 lg:px-8'>
@@ -103,6 +170,15 @@ const PhotoCategoryPage = async ({
 					/>
 				</Suspense>
 			</div>
+
+			{/* Structured Data for SEO */}
+			<script
+				id='collectionStructuredData'
+				type='application/ld+json'
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(collectionStructuredData)
+				}}
+			/>
 		</main>
 	);
 };
