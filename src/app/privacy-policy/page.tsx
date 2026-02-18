@@ -1,334 +1,244 @@
-'use client';
-
-import tellme_logo from '@/assets/images/tellme_logo.png';
-import Navbar from '@/components/Navbar';
-import { motion } from 'motion/react';
+import { siteUrl } from '@/auth/ConfigManager';
 import Link from 'next/link';
+import { IoArrowBack } from 'react-icons/io5';
 
-const PrivacyPolicy = () => {
+export default function PrivacyPolicyPage() {
 	return (
-		<main className='bg-background min-h-screen'>
-			<div className='text-foreground relative w-full overflow-hidden'>
-				 
+		<div className='mx-6 py-6'>
+			<Link
+				href='/'
+				className='text-muted-foreground hover:text-foreground mb-6 inline-flex items-center gap-2 text-sm transition-colors'
+			>
+				<IoArrowBack className='h-4 w-4' />
+				Back to Home
+			</Link>
+			<div className='mx-10 text-sm leading-relaxed text-foreground'>
+				<h2 className='font-cinzel text-base font-semibold'>Effective Date:</h2>
+				<p className='mb-3'>1st July 2025</p>
 
-				<section className='px-4 pt-24 pb-12 sm:px-6 md:px-8 lg:px-12 xl:px-16'>
-					<div className='mx-auto max-w-4xl'>
-						<motion.div
-							initial={{ opacity: 0, y: 20 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.6 }}
-							className='mb-8'
-						>
-							<h1 className='mb-4 text-3xl font-semibold sm:text-4xl md:text-5xl lg:text-6xl'>
-								Privacy Policy
-							</h1>
-						</motion.div>
+				<h2 className='font-cinzel text-base font-semibold'>Last Updated:</h2>
+				<p className='mb-3'>30th June 2025</p>
 
-						<motion.section
-							initial={{ opacity: 0, y: 20 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.6, delay: 0.2 }}
-							className='space-y-8'
-						>
-							<div className='space-y-4'>
-								<h2
-									className='text-2xl font-semibold sm:text-3xl'
-									id='introduction'
-								>
-									Introduction
-								</h2>
-								<p className='text-base leading-relaxed sm:text-lg'>
-									<Link
-										href='https://tellmemediahub.com'
-										className='font-semibold hover:underline'
-									>
-										tellmemediahub.com
-									</Link>{' '}
-									(&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is
-									committed to protecting the privacy of our users
-									(&quot;you,&quot; &quot;your&quot;). This Privacy Policy
-									explains how we collect, use, disclose, and safeguard your
-									information when you visit our website -{' '}
-									<Link
-										href='https://tellmemediahub.com'
-										className='font-semibold hover:underline'
-									>
-										tellmemediahub.com
-									</Link>{' '}
-									(the &quot;Website&quot;) and interact with our digital media
-									content.
-								</p>
-							</div>
+				<p className='mb-4'>
+					This Privacy Policy explains how Tellme Digiinfotech Private Limited
+					(&quot;Tellme&&quot;, &quot;we&&quot;, &quot;our&&quot;, or
+					&quot;us&&quot;) collects, uses, shares, and protects personal and
+					non-personal information of users of our website&nbsp;
+					<Link href={siteUrl} className='text-blue-600 underline'>
+						{siteUrl}
+					</Link>
+					&nbsp; (&quot;Website&quot;). By accessing or using the Website, you
+					agree to the practices described in this policy.
+				</p>
 
-							<div className='border-border space-y-4 border-t pt-6'>
-								<h2
-									className='text-2xl font-semibold sm:text-3xl'
-									id='information-we-collect'
-								>
-									Information We Collect
-								</h2>
-								<p className='text-base leading-relaxed sm:text-lg'>
-									We may collect and process the following types of information:
-								</p>
-								<ul className='list-inside list-disc space-y-2 text-base sm:text-lg'>
-									<li>
-										Personal Information: When you create an account, subscribe
-										to our newsletter, contact us, or interact with our digital
-										media content, we may collect personal information such as
-										your name, email address, mailing address, phone number, and
-										any other contact details.
-									</li>
-									<li>
-										Non-Personal Information: We may collect non-personal
-										information such as browser type, device information, IP
-										address, and browsing behavior through cookies and similar
-										technologies.
-									</li>
-								</ul>
-							</div>
+				<h3 className='font-cinzel text-base font-semibold'>
+					1. Company Details
+				</h3>
+				<p className='mb-4'>
+					<strong>Tellme Digiinfotech Private Limited</strong>
+					<br />
+					Registered Office: 218, Akshay Complex, Dhole Patil Road, Pune -
+					411001, Maharashtra, India
+					<br />
+					Contact Email:&nbsp;
+					<a
+						href='mailto:tellmedigi@outlook.com'
+						className='text-blue-600 underline'
+					>
+						tellmedigi@outlook.com
+					</a>
+				</p>
 
-							<div className='border-border space-y-4 border-t pt-6'>
-								<h2
-									className='text-2xl font-semibold sm:text-3xl'
-									id='how-we-use-your-information'
-								>
-									How We Use Your Information
-								</h2>
-								<p className='text-base leading-relaxed sm:text-lg'>
-									By accepting this Privacy Policy and our Terms, you expressly
-									consent to our use and disclosure of your Personal Information
-									in the manner prescribed in this Privacy Policy. We use the
-									information we collect for various purposes including:
-								</p>
-								<ul className='list-inside list-disc space-y-2 text-base sm:text-lg'>
-									<li>To provide and maintain our website.</li>
-									<li>
-										To communicate with you, including sending updates and
-										promotional materials.
-									</li>
-									<li>To improve our website and services.</li>
-									<li>To comply with legal obligations.</li>
-								</ul>
-							</div>
+				<h3 className='font-cinzel text-base font-semibold'>2. Scope</h3>
+				<p className='mb-4'>
+					This Privacy Policy applies to all users of the Website including
+					individuals, professionals, business entities, and creators who
+					interact with our content, register, or license experiential creations
+					(e.g., images, videos, and 360° contents).
+				</p>
 
-							<div className='border-border space-y-4 border-t pt-6'>
-								<h2
-									className='text-2xl font-semibold sm:text-3xl'
-									id='disclosure-of-your-information'
-								>
-									Disclosure of Your Information
-								</h2>
-								<p className='text-base leading-relaxed sm:text-lg'>
-									We may share your information with:
-								</p>
-								<ul className='list-inside list-disc space-y-2 text-base sm:text-lg'>
-									<li>
-										Service Providers: We may share your information with
-										third-party service providers who perform services on our
-										behalf, such as payment processing, email delivery, and data
-										analysis.
-									</li>
-									<li>
-										Legal Requirements: We may disclose your information if
-										required to do so by law or in response to valid requests by
-										public authorities.
-									</li>
-									<li>
-										Business Transfers: In the event of a merger, acquisition,
-										or sale of all or a portion of our assets, your information
-										may be transferred.
-									</li>
-								</ul>
-							</div>
+				<h3 className='font-cinzel text-base font-semibold'>
+					3. Information We Collect
+				</h3>
+				<h4 className='mt-2 text-sm font-semibold'>a) Personal Information</h4>
+				<ul className='list-disc pl-5'>
+					<li>Name, business/organization name</li>
+					<li>Contact details: phone number, email, mailing address</li>
+					<li>Professional or business category</li>
+					<li>Geo-location data (e.g., latitude/longitude)</li>
+					<li>Feedback, submissions, or correspondence with us</li>
+				</ul>
+				<p className='mt-2 mb-4'>
+					<strong>Note:</strong> We do not intentionally collect or process
+					Sensitive Personal Data or Information (SPDI) as defined under Indian
+					IT Rules.
+				</p>
 
-							<div className='border-border space-y-4 border-t pt-6'>
-								<h2
-									className='text-2xl font-semibold sm:text-3xl'
-									id='security-of-your-information'
-								>
-									Security of Your Information
-								</h2>
-								<p className='text-base leading-relaxed sm:text-lg'>
-									We use administrative, technical, and physical security
-									measures to help protect your personal information. However,
-									no electronic transmission or storage of information can be
-									entirely secure, so we cannot guarantee absolute security.
-								</p>
-							</div>
+				<h4 className='mt-2 text-sm font-semibold'>
+					b) Non-Personal Information
+				</h4>
+				<ul className='mb-4 list-disc pl-5'>
+					<li>IP address and browser type</li>
+					<li>Usage behavior, page views, clicks</li>
+					<li>Device information and location metadata</li>
+					<li>Analytics and cookie data</li>
+				</ul>
 
-							<div className='border-border space-y-4 border-t pt-6'>
-								<h2
-									className='text-2xl font-semibold sm:text-3xl'
-									id='cookies-and-tracking-technologies'
-								>
-									Cookies and Tracking Technologies
-								</h2>
-								<p className='text-base leading-relaxed sm:text-lg'>
-									We use cookies and similar tracking technologies to track
-									activity on our Website and store certain information. You can
-									instruct your browser to refuse all cookies or to indicate
-									when a cookie is being sent. However, if you do not accept
-									cookies, you may not be able to use some portions of our
-									Website.
-								</p>
-							</div>
+				<h3 className='font-cinzel text-base font-semibold'>
+					4. How We Collect Information
+				</h3>
+				<ul className='mb-4 list-disc pl-5'>
+					<li>Direct submissions via forms, registration, or contact pages</li>
+					<li>Automated technologies such as cookies, analytics tools</li>
+					<li>Public domain sources and licensed data repositories</li>
+					<li>
+						User-generated content including reviews, uploads, and comments
+					</li>
+					<li>
+						Collaborative content from verified content creators and
+						photographers
+					</li>
+				</ul>
 
-							<div className='border-border space-y-4 border-t pt-6'>
-								<h2
-									className='text-2xl font-semibold sm:text-3xl'
-									id='your-data-protection-rights'
-								>
-									Your Data Protection Rights
-								</h2>
-								<p className='text-base leading-relaxed sm:text-lg'>
-									Depending on your location, you may have the following rights
-									regarding your personal data:
-								</p>
-								<ul className='list-inside list-disc space-y-2 text-base sm:text-lg'>
-									<li>
-										The right to access - You have the right to request copies
-										of your personal data.
-									</li>
-									<li>
-										The right to rectification - You have the right to request
-										that we correct any information you believe is inaccurate or
-										complete information you believe is incomplete.
-									</li>
-									<li>
-										The right to erasure - You have the right to request that we
-										erase your personal data under certain conditions.
-									</li>
-									<li>
-										The right to restrict processing - You have the right to
-										request that we restrict the processing of your personal
-										data under certain conditions.
-									</li>
-									<li>
-										The right to object to processing - You have the right to
-										object to our processing of your personal data under certain
-										conditions.
-									</li>
-									<li>
-										The right to data portability - You have the right to
-										request that we transfer the data that we have collected to
-										another organization or directly to you under certain
-										conditions.
-									</li>
-								</ul>
-								<p className='text-base leading-relaxed sm:text-lg'>
-									To exercise these rights, please contact us at{' '}
-									<Link
-										href='mailto:tellmedigi@outlook.com'
-										className='font-semibold hover:underline'
-									>
-										tellmedigi@outlook.com
-									</Link>
-									.
-								</p>
-							</div>
+				<h3 className='font-cinzel text-base font-semibold'>
+					5. Use of Information
+				</h3>
+				<ul className='mb-2 list-disc pl-5'>
+					<li>To verify, process, and publish submitted content</li>
+					<li>To deliver services and user support</li>
+					<li>To display digital creations</li>
+					<li>To market new content and offers</li>
+					<li>To improve Website performance and personalization</li>
+					<li>To comply with legal and regulatory obligations</li>
+				</ul>
+				<p className='mb-4'>
+					We may aggregate and share anonymized statistical data with third
+					parties, partners, or sponsors.
+				</p>
 
-							<div className='border-border space-y-4 border-t pt-6'>
-								<h2
-									className='text-2xl font-semibold sm:text-3xl'
-									id='your-consent'
-								>
-									Your Consent
-								</h2>
-								<p className='text-base leading-relaxed sm:text-lg'>
-									By accepting this Privacy Policy and our Terms, you expressly
-									consent to our use and disclosure of your Personal Information
-									in the manner prescribed in this Privacy Policy.
-								</p>
-							</div>
+				<h3 className='font-cinzel text-base font-semibold'>
+					6. Sharing of Information
+				</h3>
+				<p className='mb-2'>Your personal information may be shared:</p>
+				<ul className='mb-4 list-disc pl-5'>
+					<li>With third-party service providers under contract</li>
+					<li>With licensees and affiliates for lawful business purposes</li>
+					<li>
+						In case of legal requests by government or regulatory agencies
+					</li>
+					<li>
+						During company restructuring, merger, or acquisition (with prior
+						safeguards)
+					</li>
+				</ul>
+				<p className='mb-4'>
+					No personal data will be sold to third parties without your consent.
+				</p>
 
-							<div className='border-border space-y-4 border-t pt-6'>
-								<h2
-									className='text-2xl font-semibold sm:text-3xl'
-									id='children-s-privacy'
-								>
-									Children&apos;s Privacy
-								</h2>
-								<p className='text-base leading-relaxed sm:text-lg'>
-									Our Website is not intended for children under the age of 18.
-									We do not knowingly collect personal information from children
-									under 18. If we become aware that we have collected personal
-									information from a child under 18, we will take steps to
-									delete such information from our files as soon as possible.
-								</p>
-							</div>
+				<h3 className='font-cinzel text-base font-semibold'>
+					7. User Submissions and Publications
+				</h3>
+				<ul className='mb-4 list-disc pl-5'>
+					<li>
+						You grant Tellme a worldwide, non-exclusive, royalty-free license to
+						use, display, and distribute your submission
+					</li>
+					<li>
+						You may withdraw consent to publish your content by contacting our
+						Grievance Officer
+					</li>
+				</ul>
 
-							<div className='border-border space-y-4 border-t pt-6'>
-								<h2
-									className='text-2xl font-semibold sm:text-3xl'
-									id='changes-to-this-privacy-policy'
-								>
-									Changes to This Privacy Policy
-								</h2>
-								<p className='text-base leading-relaxed sm:text-lg'>
-									We may update our Privacy Policy from time to time. You are
-									advised to review this Privacy Policy periodically for any
-									changes.
-								</p>
-							</div>
+				<h3 className='font-cinzel text-base font-semibold'>
+					8. Cookies and Tracking Technologies
+				</h3>
+				<ul className='mb-4 list-disc pl-5'>
+					<li>Maintain user sessions and site preferences</li>
+					<li>Provide content recommendations</li>
+					<li>Collect analytics data</li>
+					<li>Enable remarketing or targeted advertising</li>
+				</ul>
+				<p className='mb-4'>
+					You may disable cookies in your browser settings, but this may limit
+					Website functionality.
+				</p>
 
-							<div className='border-border space-y-4 border-t pt-6'>
-								<h2
-									className='text-2xl font-semibold sm:text-3xl'
-									id='links-to-other-websites'
-								>
-									Links to Other Websites
-								</h2>
-								<p className='text-base leading-relaxed sm:text-lg'>
-									Our Website has links that redirect you to our social
-									networking pages such as Facebook, Twitter, LinkedIn, YouTube,
-									and other websites that may be added from time to time. Your
-									visits and activity on those portals shall be governed by
-									their own privacy policies. Please go through their privacy
-									policies to get information on their privacy practices.
-								</p>
-							</div>
+				<h3 className='font-cinzel text-base font-semibold'>
+					9. Google Analytics & Third-Party Tools
+				</h3>
+				<p className='mb-4'>
+					We use Google Analytics and related tools for traffic analysis. You
+					may opt out using Google&apos;s Opt-Out Tool.
+				</p>
 
-							<div className='border-border space-y-4 border-t pt-6'>
-								<h2
-									className='text-2xl font-semibold sm:text-3xl'
-									id='contact-us'
-								>
-									Contact Us
-								</h2>
-								<p className='text-base leading-relaxed sm:text-lg'>
-									If you have any questions about this Privacy Policy, please
-									contact us at:
-								</p>
-								<div className='space-y-2 text-base sm:text-lg'>
-									<p>TellMe Digiinfotech Private Limited</p>
-									<p>Office No. 218, Akshay Complex,</p>
-									<p>Dhole Patil Road, Pune - 411001</p>
-									<p>
-										Email:{' '}
-										<Link
-											href='mailto:tellmedigi@outlook.com'
-											className='font-semibold hover:underline'
-										>
-											tellmedigi@outlook.com
-										</Link>
-									</p>
-									<p>
-										Phone:{' '}
-										<Link
-											href='tel:+917030238122'
-											className='font-semibold hover:underline'
-										>
-											+91 7030238122
-										</Link>
-									</p>
-								</div>
-							</div>
-						</motion.section>
-					</div>
-				</section>
+				<h3 className='font-cinzel text-base font-semibold'>
+					10. Children&apos;s Privacy
+				</h3>
+				<p className='mb-4'>
+					This Website is not intended for individuals under 18 years of age. If
+					we discover such data, it will be deleted promptly.
+				</p>
+
+				<h3 className='font-cinzel text-base font-semibold'>
+					11. Data Retention and Security
+				</h3>
+				<ul className='mb-4 list-disc pl-5'>
+					<li>Secure servers with password protection</li>
+					<li>Access restrictions to authorized personnel only</li>
+					<li>Regular audits and encryption practices</li>
+				</ul>
+
+				<h3 className='font-cinzel text-base font-semibold'>
+					12. Cross-Border Data Transfers
+				</h3>
+				<p className='mb-4'>
+					We ensure appropriate safeguards are in place if your information is
+					stored or processed outside India.
+				</p>
+
+				<h3 className='font-cinzel text-base font-semibold'>
+					13. External Links
+				</h3>
+				<p className='mb-4'>
+					Our Website may contain links to third-party websites. We are not
+					responsible for their content or privacy practices.
+				</p>
+
+				<h3 className='font-cinzel text-base font-semibold'>14. User Rights</h3>
+				<ul className='mb-4 list-disc pl-5'>
+					<li>Access or review your data</li>
+					<li>Request correction or deletion</li>
+					<li>Withdraw previously granted consent</li>
+					<li>Report data misuse or file complaints</li>
+				</ul>
+
+				<h3 className='font-cinzel text-base font-semibold'>
+					15. Grievance Redressal
+				</h3>
+				<p className='mb-4'>
+					<strong>Grievance Officer</strong>
+					<br />
+					Tellme Digiinfotech Private Limited
+					<br />
+					218, Akshay Complex, Dhole Patil Road, Pune - 411001, Maharashtra
+					<br />
+					📧 Email:&nbsp;
+					<a
+						href='mailto:tellmedigi@outlook.com'
+						className='text-blue-600 underline'
+					>
+						tellmedigi@outlook.com
+					</a>
+				</p>
+
+				<h3 className='font-cinzel text-base font-semibold'>
+					16. Updates to this Policy
+				</h3>
+				<p>
+					We may update this Privacy Policy from time to time. Continued use of
+					the Website constitutes acceptance of the changes.
+				</p>
 			</div>
-		</main>
+		</div>
 	);
-};
-
-export default PrivacyPolicy;
+}

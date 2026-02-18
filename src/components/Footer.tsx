@@ -42,11 +42,11 @@ const Footer = () => {
 					<div className='flex flex-col items-center space-y-4 sm:items-start xl:ml-16 2xl:ml-32'>
 						<h2 className='font-cinzel pb-3 text-2xl'>Quick Links</h2>
 						<ul className='flex w-full flex-col items-center gap-3 font-light uppercase sm:items-start'>
-							<li>
+							{/* <li>
 								<Link href='/' className='transition-colors hover:text-white'>
 									Home
 								</Link>
-							</li>
+							</li> */}
 							<li>
 								<Link
 									href='/about-us/'
@@ -67,7 +67,7 @@ const Footer = () => {
 							</li> */}
 							<li>
 								<Link
-									href='/?filter=photos'
+									href='/?filter=images'
 									className='transition-colors hover:text-white'
 								>
 									Photos

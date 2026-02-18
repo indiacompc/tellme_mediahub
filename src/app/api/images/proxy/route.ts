@@ -46,89 +46,132 @@ export async function GET(request: NextRequest) {
 			);
 		}
 
-		// ── Security: Require Referer from our own domains ──
-		// This is the most reliable way to block direct URL access:
-		// - Browser <img> tags ALWAYS send Referer (same-origin request)
-		// - Pasting URL in address bar NEVER sends Referer
-		// - Works on ALL platforms (localhost, Vercel, custom domains)
-		// - No CDN or proxy strips the Referer header
+		// ── Security: Multi-layer protection ──
+		// Layer 1: Token validation (if provided) - must be valid if present
+		// Layer 2: Referer validation - ALWAYS required to block direct URL access
+		// Both layers must pass for access to be granted
+		
 		const referer = request.headers.get('referer') || '';
 		const originHeader = request.headers.get('origin') || '';
 		const hostHeader = request.headers.get('host') || '';
 		const forwardedHost = request.headers.get('x-forwarded-host') || '';
 		const currentHost = (forwardedHost || hostHeader).toLowerCase();
 		const currentHostname = currentHost.split(':')[0];
-		const refererLower = referer.toLowerCase();
 
-		const hasReferer = referer !== '';
-
-		// Parse referer URL to check its path
-		let refererPath = '';
-		let refererHostname = '';
-		try {
-			if (referer) {
-				const refererUrl = new URL(referer);
-				refererPath = refererUrl.pathname.toLowerCase();
-				refererHostname = refererUrl.hostname.toLowerCase();
+		// Validate token if provided (must be valid if present)
+		if (token) {
+			const isValidToken = verifyAccessToken(imageUrl, token);
+			if (!isValidToken) {
+				console.warn('Image Proxy Blocked: Invalid token', {
+					imageUrl: imageUrl.substring(0, 80),
+					hasToken: !!token
+				});
+				return NextResponse.json(
+					{
+						error: 'Access denied.',
+						debug: isDev ? { reason: 'Invalid or expired token' } : undefined
+					},
+					{ status: 403 }
+				);
 			}
-		} catch {
-			// Invalid referer URL format
 		}
 
-		// Verify referer comes from one of our trusted origins
-		const isFromTrustedOrigin =
-			refererHostname.includes('localhost') ||
-			refererHostname.includes('127.0.0.1') ||
-			refererHostname.includes('tellme360.media') ||
-			refererHostname.includes('tellmemediahub.com') ||
-			refererHostname.includes('vercel.app') ||
-			refererHostname === currentHostname;
+		// ALWAYS require referer validation (even if token is valid)
+		// This prevents direct URL access even with a valid token
+		const hasReferer = referer !== '';
 
-		// CRITICAL: Block if referer is the proxy API route itself (prevents direct access)
-		const isRefererProxyRoute = refererPath.includes('/api/images/proxy');
+			// Parse referer URL to check its path and hostname
+			let refererPath = '';
+			let refererHostname = '';
+			try {
+				if (referer) {
+					const refererUrl = new URL(referer);
+					refererPath = refererUrl.pathname.toLowerCase();
+					refererHostname = refererUrl.hostname.toLowerCase();
+				}
+			} catch {
+				// Invalid referer URL format - treat as no referer
+			}
 
-		// CRITICAL: Block if referer is any API route (prevents API-to-API access)
-		const isRefererApiRoute = refererPath.startsWith('/api/');
+			// Verify referer comes from one of our trusted origins
+			const isFromTrustedOrigin =
+				refererHostname.includes('localhost') ||
+				refererHostname.includes('127.0.0.1') ||
+				refererHostname.includes('tellme360.media') ||
+				refererHostname.includes('tellmemediahub.com') ||
+				refererHostname.includes('vercel.app') ||
+				refererHostname === currentHostname;
 
-		// BLOCK if:
-		// 1. No Referer header (direct URL access in address bar)
-		// 2. Referer is not from trusted origin
-		// 3. Referer is the proxy route itself (prevents direct access)
-		// 4. Referer is any API route (prevents API-to-API access)
-		if (!hasReferer || !isFromTrustedOrigin || isRefererProxyRoute || isRefererApiRoute) {
-			console.warn('Image Proxy Blocked:', {
-				reason: !hasReferer
-					? 'No Referer header (direct URL access)'
-					: !isFromTrustedOrigin
-						? 'Referer not from trusted origin'
-						: isRefererProxyRoute
-							? 'Referer is proxy route itself (direct access)'
-							: 'Referer is API route',
-				referer: referer.substring(0, 100) || '(empty)',
-				refererPath,
-				currentHost
-			});
-			return NextResponse.json(
-				{
-					error: 'Access denied.',
-					debug: isDev
-						? {
-							reason: !hasReferer
-								? 'No Referer header — direct URL access is not allowed'
-								: !isFromTrustedOrigin
-									? 'Referer is not from a trusted origin'
-									: isRefererProxyRoute
-										? 'Referer is the proxy route itself — direct access blocked'
-										: 'Referer is an API route — only page requests allowed',
-							referer: referer.substring(0, 100) || '(empty)',
-							refererPath,
-							currentHost,
-							currentHostname
-						}
-						: undefined
-				},
-				{ status: 403 }
-			);
+			// CRITICAL: Block if referer is the proxy API route itself
+			const isRefererProxyRoute = refererPath.includes('/api/images/proxy');
+
+			// CRITICAL: Block if referer is any API route
+			const isRefererApiRoute = refererPath.startsWith('/api/');
+
+			// CRITICAL: Require referer to be from a valid page path
+			// Block root path '/' as it's often sent by browsers on direct navigation
+			// Only allow specific page paths where images are actually displayed
+			const isRefererValidPage = refererPath !== '' &&
+				refererPath !== '/' &&
+				(refererPath.startsWith('/images') ||
+				refererPath.startsWith('/shorts') ||
+				refererPath.startsWith('/video') ||
+				refererPath.startsWith('/about') ||
+				refererPath.startsWith('/contact') ||
+				refererPath.startsWith('/privacy'));
+
+			// BLOCK if:
+			// 1. No Referer header (direct URL access in address bar)
+			// 2. Referer is not from trusted origin
+			// 3. Referer is the proxy route itself
+			// 4. Referer is any API route
+			// 5. Referer path is not a valid page path
+			if (!hasReferer || 
+				!isFromTrustedOrigin || 
+				isRefererProxyRoute || 
+				isRefererApiRoute ||
+				!isRefererValidPage) {
+				console.warn('Image Proxy Blocked:', {
+					reason: !hasReferer
+						? 'No Referer header (direct URL access)'
+						: !isFromTrustedOrigin
+							? 'Referer not from trusted origin'
+							: isRefererProxyRoute
+								? 'Referer is proxy route itself (direct access)'
+								: isRefererApiRoute
+									? 'Referer is API route'
+									: 'Referer is not from a valid page path',
+					referer: referer.substring(0, 100) || '(empty)',
+					refererPath,
+					refererHostname,
+					currentHost,
+					hasToken: !!token
+				});
+				return NextResponse.json(
+					{
+						error: 'Access denied.',
+						debug: isDev
+							? {
+								reason: !hasReferer
+									? 'No Referer header — direct URL access is not allowed'
+									: !isFromTrustedOrigin
+										? 'Referer is not from a trusted origin'
+										: isRefererProxyRoute
+											? 'Referer is the proxy route itself — direct access blocked'
+											: isRefererApiRoute
+												? 'Referer is an API route — only page requests allowed'
+												: 'Referer is not from a valid page path — must be from an actual page',
+								referer: referer.substring(0, 100) || '(empty)',
+								refererPath,
+								refererHostname,
+								currentHost,
+								currentHostname,
+								hasToken: !!token
+							}
+							: undefined
+					},
+					{ status: 403 }
+				);
 		}
 
 		// ── Fetch and serve the image ──
