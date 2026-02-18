@@ -138,6 +138,7 @@ export default function RootLayout({
 					/>
 				</Providers>
 				<Analytics />
+				<SpeedInsights />
 			</body>
 			{/* <GoogleAnalytics gaId="G-0ZTPKHTLJV" /> */}
 		</html>
