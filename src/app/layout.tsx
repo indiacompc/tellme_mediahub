@@ -6,6 +6,7 @@ import { organizationJsonLd, websiteJsonLd } from '@/lib/globalVariables';
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Providers } from './providers';
+import { Analytics } from '@vercel/analytics/next';
 
 export const fetchCache = 'default-no-store';
 
@@ -135,6 +136,7 @@ export default function RootLayout({
 						}}
 					/>
 				</Providers>
+				<Analytics />
 			</body>
 			{/* <GoogleAnalytics gaId="G-0ZTPKHTLJV" /> */}
 		</html>
