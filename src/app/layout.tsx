@@ -35,7 +35,7 @@ export const metadata: Metadata = {
 	creator: 'Indiacom And Tellme Digiinfotech Web Development Team 2024',
 	publisher: 'Tellme Digiinfotech Private Limited',
 	verification: {
-		// google: 'z-6w4swAqLN2x43xos67AMnpmPe2ilYVVNo9a5oRzLw',
+		google: 'dOSHHtiuVy9KXC8vLDa-nt25mKjl3CP1GZcukB53ENc',
 		// yandex: 'b58b4822f9b89f2b',
 		// <meta name="rating" key='rating' content="General" />
 		// <meta name="Audience" key='Audience' content="General" />
