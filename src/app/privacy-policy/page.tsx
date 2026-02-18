@@ -24,7 +24,7 @@ export default function PrivacyPolicyPage() {
 					(&quot;Tellme&&quot;, &quot;we&&quot;, &quot;our&&quot;, or
 					&quot;us&&quot;) collects, uses, shares, and protects personal and
 					non-personal information of users of our website&nbsp;
-					<Link href={"youtellme.ai"} className='text-blue-600 underline'>
+					<Link href={"https://youtellme.ai"} className='text-blue-600 underline' target='_blank' rel='noopener noreferrer'>
 						youtellme.ai
 					</Link>
 					&nbsp; (&quot;Website&quot;). By accessing or using the Website, you
