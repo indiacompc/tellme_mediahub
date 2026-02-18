@@ -2,6 +2,10 @@ import { convertToSignedUrl } from '@/lib/firebaseStorage';
 import crypto from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 
+// Force dynamic rendering - NEVER cache this route at the edge
+// This ensures the referer check runs on EVERY request
+export const dynamic = 'force-dynamic';
+
 /**
  * Verify the access token
  */
@@ -156,22 +160,22 @@ export async function GET(request: NextRequest) {
 					error: 'Access denied.',
 					debug: isDev
 						? {
-								reason: !hasReferer
-									? 'No Referer header — direct URL access is not allowed'
-									: !isFromTrustedOrigin
-										? 'Referer is not from a trusted origin'
-										: isRefererProxyRoute
-											? 'Referer is the proxy route itself — direct access blocked'
-											: isRefererApiRoute
-												? 'Referer is an API route — only page requests allowed'
-												: 'Referer is not from a valid page path — must be from an actual page',
-								referer: referer.substring(0, 100) || '(empty)',
-								refererPath,
-								refererHostname,
-								currentHost,
-								currentHostname,
-								hasToken: !!token
-							}
+							reason: !hasReferer
+								? 'No Referer header — direct URL access is not allowed'
+								: !isFromTrustedOrigin
+									? 'Referer is not from a trusted origin'
+									: isRefererProxyRoute
+										? 'Referer is the proxy route itself — direct access blocked'
+										: isRefererApiRoute
+											? 'Referer is an API route — only page requests allowed'
+											: 'Referer is not from a valid page path — must be from an actual page',
+							referer: referer.substring(0, 100) || '(empty)',
+							refererPath,
+							refererHostname,
+							currentHost,
+							currentHostname,
+							hasToken: !!token
+						}
 						: undefined
 				},
 				{ status: 403 }
@@ -245,15 +249,18 @@ export async function GET(request: NextRequest) {
 			status: 200,
 			headers: {
 				'Content-Type': contentType,
-				// Cache for 1 day (not immutable, so security updates take effect)
-				'Cache-Control': 'public, max-age=86400, s-maxage=86400',
+				// PRIVATE cache only (browser) - NO CDN/edge caching
+				// This ensures every request hits the route handler for referer validation
+				'Cache-Control': 'private, max-age=3600, no-store',
+				'CDN-Cache-Control': 'no-store',
+				'Vercel-CDN-Cache-Control': 'no-store',
 				'X-Content-Type-Options': 'nosniff',
 				'X-Frame-Options': 'SAMEORIGIN',
 				'Access-Control-Allow-Origin': originHeader || '*',
 				'Access-Control-Allow-Methods': 'GET',
 				'Access-Control-Allow-Headers': 'Content-Type',
 				'Content-Encoding': 'identity',
-				Vary: 'Accept-Encoding'
+				Vary: 'Accept-Encoding, Referer'
 			}
 		});
 	} catch (error) {
