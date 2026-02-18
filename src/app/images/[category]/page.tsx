@@ -67,10 +67,7 @@ export async function generateMetadata({
 		},
 		robots: {
 			index: true,
-			follow: true,
-			...(pageNumber > 1 && {
-				noindex: false // Allow pagination pages to be indexed
-			})
+			follow: true
 		}
 	};
 }
