@@ -32,6 +32,7 @@ export default function ImageGrid({
 	const isSearching = searchQuery && searchQuery.trim().length > 0;
 
 	useEffect(() => {
+		let isMounted = true;
 		const loadData = async () => {
 			try {
 				setLoading(true);
@@ -39,20 +40,27 @@ export default function ImageGrid({
 
 				if (isSearching) {
 					const searchResults = await searchImagesInDatabase(searchQuery);
+					if (!isMounted) return;
 					setSearchCategories(searchResults);
 				} else {
 					// Use lightweight summaries — much faster than loading all images
 					const summaries = await loadImageCategorySummaries();
+					if (!isMounted) return;
 					setCategorySummaries(summaries);
 				}
 			} catch (err) {
+				if (!isMounted) return;
 				setError(err instanceof Error ? err.message : 'Failed to load images');
 			} finally {
+				if (!isMounted) return;
 				setLoading(false);
 			}
 		};
 
 		loadData();
+		return () => {
+			isMounted = false;
+		};
 	}, [searchQuery, isSearching]);
 
 	// Reset selected category when data changes
@@ -142,8 +150,13 @@ export default function ImageGrid({
 			</div>
 
 			<div className='grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3'>
-				{filteredItems.map((item) => (
-					<CategoryCard key={item.categoryId} category={item} />
+				{filteredItems.map((item, index) => (
+					<CategoryCard
+						key={item.categoryId}
+						category={item}
+						searchQuery={searchQuery}
+						priority={index < 2}
+					/>
 				))}
 			</div>
 		</div>

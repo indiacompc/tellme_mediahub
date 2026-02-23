@@ -6,7 +6,6 @@ import {
 	searchVideosInDatabase
 } from '@/lib/actions';
 import type { YouTubeVideo } from '@/types/youtube';
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import ErrorState from './Error';
@@ -43,6 +42,13 @@ export default function VideoGrid({
 	// Initialize filter from URL params or prop
 	const urlFilter = searchParams.get('filter') as FilterType | null;
 	const [filter, setFilter] = useState<FilterType>(urlFilter || initialFilter);
+
+	const setFilterAndUrl = (target: FilterType) => {
+		if (target === filter) return;
+		setFilter(target);
+		const url = `/?filter=${target}`;
+		router.replace(url, { scroll: false });
+	};
 
 	// Update filter when URL param changes
 	useEffect(() => {
@@ -125,19 +131,22 @@ export default function VideoGrid({
 										.replace(/[^a-z0-9]+/g, '-')
 										.replace(/^-+|-+$/g, '') + `-${videoId}`;
 
-								return {
-									id: videoId,
-									title: title,
-									description: video.description || '',
-									thumbnail:
-										video.thumbnail_url ||
-										`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-									publishedAt:
-										video.published_on ||
-										video.last_modified ||
-										new Date().toISOString(),
-									channelName: 'Tellme360',
-									slug: slug,
+												return {
+													id: videoId,
+													title: title,
+													description: video.description || '',
+													thumbnail:
+														video.thumbnail_url ||
+														`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+													thumbnailLow:
+														video.thumbnail_url ||
+														`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+													publishedAt:
+														video.published_on ||
+														video.last_modified ||
+														new Date().toISOString(),
+													channelName: 'Tellme360',
+													slug: slug,
 									recordingLocation: video.recording_location || undefined
 								} as YouTubeVideo;
 							});
@@ -167,10 +176,24 @@ export default function VideoGrid({
 		loadVideos();
 	}, []);
 
+	const searchPlaceholder =
+		filter === 'images'
+			? 'Search images...'
+			: filter === 'shorts'
+				? 'Search shorts...'
+				: 'Search videos...';
+
 	const handleSearch = async (query: string) => {
 		setSearchQuery(query);
 
 		if (!query || query.trim().length === 0) {
+			setSearchResults([]);
+			setSearching(false);
+			return;
+		}
+
+		// For images, delegate search to ImageGrid; no video/short search required here
+		if (filter === 'images') {
 			setSearchResults([]);
 			setSearching(false);
 			return;
@@ -188,6 +211,12 @@ export default function VideoGrid({
 			setSearching(false);
 		}
 	};
+
+	// Re-run search when filter changes so query reflects the active tab
+	useEffect(() => {
+		if (!searchQuery.trim()) return;
+		void handleSearch(searchQuery);
+	}, [filter]);
 
 	const isSearching = searchQuery.trim().length > 0;
 
@@ -222,7 +251,7 @@ export default function VideoGrid({
 	if (loading) {
 		return (
 			<div>
-				<SearchBar onSearch={handleSearch} />
+				<SearchBar onSearch={handleSearch} placeholder={searchPlaceholder} />
 				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4'>
 					{Array.from({ length: 12 }).map((_, i) => (
 						<VideoSkeleton key={i} />
@@ -239,7 +268,7 @@ export default function VideoGrid({
 	if (videos.length === 0 && !isSearching) {
 		return (
 			<div>
-				<SearchBar onSearch={handleSearch} />
+				<SearchBar onSearch={handleSearch} placeholder={searchPlaceholder} />
 				<ErrorState message='No videos found' />
 			</div>
 		);
@@ -247,15 +276,15 @@ export default function VideoGrid({
 
 	return (
 		<div>
-			<SearchBar onSearch={handleSearch} />
+			<SearchBar onSearch={handleSearch} placeholder={searchPlaceholder} />
 
 			{/* Modern Segmented Control */}
 			{!hideNavigation && (
 				<div className='mb-6 flex justify-center sm:mb-8'>
 					<div className='bg-muted/50 border-border inline-flex items-center rounded-lg border p-1 shadow-sm'>
-						<Link
-							href='/?filter=images'
-							scroll={false}
+						<button
+							type='button'
+							onClick={() => setFilterAndUrl('images')}
 							className={`relative rounded-md px-6 py-2 text-sm font-medium transition-all duration-200 sm:px-8 sm:py-2.5 sm:text-base ${
 								filter === 'images'
 									? 'bg-primary text-primary-foreground shadow-sm'
@@ -263,10 +292,10 @@ export default function VideoGrid({
 							} `}
 						>
 							Images
-						</Link>
-						<Link
-							href='/?filter=videos'
-							scroll={false}
+						</button>
+						<button
+							type='button'
+							onClick={() => setFilterAndUrl('videos')}
 							className={`font-ci relative rounded-md px-6 py-2 text-sm transition-all duration-200 sm:px-8 sm:py-2.5 sm:text-base ${
 								filter === 'videos'
 									? 'bg-primary text-primary-foreground shadow-sm'
@@ -274,10 +303,10 @@ export default function VideoGrid({
 							} `}
 						>
 							Videos
-						</Link>
-						<Link
-							href='/?filter=shorts'
-							scroll={false}
+						</button>
+						<button
+							type='button'
+							onClick={() => setFilterAndUrl('shorts')}
 							className={`relative rounded-md px-6 py-2 text-sm font-medium transition-all duration-200 sm:px-8 sm:py-2.5 sm:text-base ${
 								filter === 'shorts'
 									? 'bg-primary text-primary-foreground shadow-sm'
@@ -285,12 +314,12 @@ export default function VideoGrid({
 							} `}
 						>
 							Shorts
-						</Link>
+						</button>
 					</div>
 				</div>
 			)}
 
-			{isSearching && (
+			{isSearching && filter !== 'images' && (
 				<div className='text-muted-foreground mb-4 text-sm'>
 					{searching
 						? 'Searching...'

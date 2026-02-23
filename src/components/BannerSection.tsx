@@ -23,10 +23,12 @@ interface BannerSectionProps {}
 // Featured Video Card Component matching VideoCard design
 function FeaturedVideoCard({
 	video,
-	onClick
+	onClick,
+	loading = 'lazy'
 }: {
 	video: YouTubeVideo;
 	onClick: () => void;
+	loading?: 'lazy' | 'eager';
 }) {
 	const [currentThumbnailIndex, setCurrentThumbnailIndex] = useState(0);
 	const [hasError, setHasError] = useState(false);
@@ -76,6 +78,9 @@ function FeaturedVideoCard({
 							fill
 							className='rounded-lg object-cover transition-transform duration-300 group-hover:scale-110'
 							unoptimized
+							loading={loading}
+							fetchPriority={loading === 'eager' ? 'high' : 'auto'}
+							sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
 							onError={handleImageError}
 						/>
 					) : (
@@ -113,6 +118,18 @@ export default function BannerSection({}: BannerSectionProps) {
 	const [featuredVideos, setFeaturedVideos] = useState<YouTubeVideo[]>([]);
 	const [carouselApi, setCarouselApi] = useState<any>(null);
 	const [isCarouselHovered, setIsCarouselHovered] = useState(false);
+	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+	useEffect(() => {
+		if (typeof window !== 'undefined' && 'matchMedia' in window) {
+			const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+			setPrefersReducedMotion(mediaQuery.matches);
+			const handler = (event: MediaQueryListEvent) =>
+				setPrefersReducedMotion(event.matches);
+			mediaQuery.addEventListener('change', handler);
+			return () => mediaQuery.removeEventListener('change', handler);
+		}
+	}, []);
 
 	useEffect(() => {
 		let isMounted = true;
@@ -207,7 +224,7 @@ export default function BannerSection({}: BannerSectionProps) {
 
 	// Auto-scroll carousel
 	useEffect(() => {
-		if (!carouselApi || isCarouselHovered) return;
+		if (!carouselApi || isCarouselHovered || prefersReducedMotion) return;
 
 		const interval = setInterval(() => {
 			carouselApi.scrollNext();
@@ -290,19 +307,20 @@ export default function BannerSection({}: BannerSectionProps) {
 										onMouseLeave={() => setIsCarouselHovered(false)}
 									>
 										<CarouselContent className='-ml-4 xl:-ml-5 2xl:-ml-6'>
-											{featuredVideos.map((video) => (
-												<CarouselItem
-													key={video.id}
-													className='basis-[85%] pl-4 sm:basis-[70%] md:basis-[75%] lg:basis-1/3 xl:basis-[40%] xl:pl-5 2xl:basis-[45%] 2xl:pl-6'
-												>
-													<FeaturedVideoCard
-														video={video}
-														onClick={() =>
-															router.push(`/video/${video.slug}?filter=videos`)
-														}
-													/>
-												</CarouselItem>
-											))}
+												{featuredVideos.map((video, index) => (
+													<CarouselItem
+														key={video.id}
+														className='basis-[85%] pl-4 sm:basis-[70%] md:basis-[75%] lg:basis-1/3 xl:basis-[40%] xl:pl-5 2xl:basis-[45%] 2xl:pl-6'
+													>
+														<FeaturedVideoCard
+															video={video}
+															onClick={() =>
+																router.push(`/video/${video.slug}?filter=videos`)
+															}
+															loading={index < 1 ? 'eager' : 'lazy'}
+														/>
+													</CarouselItem>
+												))}
 										</CarouselContent>
 										<CarouselPrevious className='text-foreground border-foreground/20 hover:bg-foreground/10 hover:border-foreground/40 bg-background/30 -left-4 z-20 hidden size-12 border-2 backdrop-blur-sm md:flex lg:-left-6 xl:-left-8 xl:size-12 2xl:-left-10 2xl:size-12 dark:border-white/20 dark:bg-black/30 dark:hover:border-white/40 dark:hover:bg-white/10' />
 										<CarouselNext className='text-foreground border-foreground/20 hover:bg-foreground/10 hover:border-foreground/40 bg-background/30 -right-4 z-20 hidden size-12 border-2 backdrop-blur-sm md:flex lg:-right-6 xl:-right-8 xl:size-12 2xl:-right-10 2xl:size-12 dark:border-white/20 dark:bg-black/30 dark:hover:border-white/40 dark:hover:bg-white/10' />
@@ -335,6 +353,7 @@ export default function BannerSection({}: BannerSectionProps) {
 															key={`desktop-short-${short.id}-${index}`}
 															src={`https://www.youtube.com/embed/${short.id}?autoplay=${index === 0 ? 1 : 0}&mute=1&rel=0&playsinline=1&loop=0&controls=1`}
 															title={short.title}
+															loading={index < 1 ? 'eager' : 'lazy'}
 															allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
 															referrerPolicy='strict-origin-when-cross-origin'
 															allowFullScreen
@@ -385,6 +404,7 @@ export default function BannerSection({}: BannerSectionProps) {
 														key={`mobile-short-${short.id}-${index}`}
 														src={`https://www.youtube.com/embed/${short.id}?autoplay=${index === 0 ? 1 : 0}&mute=1&rel=0&playsinline=1&loop=0&controls=1`}
 														title={short.title}
+														loading={index < 1 ? 'eager' : 'lazy'}
 														allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
 														referrerPolicy='strict-origin-when-cross-origin'
 														allowFullScreen
@@ -419,19 +439,20 @@ export default function BannerSection({}: BannerSectionProps) {
 								className='w-full'
 							>
 								<CarouselContent className='-ml-2 sm:-ml-3 md:-ml-4 lg:-ml-6'>
-									{featuredVideos.map((video) => (
-										<CarouselItem
-											key={video.id}
-											className='basis-[85%] pl-2 sm:basis-[70%] sm:pl-3 md:basis-[45%] md:pl-4 lg:basis-1/3 lg:pl-6 xl:basis-1/3 2xl:basis-1/4'
-										>
-											<FeaturedVideoCard
-												video={video}
-												onClick={() =>
-													router.push(`/video/${video.slug}?filter=videos`)
-												}
-											/>
-										</CarouselItem>
-									))}
+							{featuredVideos.map((video, index) => (
+								<CarouselItem
+									key={video.id}
+									className='basis-[85%] pl-2 sm:basis-[70%] sm:pl-3 md:basis-[45%] md:pl-4 lg:basis-1/3 lg:pl-6 xl:basis-1/3 2xl:basis-1/4'
+								>
+									<FeaturedVideoCard
+										video={video}
+										onClick={() =>
+											router.push(`/video/${video.slug}?filter=videos`)
+										}
+										loading={index < 1 ? 'eager' : 'lazy'}
+									/>
+								</CarouselItem>
+							))}
 								</CarouselContent>
 								<CarouselPrevious className='border-border hover:bg-muted -left-4 hidden md:flex lg:-left-8 xl:-left-10' />
 								<CarouselNext className='border-border hover:bg-muted -right-4 hidden md:flex lg:-right-8 xl:-right-10' />

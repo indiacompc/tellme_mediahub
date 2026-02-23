@@ -8,6 +8,8 @@ import './globals.css';
 import { Providers } from './providers';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import Script from 'next/script';
+
 
 export const fetchCache = 'default-no-store';
 
@@ -157,8 +159,20 @@ export default function RootLayout({
 				</Providers>
 				<Analytics />
 				<SpeedInsights />
+				{/* Google Analytics (gtag.js) */}
+				<Script
+					src='https://www.googletagmanager.com/gtag/js?id=G-501057746'
+					strategy='afterInteractive'
+				/>
+				<Script id='ga-gtag-init' strategy='afterInteractive'>
+					{`
+						window.dataLayer = window.dataLayer || [];
+						function gtag(){dataLayer.push(arguments);}
+						gtag('js', new Date());
+						gtag('config', 'G-501057746');
+					`}
+				</Script>
 			</body>
-			{/* <GoogleAnalytics gaId="G-0ZTPKHTLJV" /> */}
 		</html>
 	);
 }

@@ -1,5 +1,9 @@
 import { siteUrl } from '@/auth/ConfigManager';
-import { getAllCategories, getImagesByCategorySlug } from '@/lib/actions';
+import {
+	getAllCategories,
+	getImagesByCategorySlug,
+	searchImagesInDatabase
+} from '@/lib/actions';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
@@ -13,6 +17,25 @@ type PhotoCategoryPageProps = {
 
 // Reduced limit to minimize bandwidth usage
 const limit = 8;
+
+const normalizeSlug = (slug: string) =>
+	slug
+		?.toString()
+		.toLowerCase()
+		.trim()
+		.replace(/\s+/g, '-');
+
+const matchesSearchTerm = (image: any, term: string) => {
+	const searchTerm = term.toLowerCase();
+	return (
+		(image.title || '').toLowerCase().includes(searchTerm) ||
+		(image.description || '').toLowerCase().includes(searchTerm) ||
+		(image.image_category_id || '').toLowerCase().includes(searchTerm) ||
+		(image.city || '').toLowerCase().includes(searchTerm) ||
+		(image.state || '').toLowerCase().includes(searchTerm) ||
+		(image.captured_location || '').toLowerCase().includes(searchTerm)
+	);
+};
 
 export async function generateMetadata({
 	params,
@@ -102,8 +125,53 @@ const PhotoCategoryPage = async ({
 
 	// Get images for this category (only first 10 initially)
 	const skip = (pageNumber - 1) * limit;
-	const { images: imageListingsData, total: total_images } =
-		await getImagesByCategorySlug(paramsAwaited.category, limit, skip);
+	const searchTerm = searchParamsAwaited.q
+		? Array.isArray(searchParamsAwaited.q)
+			? searchParamsAwaited.q[0]
+			: searchParamsAwaited.q
+		: '';
+
+	let imageListingsData = [] as any[];
+	let total_images = 0;
+
+	if (searchTerm.trim()) {
+		// When arriving from search, try to use the search subset for this category
+		const searchResults = await searchImagesInDatabase(searchTerm);
+		const targetSlug = normalizeSlug(paramsAwaited.category);
+		const match = searchResults.find((cat) => {
+			const catSlug = normalizeSlug(cat.categorySlug || '');
+			const catId = normalizeSlug(cat.categoryId || '');
+			const catName = normalizeSlug(cat.categoryName || '');
+			return catSlug === targetSlug || catId === targetSlug || catName === targetSlug;
+		});
+
+		const matchedImages = match?.images ?? [];
+		const filteredMatchedImages = matchedImages.filter((img) =>
+			matchesSearchTerm(img, searchTerm)
+		);
+
+		if (filteredMatchedImages.length > 0) {
+			imageListingsData = filteredMatchedImages;
+			total_images = imageListingsData.length;
+		} else {
+			// Fallback: load category images and filter by search term
+			const { images: catImages } = await getImagesByCategorySlug(
+				paramsAwaited.category,
+				500,
+				0
+			);
+			imageListingsData = catImages.filter((img) => matchesSearchTerm(img, searchTerm));
+			total_images = imageListingsData.length;
+		}
+	} else {
+		const result = await getImagesByCategorySlug(
+			paramsAwaited.category,
+			limit,
+			skip
+		);
+		imageListingsData = result.images;
+		total_images = result.total;
+	}
 
 	// Generate structured data for category page
 	const baseUrl = siteUrl.replace(/\/$/, '');
@@ -159,13 +227,18 @@ const PhotoCategoryPage = async ({
 				<div className='mb-4 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between'></div>
 
 				<Suspense>
-					<MasonryLayout
-						images={imageListingsData}
-						categorySlug={paramsAwaited.category}
-						pageNumber={pageNumber}
-						totalPages={Math.ceil(total_images / limit)}
-						limit={limit}
-					/>
+				<MasonryLayout
+					images={imageListingsData}
+					categorySlug={paramsAwaited.category}
+					pageNumber={pageNumber}
+					totalPages={
+						searchTerm.trim()
+							? Math.max(1, Math.ceil(imageListingsData.length / limit))
+							: Math.ceil(total_images / limit)
+					}
+					limit={limit}
+					searchQuery={searchTerm.trim() ? searchTerm : undefined}
+				/>
 				</Suspense>
 			</div>
 

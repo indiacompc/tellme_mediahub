@@ -11,9 +11,19 @@ import { useState } from 'react';
 
 interface CategoryCardProps {
 	category: ImageCategorySummary;
+	priority?: boolean;
+	/**
+	 * Optional search query to append when navigating so the category page
+	 * can render the same search subset in its masonry grid.
+	 */
+	searchQuery?: string;
 }
 
-export default function CategoryCard({ category }: CategoryCardProps) {
+export default function CategoryCard({
+	category,
+	searchQuery,
+	priority = false
+}: CategoryCardProps) {
 	const router = useRouter();
 	const [imgError, setImgError] = useState(false);
 
@@ -25,7 +35,13 @@ export default function CategoryCard({ category }: CategoryCardProps) {
 		const slug =
 			category.categorySlug ||
 			category.categoryId.toLowerCase().replace(/\s+/g, '-');
-		router.push(`/images?filter=${slug}`);
+
+		const searchParam = searchQuery?.trim()
+			? `&q=${encodeURIComponent(searchQuery.trim())}`
+			: '';
+
+		// Preserve search context when going into category; masonry page reads q
+		router.push(`/images?filter=${slug}${searchParam}`);
 	};
 
 	// Route Firebase Storage images through the proxy (bucket is private)
@@ -49,7 +65,9 @@ export default function CategoryCard({ category }: CategoryCardProps) {
 						fill
 						sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
 						className='object-cover transition-transform duration-500 group-hover:scale-110'
-						loading='lazy'
+						priority={priority}
+						loading={priority ? 'eager' : 'lazy'}
+						fetchPriority={priority ? 'high' : 'auto'}
 						unoptimized={isProxied}
 						quality={isProxied ? undefined : 50}
 						onError={() => setImgError(true)}

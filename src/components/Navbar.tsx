@@ -32,7 +32,9 @@ const Navbar = ({ tellme_logo }: { tellme_logo: StaticImageData }) => {
 						src={tellme_logo}
 						alt='tellme logo'
 						className='my-1 h-auto w-24 sm:w-40'
+						sizes='(max-width: 640px) 96px, 160px'
 						priority={true}
+						fetchPriority='high'
 					/>
 				</Link>
 

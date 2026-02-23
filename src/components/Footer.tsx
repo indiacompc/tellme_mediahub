@@ -18,13 +18,14 @@ const Footer = () => {
 					{/* Column 1: Logo and Company Info */}
 					<div className='flex flex-col items-start space-y-4'>
 						<div className='logo'>
-							<Image
-								src={logo}
-								alt='tellme logo'
-								className='h-auto rounded-2xl'
-								height={60}
-								priority={true}
-							/>
+						<Image
+							src={logo}
+							alt='tellme logo'
+							className='h-auto rounded-2xl'
+							height={60}
+							sizes='(max-width: 640px) 96px, 160px'
+							priority={false}
+						/>
 						</div>
 						<p className='mt-2 text-white'>
 							Delivering Immersive Experiences and delighting consumers and

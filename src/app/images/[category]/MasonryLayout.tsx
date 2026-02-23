@@ -15,19 +15,22 @@ const MasonryLayout = ({
 	categorySlug,
 	pageNumber,
 	totalPages,
-	limit
+	limit,
+	searchQuery
 }: {
 	images: Array<ImageListing>;
 	categorySlug: string;
 	pageNumber: number;
 	totalPages: number;
 	limit: number;
+	searchQuery?: string;
 }) => {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const stateFilter = searchParams.get('state') || undefined;
 	const cityFilter = searchParams.get('city') || undefined;
-	const [allImages, setAllImages] = useState(images);
+	const isSearchMode = !!searchQuery?.trim();
+	const [allImages, setAllImages] = useState<ImageListing[]>(images);
 	const [currentPage, setCurrentPage] = useState(pageNumber);
 	const [loading, setLoading] = useState(false);
 	const [hasMore, setHasMore] = useState(currentPage < totalPages);
@@ -107,23 +110,25 @@ const MasonryLayout = ({
 									}}
 								>
 									<div className='group relative h-full w-full'>
-										<ImageWithLoading
-											src={
-												isFirebaseStorageUrl(item.src)
-													? getProtectedImageUrl(item.src)
-													: item.src
-											}
-											width={Math.min(item.width, 800)}
-											height={Math.min(item.height, 1200)}
-											alt={(item as any).meta_title || item.title}
-											className='h-full w-full rounded-lg object-cover shadow-lg transition-shadow duration-300 group-hover:shadow-xl dark:shadow-gray-900/50 dark:group-hover:shadow-gray-800/60'
-											style={{
-												aspectRatio: `${item.width} / ${item.height}`
-											}}
-											sizes='(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw'
-											loading='lazy'
-											quality={75}
-										/>
+								<ImageWithLoading
+									src={
+										isFirebaseStorageUrl(item.src)
+											? getProtectedImageUrl(item.src)
+											: item.src
+									}
+									width={Math.min(item.width, 800)}
+									height={Math.min(item.height, 1200)}
+									alt={(item as any).meta_title || item.title}
+									className='h-full w-full rounded-lg object-cover shadow-lg transition-shadow duration-300 group-hover:shadow-xl dark:shadow-gray-900/50 dark:group-hover:shadow-gray-800/60'
+									style={{
+										aspectRatio: `${item.width} / ${item.height}`
+									}}
+									sizes='(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw'
+									priority={item.priority === 1 && !isSearchMode}
+									loading={item.priority === 1 && !isSearchMode ? 'eager' : 'lazy'}
+									fetchPriority={item.priority === 1 && !isSearchMode ? 'high' : 'auto'}
+									quality={72}
+								/>
 										<div className='absolute right-0 bottom-0 left-0 z-20 hidden rounded-b-lg bg-black/75 py-2 text-white group-hover:block'>
 											<div className='flex w-full px-2'>
 												<p>{item.title}</p>

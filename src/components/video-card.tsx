@@ -31,6 +31,7 @@ export default function VideoCard({ video, onClick }: VideoCardProps) {
 			? null
 			: thumbnailFallbacks[currentIndex] || null;
 
+
 	const handleImageError = () => {
 		// Try next fallback thumbnail
 		const nextIndex = currentThumbnailIndex + 1;
@@ -64,6 +65,9 @@ export default function VideoCard({ video, onClick }: VideoCardProps) {
 							fill
 							className='rounded-lg object-cover transition-transform duration-300 group-hover:scale-110'
 							unoptimized
+							loading='lazy'
+							fetchPriority='auto'
+							sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw'
 							onError={handleImageError}
 						/>
 					) : (

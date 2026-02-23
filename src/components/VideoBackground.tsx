@@ -10,7 +10,7 @@ const VideoBackground: React.FC = () => {
 			controls={false}
 			onContextMenu={(e) => e.preventDefault()}
 			playsInline
-			preload='auto'
+			preload='metadata'
 			id='myVideo'
 			className='absolute inset-0 h-full min-h-full w-full min-w-full object-cover'
 			style={{
@@ -19,7 +19,7 @@ const VideoBackground: React.FC = () => {
 				height: '100%'
 			}}
 		>
-			<source src='/homepage_hero_section_background.webm' type='video/mp4' />
+			<source src='/homepage_hero_section_background.webm' type='video/webm' />
 		</video>
 	);
 };
