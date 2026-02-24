@@ -161,7 +161,7 @@ export default function RootLayout({
 				<SpeedInsights />
 				{/* Google Analytics (gtag.js) */}
 				<Script
-					src='https://www.googletagmanager.com/gtag/js?id=G-501057746'
+					src='https://www.googletagmanager.com/gtag/js?id=G-VHVSZT9BD1'
 					strategy='afterInteractive'
 				/>
 				<Script id='ga-gtag-init' strategy='afterInteractive'>
@@ -169,7 +169,7 @@ export default function RootLayout({
 						window.dataLayer = window.dataLayer || [];
 						function gtag(){dataLayer.push(arguments);}
 						gtag('js', new Date());
-						gtag('config', 'G-501057746');
+						gtag('config', 'G-VHVSZT9BD1');
 					`}
 				</Script>
 			</body>

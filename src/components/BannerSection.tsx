@@ -383,7 +383,7 @@ export default function BannerSection({}: BannerSectionProps) {
 							className='mb-8 flex w-full justify-center sm:mb-10 md:hidden'
 						>
 							<div className='rounded-xl'>
-								<div className='h-110 w-72 sm:h-130 sm:w-80 md:h-140 md:w-[340px]'>
+								<div className='h-110 w-72 sm:h-130 sm:w-80 md:h-140 md:w-85'>
 									<div className='border-border bg-card relative h-full w-full overflow-hidden rounded-[24px] border shadow-xl sm:rounded-[28px]'>
 										<div className='absolute top-2 left-1/2 z-10 h-1.5 w-12 -translate-x-1/2 rounded-full bg-neutral-800/80' />
 										<div
