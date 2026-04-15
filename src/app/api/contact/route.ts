@@ -48,6 +48,7 @@ export async function POST(request: NextRequest) {
 		const companyEmailResult = await resend.emails.send({
 			from: fromEmail,
 			to: 'digital@tellmedigi.com',
+			cc: 'abhishek@youtellme.ai',
 			subject: `Contact Form: ${safeSubject}`,
 			html: `
 				<h2>New Contact Form Submission</h2>
