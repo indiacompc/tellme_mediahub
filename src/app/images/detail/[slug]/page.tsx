@@ -46,11 +46,11 @@ export async function generateMetadata({
 		: image.src;
 
 	const baseUrl = siteUrl.replace(/\/$/, '');
-	const categorySlug = (image as any).category_slug;
-	const categoryParam = categorySlug
-		? `?filter=${encodeURIComponent(categorySlug)}`
-		: '';
-	const canonicalUrl = `${baseUrl}/images/detail/${encodeURIComponent(image.slug)}${categoryParam}`;
+	// Canonical must always be the clean URL without any ?filter= query param.
+	// All filter variants (?filter=monuments, ?filter=black-and-white, etc.) are
+	// duplicate views of the same image — consolidating to the clean URL prevents
+	// link-equity splitting and avoids Google treating each filter as a unique page.
+	const canonicalUrl = `${baseUrl}/images/detail/${encodeURIComponent(image.slug)}`;
 
 	// Build location string for structured data
 	const locationParts = [];
@@ -91,7 +91,19 @@ export async function generateMetadata({
 					})
 				}
 			}
-			: {})
+			: {}),
+		// Prevent Google from treating this as time-sensitive news content.
+		// The slug may contain a date suffix (e.g. -10072025) but this is a
+		// stock image page, not a news article — noarchive is not needed here,
+		// but we explicitly omit datePublished/dateModified from metadata so
+		// Google's news crawler has no date signal to latch on to.
+		robots: {
+			index: true,
+			follow: true,
+			'max-snippet': -1,
+			'max-image-preview': 'large',
+			'max-video-preview': -1
+		}
 	};
 }
 
@@ -126,11 +138,8 @@ export default async function ImageDetailPage({
 
 	// Generate structured data for SEO
 	const baseUrl = siteUrl.replace(/\/$/, '');
-	const categorySlugForStructured = (image as any).category_slug;
-	const categoryParamForStructured = categorySlugForStructured
-		? `?filter=${encodeURIComponent(categorySlugForStructured)}`
-		: '';
-	const imageUrl = `${baseUrl}/images/detail/${encodeURIComponent(image.slug)}${categoryParamForStructured}`;
+	// Structured data URL must match the canonical — clean URL without filter param.
+	const imageUrl = `${baseUrl}/images/detail/${encodeURIComponent(image.slug)}`;
 
 	// Build location string
 	const locationParts = [];
@@ -144,35 +153,152 @@ export default async function ImageDetailPage({
 		? await convertToSignedUrl(image.src, 86400)
 		: image.src;
 
+	// Derive MIME type from the actual image URL so it is never wrong for
+	// PNG, WebP, or VR panorama sources (not hardcoded to image/jpeg).
+	const deriveEncodingFormat = (url: string): string => {
+		const ext = url.split('?')[0].split('.').pop()?.toLowerCase();
+		const mimeMap: Record<string, string> = {
+			jpg: 'image/jpeg',
+			jpeg: 'image/jpeg',
+			png: 'image/png',
+			webp: 'image/webp',
+			gif: 'image/gif',
+			avif: 'image/avif',
+			svg: 'image/svg+xml'
+		};
+		return mimeMap[ext ?? ''] || 'image/jpeg';
+	};
+
+	// acquireLicensePage: the page where users initiate a purchase/license
+	// request. Google specifically requires this for Image Search commerce
+	// badges ("License" button in image results).
+	// Use .trim() to guard against any category label concatenated to the
+	// title in the source data (e.g. "Arched Frame of Charminar CourtyardGuide").
+	const cleanImageTitle = (image.meta_title || image.title).trim();
+	const acquireLicensePageUrl =
+		`${baseUrl}/contact` +
+		`?type=licensing` +
+		`&imageName=${encodeURIComponent(cleanImageTitle)}` +
+		`&imageId=${image.id}` +
+		`&subject=${encodeURIComponent(`Licensing inquiry: ${cleanImageTitle}`)}`;
+
+	// creditText is the attribution string Google surfaces when the image
+	// is reused. Format: "© Year Organization" is the widely accepted standard.
+	const currentYear = new Date().getFullYear();
+	const creditText = `© ${currentYear} Tellme Digiinfotech Private Limited`;
+
+	// copyrightYear: year the image was first created/captured.
+	const copyrightYear = image.captured_date
+		? new Date(image.captured_date).getFullYear()
+		: currentYear;
+
 	const imageStructuredData: WithContext<ImageObject> = {
 		'@context': 'https://schema.org',
 		'@type': 'ImageObject',
+
+		// ── Identity ────────────────────────────────────────────────────────
+		// @id makes this node referenceable from other schema graphs on the page.
+		'@id': imageUrl,
+
 		name: image.meta_title || image.title,
 		description: image.meta_description || image.description,
-		image: structuredDataImageUrl,
+		inLanguage: 'en',
+
+		// ── Image source ────────────────────────────────────────────────────
+		// contentUrl: the raw image file URL — the primary field Google indexes.
+		// image:      the page URL displaying the image (same as url here).
+		// thumbnail:  smaller preview; Google uses it for search result cards.
+		contentUrl: structuredDataImageUrl,
 		url: imageUrl,
+		image: structuredDataImageUrl,
+		thumbnail: {
+			'@type': 'ImageObject',
+			url: structuredDataImageUrl
+		},
+		// representativeOfPage: true tells Google this ImageObject is the
+		// primary/hero image of the page — enables richer image indexing.
+		representativeOfPage: true,
+
+		// ── Dimensions & format ─────────────────────────────────────────────
 		width: {
 			'@type': 'QuantitativeValue',
 			value: image.width,
-			unitCode: 'E37'
+			unitCode: 'E37' // pixel
 		},
 		height: {
 			'@type': 'QuantitativeValue',
 			value: image.height,
 			unitCode: 'E37'
 		},
-		contentUrl: structuredDataImageUrl,
-		encodingFormat: 'image/jpeg',
+		encodingFormat: deriveEncodingFormat(structuredDataImageUrl),
+
+		// ── Authorship & rights ─────────────────────────────────────────────
+		// author:          who created the image (required for attribution badges).
+		// creator:         alias for author; kept for broader compatibility.
+		// publisher:       who distributes/publishes it (the platform).
+		// copyrightHolder: legal rights owner.
+		// copyrightNotice: full human-readable copyright statement.
+		// creditText:      short attribution Google surfaces in image reuse panels.
+		author: {
+			'@type': 'Organization',
+			name: 'Tellme Digiinfotech Private Limited',
+			url: baseUrl,
+			logo: {
+				'@type': 'ImageObject',
+				url: `${baseUrl}/favicon-32x32.png`
+			}
+		},
+		creator: {
+			'@type': 'Organization',
+			name: 'Tellme Digiinfotech Private Limited',
+			url: baseUrl
+		},
+		publisher: {
+			'@type': 'Organization',
+			name: 'Tellme Media',
+			url: baseUrl,
+			logo: {
+				'@type': 'ImageObject',
+				url: `${baseUrl}/favicon-32x32.png`
+			}
+		},
+		copyrightHolder: {
+			'@type': 'Organization',
+			name: 'Tellme Digiinfotech Private Limited',
+			url: baseUrl
+		},
+		copyrightYear,
+		copyrightNotice: `© ${copyrightYear} Tellme Digiinfotech Private Limited. All rights reserved.`,
+		creditText,
+
+		// ── Licensing & commerce ────────────────────────────────────────────
+		// license:            URL to the full license/terms page.
+		// acquireLicensePage: URL where users can request/purchase a license.
+		//                     THIS is what triggers the Google Image Search
+		//                     "License" badge and shopping integration.
+		license: `${baseUrl}/terms-and-conditions`,
+		acquireLicensePage: acquireLicensePageUrl,
+
+		// ── Taxonomy ────────────────────────────────────────────────────────
 		keywords: image.meta_keywords || undefined,
+
+		// ── Location ────────────────────────────────────────────────────────
 		...(fullLocation && {
 			contentLocation: {
 				'@type': 'Place',
 				name: fullLocation
 			}
 		}),
+
+		// ── Dates ───────────────────────────────────────────────────────────
+		// dateCreated: when the photo was taken (from EXIF/captured_date field).
+		// NOTE: datePublished/dateModified are intentionally omitted to prevent
+		// Google's news-freshness scorer from treating this as a news article.
 		...(image.captured_date && {
 			dateCreated: image.captured_date
 		}),
+
+		// ── Geolocation ─────────────────────────────────────────────────────
 		...(image.latitude &&
 			image.longitude && {
 			geo: {
@@ -180,16 +306,7 @@ export default async function ImageDetailPage({
 				latitude: image.latitude,
 				longitude: image.longitude
 			}
-		}),
-		copyrightHolder: {
-			'@type': 'Organization',
-			name: 'Tellme Digiinfotech Private Limited'
-		},
-		license: `${baseUrl}/terms-and-conditions`,
-		creator: {
-			'@type': 'Organization',
-			name: 'Tellme Digiinfotech Private Limited'
-		}
+		})
 	};
 
 	return (

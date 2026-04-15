@@ -1,6 +1,7 @@
 import IframeClient from '@/components/IframeClient';
 import RecommendedVideos from '@/components/RecommendedVideos';
 import VideoDetailsFull from '@/components/video-details-full';
+import { siteUrl } from '@/auth/ConfigManager';
 import {
 	getSuggestedVideos,
 	getVideoBySlug,
@@ -29,18 +30,39 @@ export async function generateMetadata({ params }: ParamsType) {
 		};
 	}
 
+	const baseUrl = siteUrl.replace(/\/$/, '');
+	// Canonical must always be the clean URL without any ?filter= query param.
+	// The ?filter= param is a UI-navigation hint, not a content differentiator.
+	const canonicalUrl = `${baseUrl}/video/${encodeURIComponent(slug)}`;
+
 	return {
 		title: video.title,
 		description: video.description,
+		alternates: {
+			canonical: canonicalUrl
+		},
 		openGraph: {
 			title: video.title,
 			description: video.description || undefined,
-			images: [video.thumbnail]
+			images: [video.thumbnail],
+			type: 'video.other',
+			url: canonicalUrl,
+			siteName: 'Tellme Media'
 		},
 		twitter: {
 			title: video.title,
 			description: video.description || undefined,
 			images: [video.thumbnail]
+		},
+		// Explicitly set robots so Google does not treat this as time-sensitive
+		// news content. Video slugs may contain date-like substrings (e.g.
+		// -10072025) which could trigger news-freshness scoring if left unset.
+		robots: {
+			index: true,
+			follow: true,
+			'max-snippet': -1,
+			'max-image-preview': 'large',
+			'max-video-preview': -1
 		}
 	};
 }

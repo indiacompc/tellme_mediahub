@@ -74,6 +74,10 @@ export async function generateMetadata({
 		description,
 		keywords,
 		alternates: {
+			// Canonical deliberately includes the ?filter= param because each
+			// category represents genuinely distinct content. However, other
+			// transient params (?q=, ?state=, ?city=) are excluded — those are
+			// UI filters that produce duplicate/near-duplicate pages.
 			canonical:
 				pageNumber > 1 ? `${categoryUrl}&page=${pageNumber}` : categoryUrl
 		},
@@ -89,9 +93,15 @@ export async function generateMetadata({
 			title,
 			description
 		},
+		// Prevent Google from treating category pages as time-sensitive news.
+		// Category slugs may contain date-like substrings but these pages are
+		// evergreen stock photo collections — not news articles.
 		robots: {
 			index: true,
-			follow: true
+			follow: true,
+			'max-snippet': -1,
+			'max-image-preview': 'large',
+			'max-video-preview': -1
 		}
 	};
 }

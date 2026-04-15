@@ -4,10 +4,12 @@ import { Button } from '@/shadcn_data/components/ui/button';
 import type { ImageListing } from '@/types/image';
 import {
 	Calendar,
+	Download,
 	Image as ImageIcon,
 	MapPin,
 	Navigation2,
 	Ruler,
+	ShoppingBag,
 	Tag
 } from 'lucide-react';
 import Link from 'next/link';
@@ -63,6 +65,26 @@ export default function ImageDetailsFull({ image }: ImageDetailsFullProps) {
 	if (image.state) locationParts.push(image.state);
 	const fullLocation = locationParts.join(', ');
 
+	// ─── BUG FIX: isolate the image title cleanly ───────────────────────────
+	// Prefer meta_title (manually curated, always clean) over the raw title
+	// field which may have category labels concatenated to it in the source
+	// data (e.g. "Arched Frame of Charminar CourtyardGuide").
+	// .trim() removes any trailing whitespace artifacts as an extra safeguard.
+	const cleanImageTitle = (image.meta_title || image.title || '').trim();
+
+	// ─── CTA URLs ────────────────────────────────────────────────────────────
+	const licensingUrl = `/contact?type=licensing&imageName=${encodeURIComponent(
+		cleanImageTitle
+	)}&imageId=${image.id}&subject=${encodeURIComponent(
+		`Licensing inquiry: ${cleanImageTitle}`
+	)}`;
+
+	const watermarkPreviewUrl = `/contact?type=preview&imageName=${encodeURIComponent(
+		cleanImageTitle
+	)}&imageId=${image.id}&subject=${encodeURIComponent(
+		`Watermarked preview request: ${cleanImageTitle}`
+	)}`;
+
 	return (
 		<div className='flex flex-col gap-6 sm:gap-8 lg:flex-row lg:gap-10 xl:gap-12'>
 			{/* Main Content */}
@@ -113,17 +135,30 @@ export default function ImageDetailsFull({ image }: ImageDetailsFullProps) {
 					</div>
 				)}
 
-				{/* Purchase Button */}
-				<div className='mb-6 sm:mb-8 lg:mb-10'>
-					<Link
-						href={`/contact?subject=${encodeURIComponent(`Purchase request for image: ${image.title}`)}`}
-					>
+				{/* ── Primary CTA: License This Image ─────────────────────────── */}
+				<div className='mb-4 sm:mb-5'>
+					<Link href={licensingUrl} id='cta-license-image'>
 						<Button
 							size='lg'
-							className='px-6 py-5 text-base font-semibold sm:px-8 sm:py-6 sm:text-lg lg:px-10 lg:py-7 lg:text-xl'
+							className='w-full px-6 py-5 text-base font-semibold sm:w-auto sm:px-8 sm:py-6 sm:text-lg lg:px-10 lg:py-7 lg:text-xl'
 						>
-							Purchase Image
+							<ShoppingBag className='mr-2 h-5 w-5' />
+							Request Licensing &amp; Pricing
 						</Button>
+					</Link>
+				</div>
+
+				{/* ── Secondary CTA: Watermarked preview ──────────────────────── */}
+				{/* Reduces friction — lets prospective buyers evaluate the image
+				    at full resolution before committing to a license inquiry.   */}
+				<div className='mb-6 sm:mb-8 lg:mb-10'>
+					<Link
+						href={watermarkPreviewUrl}
+						id='cta-watermark-preview'
+						className='text-primary inline-flex items-center gap-2 text-sm font-medium hover:underline sm:text-base'
+					>
+						<Download className='h-4 w-4' />
+						Download a free watermarked preview
 					</Link>
 				</div>
 
