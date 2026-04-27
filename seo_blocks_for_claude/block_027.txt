@@ -1,0 +1,86 @@
+--- SEO Block 27 of 137 ---
+Please review the following images and generate the best new SEO meta tags (Meta Title, Meta Description, Meta Keywords) for each item.
+
+Image ID: 335
+Title: Candlelight and Council
+Location: Lalbagh Palace Indore, Indore, madhya pradesh
+Description: A grand council room from Lalbagh Palace in Indore, showcasing European architectural elegance with ornate chandeliers, golden stucco work, royal portraits, and handwoven carpets—echoing the luxury of the Holkar dynasty.
+Current Meta Title: Candlelight and Council
+Current Meta Description: Royal council room at Lalbagh Palace, Indore—lavishly adorned with chandeliers, gold decor, and regal furnishings.
+Current Meta Keywords: Lalbagh Palace interior, Indore heritage palace, royal meeting room, Holkar dynasty palace, European-style palace India, antique chandeliers, royal decor India, palatial room Indore, historic royal furniture, colonial architecture India, golden palace hall, luxury palace interior, vintage council chamber, regal room Indore
+
+Image ID: 336
+Title: Symphony of Gold and Grace
+Location: Lalbagh Palace Indore, Indore, madhya pradesh
+Description: This richly adorned drawing room at Lalbagh Palace, Indore, radiates European luxury with pastel-green hues, rococo detailing, gilt furniture, hand-painted ceilings, and floor-to-ceiling mirrors—an ambient blend of art and aristocracy.
+
+Current Meta Title: Symphony of Gold and Grace
+Current Meta Description: Lavish European-style drawing room in Lalbagh Palace, Indore, with gold detailing, vintage furniture, and royal interiors.
+
+Current Meta Keywords: Lalbagh Palace drawing room, royal interiors India, vintage palace room Indore, Indore heritage site, rococo architecture India, royal mirrors and chandeliers, Maharaja palace decor, palace room with fresco ceiling, Indian royal palace interiors, antique furniture decor, gold and pastel room, Indore luxury heritage
+
+Image ID: 337
+Title: Council of the Royals
+Location: Lalbagh Palace Indore, Indore, madhya pradesh
+Description: A regal conference room at Lalbagh Palace, Indore, adorned with crystal chandeliers, ornate ceiling frescoes, and imperial portraits—echoing the grandeur of royal assemblies held in timeless luxury.
+Current Meta Title: Council of the Royals
+Current Meta Description: Elegant royal meeting hall at Lalbagh Palace, Indore, featuring chandeliers, portraits, and a grand gold-trimmed table beneath painted ceilings.
+Current Meta Keywords: Lalbagh Palace interiors, royal conference hall Indore, chandelier room India, Indore palace photography, vintage royal table, gold ceiling fresco, heritage room with chandelier, Indore architecture, palatial room India, aristocratic decor Indore, Lalbagh Palace hall, Indian royal heritage décor
+
+Image ID: 338
+Title: Twilight Pillars
+Location: Lalbagh Palace Indore, Indore, madhya pradesh
+Description: This minimal, dramatic photograph from Lalbagh Palace captures the fleeting play of light on classical columns—an intimate moment of stillness amidst grand architecture.
+Current Meta Title: Twilight Pillars
+Current Meta Description: Light falling on palace pillars at Lalbagh, Indore, showcasing a quiet and minimal architectural moment.
+Current Meta Keywords: Lalbagh Palace Indore, light on columns, architectural shadows India, moody palace photo, heritage architecture Indore, royal pillars, minimal light photography, Indo-European palace decor, historic palace interiors, gold detailing columns
+
+Image ID: 339
+Title: Royal Deliberations
+Location: Lalbagh Palace Indore, Indore, madhya pradesh
+Description: This grand hall at Lalbagh Palace, Indore, captures the essence of regal sophistication with its ornate chandeliers, ceiling frescoes, and carved fireplace—once a space for royal deliberation.
+Current Meta Title: Royal Deliberations
+Current Meta Description: Opulent hall at Lalbagh Palace in Indore with chandeliers, gold décor, and royal furnishings.
+Current Meta Keywords: Lalbagh Palace Indore, royal meeting hall, vintage chandelier room, Indore palace interiors, heritage photography India, golden ceiling palace, historical Indian architecture, regal dining room, Indian royalty, baroque Indian heritage room
+
+Image ID: 340
+Title: Hall of the Gilded Glow
+Location: Lalbagh Palace Indore, Indore, madhya pradesh
+Description: A magnificent chandelier crowns this royal hall inside Lalbagh Palace, Indore—where gold-leaf details, classic portraits, and imperial elegance whisper tales of regal grandeur.
+Current Meta Title: Hall of the Gilded Glow
+Current Meta Description: Ornate chandelier-lit royal hall with gold detailing and antique portraits inside Lalbagh Palace, Indore.
+
+Current Meta Keywords: Lalbagh Palace Indore, royal interior India, chandelier palace photo, Indian heritage architecture, regal room decor, historical interiors, luxury antique hall, vintage palace photography, Indore tourism, princely estate India
+
+Image ID: 341
+Title: Mandu's Silent Geometry
+Location: central group ashrafi mahal, mandu, madhya pradesh
+Description: A striking upward view of the octagonal ceiling opening at Ashrafi Mahal’s central group in Mandu, Madhya Pradesh. The symmetry of the arches and domes, carved in stone, frames the sky beautifully, creating a harmonious blend of architecture and nature.
+Current Meta Title: Symmetrical Arches – Ashrafi Mahal
+Current Meta Description: A dramatic view of the sky through the octagonal opening of Ashrafi Mahal, Mandu framed by symmetrical arches and domes in perfect geometric harmony.
+Current Meta Keywords: Ashrafi Mahal Mandu, octagonal ceiling opening, Islamic architecture India, symmetrical arch design, ancient stone structure, Mandu heritage site, architectural geometry, historical monument Madhya Pradesh, domed archways, sky through architecture.
+
+Image ID: 342
+Title: Architectural Echoes
+Location: central group ashrafi mahal, mandu, madhya pradesh
+Description: An awe-inspiring view of the open-ceiling pavilion at Ashrafi Mahal, Mandu. The arched gateways and intricate stonework rise majestically, drawing the eye upward to the octagonal opening that beautifully frames the sky, blending architectural grandeur with natural openness.
+Current Meta Title: Open Ceiling – Ashrafi Mahal
+Current Meta Description: Grand arched structure of Ashrafi Mahal in Mandu with an open octagonal ceiling, offering a dramatic upward view that frames the sky through layers of symmetrical stone arches.
+Current Meta Keywords: Ashrafi Mahal Mandu, open ceiling architecture, Islamic monument India, symmetrical stone arches, historical architecture Madhya Pradesh, octagonal dome base, ancient Indian structure, arched gateways, Indo-Islamic design, architectural photography Mandu.
+
+Image ID: 343
+Title: Light Through Silence
+Location: central group jami masjid, mandu, madhya pradesh
+Description: A captivating view from within the Jami Masjid at Mandu, where light filters through patterned jalis and an open doorway reveals the domed courtyard beyond. The interplay of shadow and stone evokes a sense of serenity and timeless grandeur.
+Current Meta Title: Inside Jama Masjid
+Current Meta Description: A serene glimpse of the dome and arches of Jami Masjid in Mandu, captured from its dimly lit interior where light gently spills through stone lattice windows and doorways.
+Current Meta Keywords: Jami Masjid Mandu, mosque interior photography, Islamic architecture India, historic mosque Madhya Pradesh, light and shadow mosque, arched doorway view, dome through door, Indo-Islamic monument, heritage site India, spiritual architecture photo.
+
+Image ID: 344
+Title: The Silent Passage
+Location: central group jami masjid, mandu, madhya pradesh
+Description: A misty morning view of the arched corridor at Jami Masjid, Mandu. The rhythmic symmetry of stone pillars and pointed arches creates a sense of depth and serenity, with the fog softly veiling the domes and courtyard in the background.
+Current Meta Title: Arched Corridor – Jama Masjid
+Current Meta Description: A misty morning view of the arched stone corridor at Jami Masjid in Mandu, showcasing perfect linear perspective and timeless Islamic architectural symmetry.
+Current Meta Keywords: Jami Masjid Mandu, arched corridor, Islamic architecture India, symmetrical arches, stone pillars walkway, medieval mosque design, heritage site Madhya Pradesh, Indo-Islamic monument, ancient architecture corridor, foggy morning architecture.
+

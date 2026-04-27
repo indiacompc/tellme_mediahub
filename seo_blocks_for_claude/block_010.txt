@@ -1,0 +1,85 @@
+--- SEO Block 10 of 137 ---
+Please review the following images and generate the best new SEO meta tags (Meta Title, Meta Description, Meta Keywords) for each item.
+
+Image ID: 165
+Title: Heritage in Pixels
+Location: jahangir mahal, orchha, madhya pradesh
+Description: A glimpse of Jahangir Mahal through a latticed sandstone screen, where warm sunlight filters in, framing the architectural details like a hidden view from history.
+Current Meta Title: Window Details – Jahangir Mahal
+Current Meta Description: A glimpse of Jahangir Mahal's architectural grandeur through its latticed sandstone screen, capturing layers of historic courtyards and domes in warm, golden light.
+Current Meta Keywords: Jahangir Mahal Orchha, jali window view, sandstone lattice screen, Mughal Rajput architecture, palace courtyard view, Indian heritage palace, window detail Jahangir Mahal, historic architecture Madhya Pradesh, traditional Indian screen design, light and shadow through jali.
+
+Image ID: 166
+Title: Chaturbhuj in the Vulture’s Gaze.
+Location: chaturbhuj temple, orchha, madhya pradesh
+Description: A majestic vulture soars above the intricately tiered spire of Chaturbhuj Temple, capturing a timeless moment where nature meets ancient architecture under a vivid blue sky.
+Current Meta Title: Vultures at Chaturbhuj Temple
+Current Meta Description: A majestic vulture soars above the intricately tiered spire of Chaturbhuj Temple in Orchha, capturing the harmony of ancient architecture and wildlife under a vivid blue sky.
+Current Meta Keywords: Chaturbhuj Temple Orchha, temple spire architecture, vulture in flight, heritage site Madhya Pradesh, bird above temple, Indian temple design, aerial wildlife photography, historical architecture India, spiritual monuments, blue sky temple view.
+
+Image ID: 167
+Title: Golden Hour at Laxmi Narayan
+Location: Laxmi Narayan Temple, orchha, madhya pradesh
+Description: As the sun sets behind Orchha's Laxmi Narayan Temple, its historic walls glow with warmth, capturing a perfect harmony between architecture, time, and nature.
+
+
+Current Meta Title: Golden Hour at Laxmi Narayan
+Current Meta Description: Golden sunset illuminating the corner of Laxmi Narayan Temple in Orchha, showcasing its intricate heritage architecture and peaceful aura.
+Current Meta Keywords: Orchha, Laxmi Narayan Temple, sunset temple photo, Indian architecture, Madhya Pradesh heritage, golden hour photography, temple silhouette, historic monument, spiritual site, Bundela architecture
+
+Image ID: 168
+Title: The Rising Shikhara – Majesty of Indore
+Location: Chattris of Indore, Indore, madhya pradesh
+Description: Bathed in the golden hues of twilight, the towering shikhara of this intricately sculpted temple pierces the serene blue sky. Its rhythmic tiers of stone carvings echo tales of devotion and artistry from centuries past. Each sculpted niche and ornate window frame stands as a silent hymn to the divine, celebrating the sacred geometry of Indian temple architecture.
+Current Meta Title: The Rising Shikhara – Majesty of Indore
+Current Meta Description: Majestic Indian temple shikhara captured in warm evening light, showcasing intricate carvings and architectural grandeur.
+Current Meta Keywords: Indian temple, shikhara, temple architecture, ancient India, heritage, carvings, stone sculpture, spirituality, sacred architecture, Indore temple, historical monument, twilight photography, Hindu temple
+
+Image ID: 169
+Title: Watchers of History – Framed in Light
+Location: Chattris of Indore, Indore, madhya pradesh
+Description: Dappled by the last rays of evening, two stoic stone guardians stand eternally alert, their finely chiseled turbans, swords, and pleats captured in quiet chiaroscuro. The warm glow traces every contour, turning weathered sandstone into living history and framing these silent sentinels in a timeless play of light and shadow.
+Current Meta Title: Watchers of History – Framed in Light
+Current Meta Description: Sun-lit sandstone relief of two traditional guardians on an Indian temple wall, captured in warm evening light.
+Current Meta Keywords: stone relief, sandstone carvings, temple guardians, Indian heritage art, warrior sculptures, historical façade, architectural detail, dusk photography, Indore temple, cultural monument
+
+Image ID: 170
+Title: Carved Honor – A Tribute to Warriors
+Location: Chattris of Indore, Indore, madhya pradesh
+Description: Bathed in the amber glow of the setting sun, this finely carved sandstone figure stands as a timeless emblem of valor and nobility. Draped in traditional attire and gripping a ceremonial mace, his poised stance and proud mustache evoke the silent strength of guardians past—forever etched in stone, forever watching.
+Current Meta Title: Carved Honor – A Tribute to Warriors
+Current Meta Description: Sunlit sandstone carving of a traditional warrior figure on an Indian temple wall, reflecting heritage and craftsmanship.
+Current Meta Keywords: sandstone carving, Indian warrior sculpture, heritage art, temple relief, traditional attire, historical figure, stone guardian, Indian temple art, Indore architecture, cultural monument, warrior tribute, Indian history
+
+Image ID: 171
+Title: The Corridor of Heritage
+Location: Chattris of Indore, Indore, madhya pradesh
+Description: Sunlight gently dances through the arched corridor, casting intricate shadows on the polished stone floor. These ornately carved columns, standing in perfect rhythm, guide the eye toward the lush green beyond—a meeting point of regal craftsmanship and nature’s quiet presence. This is a timeless journey through symmetry, silence, and splendor.
+Current Meta Title: The Corridor of Heritage
+Current Meta Description: A symmetrical corridor of intricately carved stone arches leading to a vibrant green backdrop, blending architecture and nature.
+Current Meta Keywords: Indian architecture, carved stone columns, temple corridor, archways, symmetrical corridor, heritage site, traditional Indian design, historical monument, palace walkway, sandstone pillars, architectural symmetry, Indore heritage
+
+Image ID: 172
+Title: Through the Pillars of Time
+Location: Chattris of Indore, Indore, madhya pradesh
+Description: <p>In this timeless monochrome frame, the intricately carved pillars of history stand like silent sentinels, echoing whispers of a bygone era. The rhythmic play of light and shadow weaves through the arches, guiding the viewer through an architectural narrative sculpted in stone. Each detail reveals the grandeur of craftsmanship, preserved in stillness and symmetry.</p>
+Current Meta Title: Through the Pillars of Time
+Current Meta Description: A black and white image capturing the ornate columns and arches of historic Indian architecture, rich in detail and depth.
+Current Meta Keywords: black and white architecture, Indian heritage, stone pillars, historic arches, temple corridor, ancient architecture, carved stonework, royal pavilion, architectural symmetry, cultural monument, timeless structure, heritage India
+
+Image ID: 173
+Title: Crafted to Endure
+Location: Chattris of Indore, Indore, madhya pradesh
+Description: Bathed in golden sunlight, this historic pavilion emerges with quiet majesty. The ascending stone steps lead into a forest of elaborately carved columns and warrior motifs, inviting one into the heart of a bygone dynasty. Against the clear blue sky, the blend of light, shadow, and intricate detail evokes a timeless reverence for craftsmanship etched in stone.
+Current Meta Title: Crafted to Endure
+Current Meta Description: A heritage structure with intricately carved stone columns and steps, captured under warm sunlight and a clear sky
+Current Meta Keywords: ancient Indian architecture, heritage pavilion, stone carvings, historic steps, warrior sculptures, traditional craftsmanship, temple entrance, Indian monument, sandstone structure, cultural heritage, royal architecture, sunlight on stone
+
+Image ID: 174
+Title: Green Veil Over Red Stone
+Location: Chattris of Indore, Indore, madhya pradesh
+Description: The photograph gazes upward at a regal facade, where sunlight kisses the intricately carved red stone, revealing centuries of artistry etched into every detail. Framed by tender green leaves, the ancient architecture stands proudly against a clear blue sky—a poetic fusion of nature and heritage, light and legacy.
+Current Meta Title: Green Veil Over Red Stone
+Current Meta Description: Sunlit red stone architecture framed by green leaves against a bright blue sky, showcasing intricate historic carvings.
+Current Meta Keywords: heritage architecture, red sandstone carvings, Indian monument, ancient structure, traditional facade, nature and history, cultural heritage, intricate arches, stone artistry, blue sky backdrop, green leaves framing, historical site photograph
+

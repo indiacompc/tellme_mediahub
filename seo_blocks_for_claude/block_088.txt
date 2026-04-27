@@ -1,0 +1,83 @@
+--- SEO Block 88 of 137 ---
+Please review the following images and generate the best new SEO meta tags (Meta Title, Meta Description, Meta Keywords) for each item.
+
+Image ID: 963
+Title: Intricate Stone Carving
+Location: JAMI MASJID, Vadodara, Gujarat
+Description: A close-up of the exquisite sandstone carving at Jami Masjid in Vadodara, Gujarat. The detailed jaali work and layered geometry showcase the mastery of Indo-Islamic artisanship.
+Current Meta Title: Intricate Stone Carving
+Current Meta Description: Detailed stone carving at Jami Masjid, Vadodara.
+Current Meta Keywords: Jami Masjid Vadodara, mosque stone carving, Gujarat heritage, Islamic architecture India, jaali work, sandstone details, Mughal era mosque, intricate facade carving
+
+Image ID: 964
+Title: Heritage Amidst Greenery
+Location: JAMI MASJID, Vadodara, Gujarat
+Description: A side elevation of the Jami Masjid in Vadodara, Gujarat, surrounded by manicured gardens and trees. This Indo-Islamic marvel stands out with its domes, minarets, and symmetrical façade, blending heritage with natural serenity.
+Current Meta Title: Heritage Amidst Greenery
+Current Meta Description: Jami Masjid in Vadodara, Gujarat, viewed from the garden side with domes and minarets.
+Current Meta Keywords: Jami Masjid Vadodara, mosque side view, Indo-Islamic architecture, Gujarat heritage site, historic mosque India, domes and minarets, green garden mosque, Mughal-style masjid, Indian monuments
+
+Image ID: 965
+Title: Qutubuddin Tomb at Sunset
+Location: Qutubuddin Tomb, Vadodara, Gujarat
+Description: A serene view of Qutubuddin Tomb in Vadodara, Gujarat, captured during golden hour. The symmetrical Mughal-style domed structure is framed by tall palm trees, with a stone path leading to its arched entrances.
+Current Meta Title: Qutubuddin Tomb at Sunset
+Current Meta Description: Sunset view of Qutubuddin Tomb in Vadodara, framed by trees and Mughal-era architecture.
+Current Meta Keywords: Qutubuddin Tomb Vadodara, Gujarat heritage sites, Mughal tomb India, historical monument Gujarat, ancient Islamic architecture, tomb at sunset, Indian domed structures, Vadodara tourism, Qutubuddin monument
+
+Image ID: 966
+Title: Saat Kaman Arches
+Location: SAAT KAMAN, Vadodara, Gujarat
+Description: A vivid look at the ancient stone arches of Saat Kaman in Vadodara, Gujarat. These seven iconic arches are remnants of military architecture from the Mughal era, standing atop a scenic hill with panoramic views and layered stonework that whispers history.
+Current Meta Title: Saat Kaman Arches
+Current Meta Description: Explore the historic seven arches of Saat Kaman in Vadodara, a unique remnant of Mughal military architecture.
+Current Meta Keywords: Saat Kaman Vadodara, seven arches Gujarat, Mughal architecture India, ancient fort arches, historic ruins Gujarat, Vadodara monuments, stone arch heritage, Indian military forts, heritage site Gujarat, travel photography Vadodara
+
+Image ID: 967
+Title: Stone Arches of Saat Kaman
+Location: SAAT KAMAN, Vadodara, Gujarat
+Description: A captivating image of the stone arches at Saat Kaman, perched atop a hill in Vadodara, Gujarat. These seven strategic arches, remnants of a bygone military outpost, exhibit Indo-Islamic architecture and provide a breathtaking view of the surrounding terrain, blending natural beauty with historic engineering.
+Current Meta Title: Stone Arches of Saat Kaman
+Current Meta Description: Discover the stone arch ruins of Saat Kaman in Vadodara, Gujarat—an enduring symbol of military architecture and heritage.
+Current Meta Keywords: Saat Kaman Vadodara, seven arches India, historic ruins Gujarat, military architecture, ancient forts India, stone arch monuments, Gujarat tourism, Indo-Islamic architecture, heritage Vadodara, architectural photography India
+
+Image ID: 968
+Title: Hira Gate Temple Facade
+Location: Hira Gate, Vadodara, Gujarat
+Description: A black-and-white capture of a richly detailed temple facade near Hira Gate in Vadodara, Gujarat. The photograph showcases the refined craftsmanship of ancient Indian artisans, with divine sculptures and ornamental carvings that reflect the architectural splendor of temple heritage in western India.
+Current Meta Title: Hira Gate Temple Facade
+Current Meta Description: A detailed view of temple carvings at Hira Gate, Vadodara, displaying Gujarat’s traditional stone craftsmanship.
+Current Meta Keywords: Hira Gate temple carvings, Vadodara heritage, Gujarat stone architecture, ancient Indian sculpture, temple wall carvings India, Indian heritage photography, temple facade art, cultural landmarks Gujarat, historical architecture India, artisan stonework temple
+
+Image ID: 969
+Title: Architectural Silence in Stone
+Location: Sarkhej roja, Ahmedabad, Gujarat
+Description: A monochrome view of the serene stepped courtyard at Sarkhej Roza, Ahmedabad. This frame captures the timeless geometry of Indo-Islamic architecture — where stepwell elements, jharokhas, and symmetrical stonework come together in quiet dignity. A space steeped in history, reflection, and architectural brilliance.
+Current Meta Title: Architectural Silence in Stone
+Current Meta Description: Black and white image of Sarkhej Roza’s stepped courtyard showcasing historic Indo-Islamic design in Ahmedabad.
+Current Meta Keywords: Sarkhej Roza Ahmedabad, stepwell courtyard Gujarat, Indo-Islamic architecture India, historical monuments Ahmedabad, heritage photography Gujarat, ancient step structure, Sarkhej Roza black and white photo, stone architecture India, Indian heritage sites, Gujarat monuments photography
+
+Image ID: 970
+Title: Lattice Light – Sarkhej Roza’s Stone Poetry
+Location: Sarkhej roja, Ahmedabad, Gujarat
+Description: A black-and-white photograph of an intricately carved jali room at Sarkhej Roza, Ahmedabad. The image captures the ethereal beauty of light filtering through the geometric stone lattice, casting mesmerizing shadows on the marble floor. This Indo-Islamic architecture showcases a seamless blend of art, faith, and silence in stone.
+Current Meta Title: Lattice Light – Sarkhej Roza’s Stone Poetry
+Current Meta Description: Lattice-lit stone chamber at Sarkhej Roza, Ahmedabad, highlighting Indo-Islamic architectural finesse in black and white.
+Current Meta Keywords: Sarkhej Roza Ahmedabad, jali architecture India, Indo-Islamic stone carving, heritage mosque Gujarat, lattice window architecture, Indian monument interior, black and white heritage photo, Islamic geometry architecture, Ahmedabad historical site, light and shadow architecture photography
+
+Image ID: 971
+Title: Geometric Grace – Light & Stone at Sarkhej Roza
+Location: Sarkhej roja, Ahmedabad, Gujarat
+Description: This monochrome image captures the refined elegance of a jali-lined corridor inside Sarkhej Roza, Ahmedabad. The symmetrical stone lattice (jali) windows create a hypnotic dance of light and shadows across the polished marble floors, reflecting the excellence of Indo-Islamic architectural tradition and craftsmanship.
+Current Meta Title: Geometric Grace – Light & Stone at Sarkhej Roza
+Current Meta Description: Black-and-white photo of Sarkhej Roza’s corridor with jali windows casting patterned light and shadows in Ahmedabad, Gujarat.
+Current Meta Keywords: Sarkhej Roza corridor, jali windows India, Indo-Islamic architecture Gujarat, heritage interiors Ahmedabad, stone lattice light patterns, historical architecture India, Ahmedabad monuments, jharokha architecture, Islamic heritage site India, heritage corridor design
+
+Image ID: 972
+Title: Sunset Silhouettes – Pillared Pavilion at Sarkhej Roza
+Location: Sarkhej roja, Ahmedabad, Gujarat
+Description: This image showcases the elevated marble pavilion at Sarkhej Roza in Ahmedabad, Gujarat, bathed in warm sunset light. The elegant pillars and symmetrical steps reflect Indo-Islamic architectural finesse, while the soft glow adds a spiritual aura to the heritage structure.
+Current Meta Title: Sunset Silhouettes – Pillared Pavilion at Sarkhej Roza
+Current Meta Description: Pillared marble pavilion at Sarkhej Roza, Ahmedabad, illuminated by golden sunset light—showcasing Indo-Islamic heritage.
+Current Meta Keywords: Sarkhej Roza pavilion, marble pillars Ahmedabad, Islamic architecture India, heritage site Gujarat, Indo-Islamic structure, sunset at Sarkhej Roza, Ahmedabad travel photo, historical architecture India, step pavilion Gujarat, evening monument India
+
