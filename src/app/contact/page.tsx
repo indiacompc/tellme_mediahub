@@ -49,10 +49,10 @@ export default function ContactPage() {
 										<div>
 											<h3 className='mb-1 font-semibold'>Email</h3>
 											<a
-												href='mailto:digital@tellmedigi.com'
+												href='mailto:connect@youtellme.ai'
 												className='text-muted-foreground hover:text-primary transition-colors'
 											>
-												digital@tellmedigi.com
+												connect@youtellme.ai
 											</a>
 										</div>
 									</div>

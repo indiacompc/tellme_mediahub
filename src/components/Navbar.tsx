@@ -62,7 +62,7 @@ const Navbar = ({ tellme_logo }: { tellme_logo: StaticImageData }) => {
           <div className="h-full flex">
             <Link
               target="_blank"
-              href="mailto:digital@tellmedigi.com"
+              href="mailto:connect@youtellme.ai"
               className="flex justify-center items-center text-black gap-2 p-2.5"
             >
               <FaEnvelope size={20} />
@@ -87,7 +87,7 @@ const Navbar = ({ tellme_logo }: { tellme_logo: StaticImageData }) => {
 					</button>
 					<Link
 						target='_blank'
-						href='mailto:digital@tellmedigi.com'
+						href='mailto:connect@youtellme.ai'
 						className='hover:text-foreground flex items-center justify-center gap-2 rounded-lg p-2.5 text-white transition-colors hover:bg-white/10'
 					>
 						<FaEnvelope size={20} />

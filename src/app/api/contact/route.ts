@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
 		// Email to company
 		const companyEmailResult = await resend.emails.send({
 			from: fromEmail,
-			to: 'digital@tellmedigi.com',
+			to: 'connect@youtellme.ai',
 			cc: 'abhishek@youtellme.ai',
 			subject: `Contact Form: ${safeSubject}`,
 			html: `
