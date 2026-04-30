@@ -22,6 +22,10 @@ export interface ImageListing {
 	latitude?: number;
 	longitude?: number;
 	is_vr_pano: boolean;
+	geo_summary?: string;
+	geo_context?: string;
+	geo_tags?: string[];
+	geo_faq?: { question: string; answer: string }[];
 }
 
 export interface ImageCategory {

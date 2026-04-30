@@ -52,3 +52,6 @@ dist/*
 
 daemon/
 daemon/*
+
+# Large source asset bundles — should never be committed (GitHub blocks >100MB)
+*.zip

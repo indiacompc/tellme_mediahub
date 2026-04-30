@@ -21,6 +21,20 @@ interface ImageDetailsFullProps {
 
 export default function ImageDetailsFull({ image }: ImageDetailsFullProps) {
 	const [showFullDescription, setShowFullDescription] = useState(false);
+	const [showFullGeo, setShowFullGeo] = useState(false);
+	const [showAllTags, setShowAllTags] = useState(false);
+
+	// Show only the first few related-topic chips by default to keep the
+	// sidebar tidy on small screens; reveal the rest on click.
+	const VISIBLE_TAG_LIMIT = 3;
+
+	// "Show more" only makes sense if there's expandable GEO content beyond
+	// the always-visible geo_summary. Keeps the toggle out of the way for
+	// images that only have a summary.
+	const hasExpandableGeo = !!(
+		image.geo_context ||
+		(image.geo_faq && image.geo_faq.length > 0)
+	);
 
 	const capturedDate = useMemo(() => {
 		if (!image.captured_date) return null;
@@ -133,6 +147,83 @@ export default function ImageDetailsFull({ image }: ImageDetailsFullProps) {
 							)}
 						</div>
 					</div>
+				)}
+
+				{/* ── About this image (GEO summary, always visible) ───────────
+				    Visible body text so AI search engines (ChatGPT, Perplexity,
+				    Google SGE) can ingest a clean factual summary. Different
+				    from `description`, which is the editorial caption.
+				    `geo_context` and the FAQ live behind a "Show more" toggle
+				    below — collapsed by default to keep the page compact while
+				    the JSON-LD FAQPage and ImageObject still expose the data
+				    to crawlers regardless of UI state. */}
+				{image.geo_summary && (
+					<section className='mb-6 sm:mb-8 lg:mb-10'>
+						<h2 className='font-quicksand mb-3 text-lg font-semibold sm:mb-4 sm:text-xl lg:text-2xl'>
+							About this image
+						</h2>
+						<p className='text-muted-foreground text-sm leading-relaxed sm:text-base'>
+							{image.geo_summary}
+						</p>
+						{hasExpandableGeo && !showFullGeo && (
+							<button
+								onClick={() => setShowFullGeo(true)}
+								className='text-primary mt-3 inline-block font-semibold hover:underline'
+							>
+								Show more
+							</button>
+						)}
+					</section>
+				)}
+
+				{showFullGeo && (
+					<>
+						{/* ── Where it fits (GEO context) ───────────────────── */}
+						{image.geo_context && (
+							<section className='mb-6 sm:mb-8 lg:mb-10'>
+								<h2 className='font-quicksand mb-3 text-lg font-semibold sm:mb-4 sm:text-xl lg:text-2xl'>
+									Where it fits
+								</h2>
+								<p className='text-muted-foreground text-sm leading-relaxed sm:text-base'>
+									{image.geo_context}
+								</p>
+							</section>
+						)}
+
+						{/* ── Frequently asked questions (GEO FAQ) ───────────
+						    Also emitted as schema.org FAQPage JSON-LD on the
+						    page route so both Google rich results and AI
+						    assistants can surface these answers regardless of
+						    whether this UI section is expanded. */}
+						{image.geo_faq && image.geo_faq.length > 0 && (
+							<section className='mb-6 sm:mb-8 lg:mb-10'>
+								<h2 className='font-quicksand mb-3 text-lg font-semibold sm:mb-4 sm:text-xl lg:text-2xl'>
+									Frequently asked questions
+								</h2>
+								<dl className='space-y-4'>
+									{image.geo_faq.map((qa, idx) => (
+										<div key={idx}>
+											<dt className='text-foreground text-sm font-semibold sm:text-base'>
+												{qa.question}
+											</dt>
+											<dd className='text-muted-foreground mt-1 text-sm leading-relaxed sm:text-base'>
+												{qa.answer}
+											</dd>
+										</div>
+									))}
+								</dl>
+							</section>
+						)}
+
+						<div className='mb-6 sm:mb-8 lg:mb-10'>
+							<button
+								onClick={() => setShowFullGeo(false)}
+								className='text-primary inline-block font-semibold hover:underline'
+							>
+								Show less
+							</button>
+						</div>
+					</>
 				)}
 
 				{/* ── Primary CTA: License This Image ─────────────────────────── */}
@@ -287,6 +378,39 @@ export default function ImageDetailsFull({ image }: ImageDetailsFullProps) {
 										Added
 									</span>
 									<span className='text-foreground'>{createdDate}</span>
+								</div>
+							</div>
+						)}
+						{image.geo_tags && image.geo_tags.length > 0 && (
+							<div className='flex items-start gap-2'>
+								<Tag className='text-muted-foreground mt-1 h-4 w-4 shrink-0' />
+								<div className='flex-1'>
+									<span className='text-muted-foreground mb-1 block sm:mb-2'>
+										Related topics
+									</span>
+									<ul className='flex flex-wrap gap-2'>
+										{(showAllTags
+											? image.geo_tags
+											: image.geo_tags.slice(0, VISIBLE_TAG_LIMIT)
+										).map((tag, idx) => (
+											<li
+												key={idx}
+												className='bg-muted text-foreground rounded-full px-2.5 py-1 text-xs sm:text-sm'
+											>
+												{tag}
+											</li>
+										))}
+									</ul>
+									{image.geo_tags.length > VISIBLE_TAG_LIMIT && (
+										<button
+											onClick={() => setShowAllTags((v) => !v)}
+											className='text-primary mt-2 inline-block text-xs font-semibold hover:underline sm:text-sm'
+										>
+											{showAllTags
+												? 'Show less'
+												: `Show ${image.geo_tags.length - VISIBLE_TAG_LIMIT} more`}
+										</button>
+									)}
 								</div>
 							</div>
 						)}

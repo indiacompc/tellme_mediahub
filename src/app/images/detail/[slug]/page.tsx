@@ -14,7 +14,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import type { ImageObject, WithContext } from 'schema-dts';
+import type { FAQPage, ImageObject, WithContext } from 'schema-dts';
 import PanoramaImageLoader from './PanoramaImageLoader';
 
 type ParamsType = {
@@ -191,6 +191,26 @@ export default async function ImageDetailPage({
 	const copyrightYear = image.captured_date
 		? new Date(image.captured_date).getFullYear()
 		: currentYear;
+
+	// FAQ structured data — built only when the image has curated geo_faq
+	// entries. Each Q&A becomes a Question node so Google can render FAQ rich
+	// results and AI engines can extract clean answer pairs.
+	const faqStructuredData: WithContext<FAQPage> | null =
+		image.geo_faq && image.geo_faq.length > 0
+			? {
+				'@context': 'https://schema.org',
+				'@type': 'FAQPage',
+				'@id': `${imageUrl}#faq`,
+				mainEntity: image.geo_faq.map((qa) => ({
+					'@type': 'Question',
+					name: qa.question,
+					acceptedAnswer: {
+						'@type': 'Answer',
+						text: qa.answer
+					}
+				}))
+			}
+			: null;
 
 	const imageStructuredData: WithContext<ImageObject> = {
 		'@context': 'https://schema.org',
@@ -375,6 +395,19 @@ export default async function ImageDetailPage({
 					__html: JSON.stringify(imageStructuredData)
 				}}
 			/>
+
+			{/* FAQ structured data — emitted only when curated GEO Q&A exists.
+			    Powers Google FAQ rich results and gives AI assistants
+			    (ChatGPT, Perplexity, SGE) clean Q&A pairs to lift from. */}
+			{image.geo_faq && image.geo_faq.length > 0 && (
+				<script
+					id='faqStructuredData'
+					type='application/ld+json'
+					dangerouslySetInnerHTML={{
+						__html: JSON.stringify(faqStructuredData)
+					}}
+				/>
+			)}
 		</div>
 	);
 }
