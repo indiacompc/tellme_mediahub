@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(unzip -l \"10 images for seo.zip\")",
-      "Bash(python -c \"import json; data = json.load\\(open\\('public/image_listings.json', encoding='utf-8'\\)\\); print\\('Valid JSON. Total entries:', len\\(data\\)\\)\")"
-    ]
-  }
-}
