@@ -55,3 +55,8 @@ daemon/*
 
 # Large source asset bundles — should never be committed (GitHub blocks >100MB)
 *.zip
+automation_indexing
+automation_indexing/*
+Websites - Plan & Activity tracker.xlsx
+seo_blocks_for_claude
+seo_blocks_for_claude/*

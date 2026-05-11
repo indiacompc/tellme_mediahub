@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c ' *)",
+      "Bash(ls \"D:/pratik/automation/website_analysis/\" 2>&1)",
+      "Read(//d/pratik/automation/website_analysis/**)",
+      "Bash(venv/Scripts/python.exe -c \"import pkgutil; mods=['google.api_core','googleapiclient','google.oauth2']; [print\\(m, pkgutil.find_loader\\(m\\) is not None\\) for m in mods]\")",
+      "Bash(venv/Scripts/python.exe -c ' *)",
+      "Bash(curl -s -A \"Mozilla/5.0\" \"https://tellme360.media/sitemap.xml\")",
+      "Bash(curl -sL -A \"Mozilla/5.0\" \"https://tellme360.media/sitemap.xml\")",
+      "Bash(curl -sL -A \"Mozilla/5.0\" \"https://www.tellme360.media/sitemap.xml\")",
+      "Bash(D:/pratik/automation/website_analysis/backend/venv/Scripts/python.exe -c ' *)",
+      "Bash(\"D:/pratik/automation/website_analysis/backend/venv/Scripts/python.exe\" -m pip install google-api-python-client)",
+      "Bash(mkdir -p \"D:/pratik/automation/website_analysis/automation_indexing/cache\" && ls \"D:/pratik/automation/website_analysis/\")",
+      "Bash(MAX_INSPECTIONS_PER_RUN=3 SNAPSHOT_DATE=2026-05-08 \"D:/pratik/automation/website_analysis/backend/venv/Scripts/python.exe\" -B update_sheet.py)",
+      "Bash(D:/pratik/automation/website_analysis/backend/venv/Scripts/python.exe -B -c ' *)",
+      "Bash(SNAPSHOT_DATE=2026-05-08 \"D:/pratik/automation/website_analysis/backend/venv/Scripts/python.exe\" -B update_sheet.py)",
+      "Bash(tee initial_run.log)",
+      "PowerShell(schtasks /Create /SC DAILY /TN \"TellMe360IndexingUpdate\" /TR 'cmd.exe /c \"D:\\\\pratik\\\\newtellme_mediahub\\\\tellmemediahub\\\\automation_indexing\\\\run.bat\"' /ST 09:30 /RU SD317 /F)",
+      "Bash(rm -f initial_run.log)",
+      "Bash(SNAPSHOT_DATE=2026-05-08 PYTHONUNBUFFERED=1 \"D:/pratik/automation/website_analysis/backend/venv/Scripts/python.exe\" -B update_sheet.py)",
+      "Bash(MAX_INSPECTIONS_PER_RUN=0 SNAPSHOT_DATE=2026-05-08 \"D:/pratik/automation/website_analysis/backend/venv/Scripts/python.exe\" -B update_sheet.py)",
+      "Bash(curl -sIL -A \"Mozilla/5.0\" \"https://www.tellme360.media/about-us\" \"https://www.tellme360.media/\")",
+      "Bash(curl -sL -A \"Mozilla/5.0\" \"https://www.tellme360.media/robots.txt\")",
+      "Bash(curl -sIL -A \"Mozilla/5.0\" \"https://tellme360.media/about-us\")",
+      "Bash(curl -sIL -A \"Mozilla/5.0\" \"https://www.tellme360.media/about-us\")",
+      "Bash(curl -sIL -A \"Mozilla/5.0\" \"https://tellme360.media/\")",
+      "Bash(git -C \"d:/pratik/newtellme_mediahub/tellmemediahub\" remote -v)",
+      "Bash(git -C \"d:/pratik/newtellme_mediahub/tellmemediahub\" branch --show-current)",
+      "Bash(git -C \"d:/pratik/newtellme_mediahub/tellmemediahub\" status -sb)"
+    ],
+    "additionalDirectories": [
+      "D:\\pratik\\automation\\website_analysis\\automation_indexing"
+    ]
+  }
+}

@@ -6,8 +6,8 @@ export const organizationJsonLd: WithContext<Organization> = {
 	'@type': 'Organization',
 	name: 'Tellme Digiinfotech Private Limited',
 	legalName: 'Tellme Digiinfotech Private Limited',
-	url: ' https://tellme360.media',
-	logo: ` https://tellme360.media${tellme_logo.src}`,
+	url: 'https://tellme360.media',
+	logo: `https://tellme360.media${tellme_logo.src}`,
 	telephone: '+917030238122',
 	email: 'connect@youtellme.ai',
 	address: {
@@ -53,7 +53,7 @@ export const websiteJsonLd: WithContext<WebSite> = {
 	'@context': 'https://schema.org',
 	'@type': 'WebSite',
 	name: 'Tellme Media',
-	url: ' https://tellme360.media',
+	url: 'https://tellme360.media',
 	copyrightHolder: organizationJsonLd,
 	sameAs: [
 		'https://www.facebook.com/Tellme360/',
@@ -72,7 +72,7 @@ export const websiteJsonLd: WithContext<WebSite> = {
 		name: 'Tellme 360 WebSite Video',
 		description:
 			'Welcome to Tellme Media, the ultimate resource for high-quality. diverse, and captivating stock footage of all travel and tourism points across the nation.We provide RAW footage straight from the camera to give you the entire editorial control. Search below to find your desired footage.',
-		contentUrl: ' https://tellme360.media/bg_video.mp4'
+		contentUrl: 'https://tellme360.media/bg_video.mp4'
 	}
 	// potentialAction: {
 	//   '@type': 'SearchAction',

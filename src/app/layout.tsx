@@ -110,7 +110,7 @@ export const metadata: Metadata = {
 	},
 	appLinks: {
 		web: {
-			url: ' https://tellme360.media',
+			url: 'https://tellme360.media',
 			should_fallback: true
 		}
 	}
