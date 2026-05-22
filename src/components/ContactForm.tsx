@@ -36,6 +36,10 @@ export default function ContactForm() {
 		intendedUse: '',
 		resolution: ''
 	});
+	// Honeypot: bots auto-fill every input, real users never see this one.
+	const [website, setWebsite] = useState('');
+	// Track when the form mounted so we can reject sub-second submissions.
+	const [mountedAt] = useState(() => Date.now());
 	const [loading, setLoading] = useState(false);
 	const [success, setSuccess] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -110,7 +114,9 @@ export default function ContactForm() {
 					name: formData.name,
 					email: formData.email,
 					subject: formData.subject,
-					message: fullMessage
+					message: fullMessage,
+					website,
+					elapsedMs: Date.now() - mountedAt
 				})
 			});
 
@@ -163,6 +169,30 @@ export default function ContactForm() {
 			)}
 
 			<form onSubmit={handleSubmit} className='space-y-5'>
+				{/* Honeypot — hidden from humans, irresistible to bots. */}
+				<div
+					aria-hidden='true'
+					style={{
+						position: 'absolute',
+						left: '-10000px',
+						top: 'auto',
+						width: '1px',
+						height: '1px',
+						overflow: 'hidden'
+					}}
+				>
+					<label htmlFor='website'>Website (leave blank)</label>
+					<input
+						type='text'
+						id='website'
+						name='website'
+						tabIndex={-1}
+						autoComplete='off'
+						value={website}
+						onChange={(e) => setWebsite(e.target.value)}
+					/>
+				</div>
+
 				{/* Name */}
 				<div>
 					<label htmlFor='name' className='mb-2 block text-sm font-medium'>

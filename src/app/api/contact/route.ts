@@ -13,10 +13,46 @@ function escapeHtml(text: string): string {
 		.replace(/'/g, '&#039;');
 }
 
+// Detects single-token mixed-case random strings (the signature bot pattern).
+// Real names/subjects/messages either contain whitespace or stay short.
+function looksLikeGibberish(text: string): boolean {
+	const t = text.trim();
+	if (t.length < 12) return false;
+	if (/\s/.test(t)) return false;
+	const letters = t.replace(/[^a-zA-Z]/g, '');
+	if (letters.length < 10) return false;
+	const hasUpper = /[A-Z]/.test(letters);
+	const hasLower = /[a-z]/.test(letters);
+	if (!hasUpper || !hasLower) return false;
+	// Count case transitions — random strings flip case often, real words don't.
+	let transitions = 0;
+	for (let i = 1; i < letters.length; i++) {
+		const prevUpper = letters[i - 1] >= 'A' && letters[i - 1] <= 'Z';
+		const curUpper = letters[i] >= 'A' && letters[i] <= 'Z';
+		if (prevUpper !== curUpper) transitions++;
+	}
+	return transitions / letters.length > 0.25;
+}
+
+// Silent success — pretends the submission worked so bots don't learn to adapt.
+function silentDrop() {
+	return NextResponse.json({ message: 'Email sent successfully' }, { status: 200 });
+}
+
 export async function POST(request: NextRequest) {
 	try {
 		const body = await request.json();
-		const { name, email, subject, message } = body;
+		const { name, email, subject, message, website, elapsedMs } = body;
+
+		// Honeypot tripped — bot filled the hidden field.
+		if (typeof website === 'string' && website.trim() !== '') {
+			return silentDrop();
+		}
+
+		// Form submitted faster than any human could type.
+		if (typeof elapsedMs === 'number' && elapsedMs < 3000) {
+			return silentDrop();
+		}
 
 		// Validate required fields
 		if (!name || !email || !subject || !message) {
@@ -33,6 +69,15 @@ export async function POST(request: NextRequest) {
 				{ error: 'Invalid email address' },
 				{ status: 400 }
 			);
+		}
+
+		// Gibberish in any visible field → drop silently.
+		if (
+			looksLikeGibberish(name) ||
+			looksLikeGibberish(subject) ||
+			looksLikeGibberish(message)
+		) {
+			return silentDrop();
 		}
 
 		const fromEmail =
