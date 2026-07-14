@@ -179,7 +179,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			const allImages: ImageListing[] = JSON.parse(fileContents);
 			if (Array.isArray(allImages)) {
 				images = allImages
-					.filter((img) => img.status === 'public')
+					// Only public images that actually have a source. A null src
+					// means the detail page returns 404 (see images/detail/[slug]),
+					// so submitting it would feed Google dead URLs and hurt crawl trust.
+					.filter((img) => img.status === 'public' && img.src)
 					.map((img) => ({
 						slug: img.slug,
 						categorySlug: (img as any).category_slug

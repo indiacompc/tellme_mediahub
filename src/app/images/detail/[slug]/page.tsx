@@ -32,7 +32,11 @@ export async function generateMetadata({
 	const { slug } = await params;
 	const image = await getImageBySlug(decodeURIComponent(slug));
 
-	if (!image) {
+	// Treat records with no image source as not-found. A null src means the
+	// image file was never attached (incomplete ingestion); rendering it would
+	// throw (isFirebaseStorageUrl/deriveEncodingFormat call String methods on
+	// null) and return HTTP 500, which causes Google to de-index the URL.
+	if (!image || !image.src) {
 		return {
 			title: 'Image Not Found'
 		};
@@ -115,7 +119,10 @@ export default async function ImageDetailPage({
 	const { filter } = await searchParams;
 	const image = await getImageBySlug(decodeURIComponent(slug));
 
-	if (!image) {
+	// A missing src (incomplete record) would crash rendering and return a 500;
+	// serve a clean 404 instead so Google drops it gracefully rather than
+	// treating the whole /images/detail/* segment as error-prone.
+	if (!image || !image.src) {
 		notFound();
 	}
 
