@@ -64,7 +64,7 @@ export async function generateMetadata({
 
 	const { siteUrl } = await import('@/auth/ConfigManager');
 	const baseUrl = siteUrl.replace(/\/$/, '');
-	const categoryUrl = `${baseUrl}/images?filter=${encodeURIComponent(category.slug)}`;
+	const categoryUrl = `${baseUrl}/images/${encodeURIComponent(category.slug)}`;
 	const title = `${category.name}${pageNumber > 1 ? ` | Page ${pageNumber}` : ''}`;
 	const description = `Browse our collection of ${category.name} images. High-quality stock photos and images available for licensing.`;
 	const keywords = `${category.name}, images, stock photos, ${category.name} photography, ${category.name} pictures`;
@@ -74,18 +74,19 @@ export async function generateMetadata({
 		description,
 		keywords,
 		alternates: {
-			// Canonical deliberately includes the ?filter= param because each
-			// category represents genuinely distinct content. However, other
-			// transient params (?q=, ?state=, ?city=) are excluded — those are
-			// UI filters that produce duplicate/near-duplicate pages.
+			// Self-canonical on the path form (/images/<slug>), which must match
+			// exactly what sitemap.ts submits. This previously pointed at
+			// /images?filter=<slug>, which itself canonicals to /images — so every
+			// category collapsed onto the gallery page and none of them indexed.
+			// Transient UI params (?q=, ?state=, ?city=) stay excluded on purpose.
 			canonical:
-				pageNumber > 1 ? `${categoryUrl}&page=${pageNumber}` : categoryUrl
+				pageNumber > 1 ? `${categoryUrl}?page=${pageNumber}` : categoryUrl
 		},
 		openGraph: {
 			title,
 			description,
 			type: 'website',
-			url: pageNumber > 1 ? `${categoryUrl}&page=${pageNumber}` : categoryUrl,
+			url: pageNumber > 1 ? `${categoryUrl}?page=${pageNumber}` : categoryUrl,
 			siteName: 'Tellme Media'
 		},
 		twitter: {
@@ -183,16 +184,17 @@ const PhotoCategoryPage = async ({
 		total_images = result.total;
 	}
 
-	// Generate structured data for category page
+	// Generate structured data for category page. URLs here must match the
+	// canonical (path form) so structured data and canonical never disagree.
 	const baseUrl = siteUrl.replace(/\/$/, '');
-	const categoryUrl = `${baseUrl}/images?filter=${encodeURIComponent(category.slug)}`;
+	const categoryUrl = `${baseUrl}/images/${encodeURIComponent(category.slug)}`;
 
 	const collectionStructuredData: WithContext<CollectionPage> = {
 		'@context': 'https://schema.org',
 		'@type': 'CollectionPage',
 		name: category.name,
 		description: `Browse our collection of ${category.name} images. High-quality stock photos and images available for licensing.`,
-		url: pageNumber > 1 ? `${categoryUrl}&page=${pageNumber}` : categoryUrl,
+		url: pageNumber > 1 ? `${categoryUrl}?page=${pageNumber}` : categoryUrl,
 		mainEntity: {
 			'@type': 'ItemList',
 			numberOfItems: total_images,
@@ -202,7 +204,10 @@ const PhotoCategoryPage = async ({
 				item: {
 					'@type': 'ImageObject',
 					name: (image as any).meta_title || image.title,
-					url: `${baseUrl}/images/detail/${encodeURIComponent(image.slug)}${category.slug ? `?filter=${encodeURIComponent(category.slug)}` : ''}`
+					// Clean URL only — the detail page canonicals to the unfiltered
+					// URL, so linking the ?filter= variant here would point Google
+					// at a page it is told not to index.
+					url: `${baseUrl}/images/detail/${encodeURIComponent(image.slug)}`
 				}
 			}))
 		},

@@ -75,12 +75,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			changeFrequency: 'daily',
 			priority: 1.0
 		},
-		{
-			url: `${baseUrl}/?filter=images`,
-			lastModified: currentDate,
-			changeFrequency: 'daily',
-			priority: 0.9
-		},
+		// /?filter=images was dropped: it is a duplicate view of /images, which is
+		// already submitted below. /?filter=videos stays because no standalone
+		// /video listing route exists yet (it 404s) — this is the only URL for
+		// that view.
 		{
 			url: `${baseUrl}/?filter=videos`,
 			lastModified: currentDate,
@@ -88,13 +86,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			priority: 0.9
 		},
 		{
-			url: `${baseUrl}/?filter=shorts`,
+			url: `${baseUrl}/images`,
 			lastModified: currentDate,
 			changeFrequency: 'daily',
 			priority: 0.9
 		},
 		{
-			url: `${baseUrl}/images`,
+			// Real listing route (was missing from the sitemap entirely, so Google
+			// was never told about it). Replaces the /?filter=shorts duplicate.
+			url: `${baseUrl}/shorts`,
 			lastModified: currentDate,
 			changeFrequency: 'daily',
 			priority: 0.9
@@ -163,8 +163,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		console.error('Error loading categories for sitemap:', error);
 	}
 
+	// Path form matches the category page's self-canonical (/images/<slug>).
+	// The old ?filter= form canonicaled to /images, collapsing every category
+	// onto the gallery page so none of them could be indexed.
 	const categoryPages: MetadataRoute.Sitemap = categories.map((category) => ({
-		url: `${baseUrl}/images?filter=${encodeURIComponent(category.slug)}`,
+		url: `${baseUrl}/images/${encodeURIComponent(category.slug)}`,
 		lastModified: currentDate,
 		changeFrequency: 'weekly',
 		priority: 0.8
@@ -193,17 +196,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		console.error('Error loading images for sitemap:', error);
 	}
 
-	const imagePages: MetadataRoute.Sitemap = images.map((image) => {
-		const categoryParam = image.categorySlug
-			? `?filter=${encodeURIComponent(image.categorySlug)}`
-			: '';
-		return {
-			url: `${baseUrl}/images/detail/${encodeURIComponent(image.slug)}${categoryParam}`,
-			lastModified: currentDate,
-			changeFrequency: 'monthly',
-			priority: 0.7
-		};
-	});
+	// Submit the clean canonical URL only. The detail page canonicals to the
+	// unfiltered URL, so submitting ?filter= variants made Google crawl a URL it
+	// was simultaneously told not to index — the cause of a large block of
+	// "Crawled - currently not indexed". Sitemap URL must equal canonical URL.
+	const imagePages: MetadataRoute.Sitemap = images.map((image) => ({
+		url: `${baseUrl}/images/detail/${encodeURIComponent(image.slug)}`,
+		lastModified: currentDate,
+		changeFrequency: 'monthly',
+		priority: 0.7
+	}));
 
 	// Combine all pages
 	return [
