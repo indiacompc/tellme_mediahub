@@ -40,6 +40,10 @@ firebase-service-account.json
 *.tsbuildinfo
 next-env.d.ts
 
+# python
+__pycache__/
+*.pyc
+
 
 # Contentlayer
 .contentlayer
